@@ -1,0 +1,48 @@
+# Paths
+src/Input/**
+src/Output/**
+src/Hotstart/**
+src/Debug/**
+src/x64/**
+input_example/**
+
+# Files/formats from input path
+*.pbi
+*.qob
+
+# Files in main path
+*.htm
+*.log
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
