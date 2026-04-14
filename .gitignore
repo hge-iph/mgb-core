@@ -5,10 +5,20 @@ src/Hotstart/**
 src/Debug/**
 src/x64/**
 input_example/**
+/Input/**
+/Output/**
+/build/**
+/Testing/**
+/CMakeFiles/**
 
-# Files/formats from input path
-*.pbi
-*.qob
+# CMake files
+/CMakeCache.txt
+/cmake_install.cmake
+/CTestTestfile.cmake
+
+# Files/formats from ad hoc runtime input paths
+/Input/*.pbi
+/Input/*.qob
 
 # Files in main path
 *.htm
