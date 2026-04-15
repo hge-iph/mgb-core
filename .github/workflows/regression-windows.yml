@@ -1,0 +1,44 @@
+name: Regression Windows
+
+on:
+  push:
+    branches:
+      - main
+      - infra/build-test-docs-bootstrap
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  regression-magdalena:
+    runs-on:
+      - self-hosted
+      - windows
+      - x64
+      - ifx
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Configure Build And Run Regression
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          cmake -S . -B build
+          cmake --build build --config Release
+          ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+
+      - name: Upload Regression Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-windows-logs
+          if-no-files-found: ignore
+          path: |
+            build/Testing/Temporary/LastTest.log
+            build/mgb_model.dir/Release/BuildLog.htm
