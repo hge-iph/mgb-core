@@ -1,6 +1,10 @@
 name: Regression Windows Hosted Probe
 
 on:
+  push:
+    branches:
+      - main
+      - infra/build-test-docs-bootstrap
   pull_request:
   workflow_dispatch:
 
