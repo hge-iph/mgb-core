@@ -1,0 +1,47 @@
+GENERAL INFORMATION FILE FOR LARGE SCALE HYDROLOGIC MODEL
+!
+Project SA - DA / FORECAST
+!
+       DAY     MONTH      YEAR      HOUR          !SIMULATION START
+         1        1       1979         0
+
+        NT        DT     ALPHA     !TIME INTERVALS, INTERVALS SIZE IN SECONDS AND ALPHA FOR NUMERICAL STABILITY 
+      1314    86400.       0.3
+
+        NC        NU        NB      NREG      NCLI   CRU_IND    RESERV  INERTIAL	PSEUDO/2D    !NUMBER OF CELLS, USES, SUBASINS (calib), CLIMATE REGIONS (fix), CLIMATE STATIONS, RESERVOIR SIMULATION (FLAG), INERTIAL ROUTING (FLAG), LATERAL CONNECTIONS
+       458         9       296         7      -458         1         0         1         0
+
+ In. Slope  2D ch. widths  2D manning   (Downstream boundary condition = water surface slope (m/km); Widths for lateral connections (m); Manning for 2D overland flow) 	 
+      0.00     10.00      0.10
+
+    ICALIB							!INDICATES IF IT IS GONNA BE USED AUTOMATIC CALIBRATION (1) OR NOT (0) 
+         0	                        !OR IF IT WILL MAKE THE DATA ASSIMILATION (7) or FORECAST (2)
+
+  READ_HOT  WRITE_HOT
+         0         0	      !FLAGS FOR INERTIAL READ AND WRITE HOTSTART VALUES    		 
+
+FILENAME WITH DAILY METEOROLOGICAL DATA 
+
+!FILENAME WITH AVERAGE MONTHLY METEOROLOGICAL DATA
+coordinates.cli
+
+!STATIONS WITH OBSERVED FLOW DATA, FILENAME WITH DATA 
+0  qobs.qob
+
+!CELLS THAT CORRESPONDS TO FLU GAUGE WITH DATA                          
+
+
+!NUMBER OF POINTS TO RECORD HYDROGRAPHS
+2
+
+!CELLS THAT CORRESPONDS TO THOSE POINTS 
+33440
+33707
+
+!N mero de c lulas onde a vaz o calc deve ser subst. pela vaz o lida de arquivo e nome do arquivo
+0  QSUBST.qsb
+
+!Cells which flow data will be substituted
+
+!Interval of subasins for which simulation will occur (initial_subasin  final_subasin) 
+1 296

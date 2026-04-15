@@ -20,6 +20,10 @@ input_example/**
 /Input/*.pbi
 /Input/*.qob
 
+# Python caches
+__pycache__/
+*.pyc
+
 # Files in main path
 *.htm
 *.log

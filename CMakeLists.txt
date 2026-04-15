@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(MGBModel LANGUAGES Fortran)
 
+include(CTest)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(BootstrapIntelFortran)
 
@@ -67,3 +68,17 @@ set_target_properties(mgb_model PROPERTIES
 )
 
 mgb_configure_bootstrap_target(mgb_model)
+
+if(BUILD_TESTING)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+    add_test(
+        NAME regression_magdalena
+        COMMAND ${Python3_EXECUTABLE}
+                ${CMAKE_SOURCE_DIR}/tests/regression/run_regression.py
+                --case-dir ${CMAKE_SOURCE_DIR}/tests/regression/magdalena
+                --exe $<TARGET_FILE:mgb_model>
+    )
+endif()
+
+

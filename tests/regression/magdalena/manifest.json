@@ -1,0 +1,35 @@
+{
+  "case_name": "magdalena",
+  "description": "Initial smoke-sized regression case for the Magdalena basin.",
+  "input_dir": "Input",
+  "expected_dir": "expected",
+  "required_outputs": [
+    "LOG_MGB.txt"
+  ],
+  "comparisons": [
+    {
+      "path": "QTUDO.MGB",
+      "dtype": "float32",
+      "atol": 1.0,
+      "rtol": 1e2
+    },
+    {
+      "path": "YTUDO.MGB",
+      "dtype": "float32",
+      "atol": 1.0,
+      "rtol": 1e2
+    },
+    {
+      "path": "TWSTUDO.MGB",
+      "dtype": "float32",
+      "atol": 1.0,
+      "rtol": 1e2
+    },
+    {
+      "path": "FLOODTUDO.MGB",
+      "dtype": "float32",
+      "atol": 1.0,
+      "rtol": 1e2
+    }
+  ]
+}
