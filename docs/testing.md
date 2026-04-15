@@ -22,9 +22,7 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena 
 
 ## Runtime Staging Behavior
 
-The regression harness does not run the model from the repository root.
-
-For each run it:
+For each run, the regression harness:
 
 1. creates a runtime directory
 2. copies `tests/regression/magdalena/Input` to `<runtime>/Input`

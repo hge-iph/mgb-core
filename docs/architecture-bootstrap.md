@@ -12,15 +12,6 @@ At startup the main program:
 - opens runtime input and output files
 - enters the simulation loop
 
-## Working Directory Rule
-
-The model currently resolves input and output directories relative to the process working directory in `src/1main.f90`:
-
-- `INPUT_DIRECTORY = '.\\Input\\'`
-- `OUTPUT_DIRECTORY = '.\\Output\\'`
-
-That means the model behavior depends on the directory it is launched from unless a wrapper stages the runtime layout explicitly.
-
 ## Bootstrap Changes In This Phase
 
 - opt-in non-interactive execution through `MGB_NONINTERACTIVE=1`

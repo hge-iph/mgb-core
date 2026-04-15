@@ -14,9 +14,3 @@ Linux support remains a project requirement, but it is not implemented in this b
 - the main driver still uses Windows-style relative paths by default
 - direct-access unformatted binary I/O will need careful validation across toolchains
 - filename case mismatches may matter outside Windows
-
-## Deferred Work
-
-- Linux CI lane
-- alternative compiler support such as `gfortran`
-- portability shims or compiler-compatibility cleanup beyond the current bootstrap seam
