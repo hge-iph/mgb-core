@@ -1,0 +1,49 @@
+name: Regression Windows Hosted Probe
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  regression-magdalena-hosted-probe:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Setup Intel Fortran
+        id: setup-fortran
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: intel
+          version: '2025.2'
+
+      - name: Toolchain Diagnostics
+        shell: cmd
+        run: |
+          ifx --version
+          echo FC=%FC%
+          cmake --version
+
+      - name: Configure Build And Run Regression
+        shell: cmd
+        run: |
+          cmake -S . -B build
+          cmake --build build --config Release
+          ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+
+      - name: Upload Regression Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-windows-hosted-probe-logs
+          if-no-files-found: ignore
+          path: |
+            build/Testing/Temporary/LastTest.log
+            build/mgb_model.dir/Release/BuildLog.htm
