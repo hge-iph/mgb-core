@@ -102,7 +102,7 @@
     CLOSE(41)
    
     !ABRE ARQUIVO DE FACES
-    if (1==1) then
+    if (1==0) then
     OPEN(42,FILE=INPUT_DIRECTORY // 'face.con',STATUS='OLD',action='READ')
     
     !Número da face / Minibacia 1 / Minibacia 2 / Ymin da fronteira (m) / DX entre as minibacias (m):

@@ -1,4 +1,4 @@
-   
+  
     !---------------------------------------------------------------------------------
     !  Licensing:
     !
@@ -21,7 +21,7 @@
 	!---------------------------------------------------------------------------------
     !  Version/Modified: 
     !
-    !    2019.02.07 - 02 July 2019 (By: Vinicius Siqueira)    
+    !    2022.06.04 - 04 June 2022 (By: Vinicius Siqueira)    
     !
     !  Authors:
     !
@@ -48,7 +48,7 @@
 	!---------------------------------------------------------------------------------
     !  Discussion:
     ! 
-    !    This sub-routine reads the climate data from internal database.
+    !    This sub-routine creates string dates from integer numbers.
     !
     !
     !---------------------------------------------------------------------------------
@@ -57,63 +57,31 @@
     !---------------------------------------------------------------------------------
     ! End of header
     !---------------------------------------------------------------------------------
+SUBROUTINE DateString(i_julian,i_year,i_month,i_day,strDate)
     
-    SUBROUTINE LECLIMA
-	!esta subrotina prepara os dados climatologicos
-	USE VARS_MAIN
-	IMPLICIT NONE
-	INTEGER KLI,MM,IYYY,ID
+   USE VARS_MAIN
 
-	!	VERIFICA EM QUE MES ESTAMOS
-	CALL caldat(JDIA,MM,id,iyyy)
-
-	DO IC=1,NC
-		KLI=ICBOM(IC)
-        IF(flagaclimed==1) THEN
-            TA(IC)=TAMM(KLI,MM)
-            UR(IC)=URMM(KLI,MM)
-            VV(IC)=VVMM(KLI,MM)
-            SOL(IC)=SOLMM(KLI,MM)
-            PA(IC)=PAMM(KLI,MM)
-            cycle
-        ENDIF
+   implicit none
+   integer, intent(in)  :: i_day, i_month, i_year, i_julian
+   character(8), intent(out) :: strDate
+             
+   call caldat(i_julian,i_month,i_day,i_year)
+      
+   !Adjust number formats
+   if ((i_day < 10).AND.(i_month < 10)) then                     
+        write (strDate,"(I4,A1,I1,A1,I1)")i_year,'0',i_month,'0',i_day
         
-		!TEMPERATURA DO AR
-		IF(TD(KLI,IT).LT.-200.0.OR.flagaclimed==1)THEN !TESTA FALHA (FALHA=-300.0)
-			TA(IC)=TAMM(KLI,MM)	!USA MEDIA MENSAL DO POSTO
-		ELSE
-			TA(IC)=TD(KLI,IT) !USA DADO REAL
-		ENDIF
-		
-		!UMIDADE RELATIVA
-		IF(UD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN !TESTA FALHA (FALHA=-1.0)
-			UR(IC)=URMM(KLI,MM)	!USA MEDIA MENSAL DO POSTO
-		ELSE
-			UR(IC)=UD(KLI,IT) !USA DADO REAL
-		ENDIF
-
-		!VELOCIDADE DO VENTO
-		IF(VD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN !TESTA FALHA (FALHA=-1.0)
-			VV(IC)=VVMM(KLI,MM) ! EM M/S
-		ELSE
-			VV(IC)=VD(KLI,IT) !USA DADO REAL
-		ENDIF	        
-
-		!HORAS DE SOL									
-		IF(SOLD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN
-			SOL(IC)=SOLMM(KLI,MM) !EM HORAS/DIA
-		ELSE
-			SOL(IC)=SOLD(KLI,IT) !USA DADO REAL
-		ENDIF
-
-		!PRESSAO ATMOSFERICA 
-		IF(PAD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN
-			PA(IC)=PAMM(KLI,MM) 
-		ELSE
-			PA(IC)=PAD(KLI,IT) !USA DADO REAL
-		ENDIF
-	ENDDO
-
-734	FORMAT(5F10.2)
-	RETURN
-	END
+   elseif ((i_day < 10).AND.(i_month >= 10)) then        
+        write (strDate,"(I4,I2,A1,I1)")i_year,i_month,'0',i_day
+        
+   elseif ((i_day >= 10).AND.(i_month < 10)) then     
+        write (strDate,"(I4,A1,I1,I2)")i_year,'0',i_month,i_day
+                
+   else     
+        write (strDate,"(I4,I2,I2)")i_year,i_month,i_day
+        
+   endif
+    
+    END SUBROUTINE
+    
+    

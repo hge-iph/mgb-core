@@ -153,14 +153,19 @@
 	STO=STO/1000.0 		! to meters/day
 	STO=STO*MESP*CLATE  ! to MJ/m2.day
 
-	!Calculates incoming radiation to terr. surface		
-	IF (flagaclimed == 1) then			! from insolation
-        if (CRU_INDEX==1) then
+	!Calculates incoming radiation to terr. surface			
+	IF (flag_IN_RAD == 0) then	!Options for monthly radiation data (flag rad = 0)
+        
+        if (CLI_INDEX==0) then !INMET
+            SSUP=STO*(0.25+0.5*SOLX/HIM) 	!from insolation (eq. 4.2.6 from Handbook Hydrology)
+            
+        elseif (CLI_INDEX==1) then !CRU
             SSUP=STO*(0.25+0.5*(SOLX)/100.)  ! Sunshine data in % for CRU data
-        else
-            SSUP=STO*(0.25+0.5*SOLX/HIM) 	! (eq. 4.2.6 from Handbook Hydrology)
+        
+        elseif (CLI_INDEX==2) then !WorldClim v2.1
+            SSUP=SOLX                        ! Sunshine data already in radiation (MJ/m².day) for WorldClim data
         endif
-	ELSE		!from incident shortwave on terr surface data		
+	ELSE    !from incident shortwave on terr surface data		
 		SSUP=SOLX	
     ENDIF
 

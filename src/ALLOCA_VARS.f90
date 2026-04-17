@@ -83,19 +83,18 @@ SUBROUTINE ALLOCA_VARS(IOP)
 ! Variables and Modules
 
 	USE VARS_MAIN
-	!use AUX_MOD !RP
 	IMPLICIT NONE	
-	INTEGER IOP
+	
+    INTEGER IOP
     SAVE
 
 ! Select the case how the subroutine is working: for allocation, or for deallocation.
 
 	ALLOCV_CASE: SELECT CASE (IOP) !Checks for allocation or deallocation. IOP=0 means allocation, and IOP=1 means deallocation.
-    CASE (0) ! Allocation
-		!ALLOCATE (QTUDO(NC,NT),HTUDO(NC,NT),YTUDO(NC,NT),QVIZTUDO(NC,NT)) !Streamflow at all minibasins flow at all time steps               
+    CASE (0) ! Allocation          
         ALLOCATE (QTUDO(NC),HTUDO(NC),YTUDO(NC),QVIZTUDO(NC)) !Streamflow at all catchments #Vinicius Siqueira
         ALLOCATE (ALAGTUDO(NC),TWSTUDO(NC))                       !! Sly + Vinicius
-        
+        ALLOCATE (HANDTUDO(NC))
 		ALLOCATE (DIAH(NT),MESH(NT),ANOH(NT),HORAH(NT)) !Date and time corresponding to the time interval counter
 		ALLOCATE (ICODMUSK(NC)) !Code that indicates linear or non-linear
 		ALLOCATE (BPLAN(NC)) !Width of the floodplain (includes own river)
@@ -111,11 +110,6 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		ALLOCATE (PMB(NB)) !Average rainfall at each sub-basin
 		ALLOCATE (KPM(NB)) !Auxiliar variable for calclulation of average rainfall
 		
-		if (flagaclimed/=1) then !#MV When using CRU file of South America (or not use time serie), do not allocate!
-		     ALLOCATE (TD(NCLI,NT),UD(NCLI,NT),VD(NCLI,NT),SOLD(NCLI,NT))
-		     ALLOCATE (PAD(NCLI,NT))
-		end if
-
 		ALLOCATE (QREF(NC)) !Reference flow
 		ALLOCATE (ICBOM(NC))!Number (id) of the nearest climatological station to the minibasin center
 	 	ALLOCATE (PUSO(NC,NU))!Proportion of uses in minibasin
@@ -141,10 +135,8 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		ALLOCATE (DSUM(NB,NT),DINM(NB,NT),DBAM(NB,NT))!Averages over the SubBasins
 		ALLOCATE (SIM(NB,NT),EM(NB,NT),WBM(NB,NT),PM2(NB,NT))!Averages over the SubBasins
 		ALLOCATE (KCB(NB)) !Number of minibasins inside each subbasin
-		ALLOCATE (QR(NOBS,NT),QOBS(NOBS,NT))!Calculated and Observed streamflow in the outlet of each microbasin
 		ALLOCATE (QLIDO(NUMSUBST,NT)) !Flow that is read to replace calculated
 		
-		ALLOCATE (QRG(NUMHIDG,NT)) !Hydrograph for recording
 		ALLOCATE (QRB(NB,NT)) !Hydrographs of sub-basins
 		ALLOCATE (QM1(NC+1),QJ1(NC),QM2(NC+1),QJ2(NC)) !Streamflows upstream and downstream in i
 		ALLOCATE (QCEL1(NC),QCEL2(NC)) !Original streamflows at minibasins at the instants t E t+1 at minibasin i
@@ -158,14 +150,12 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		ALLOCATE (VBAS(NC),VINT(NC),VSUP(NC))		!Volume at the minibasin
 		ALLOCATE (TONTEM(NC))		!Previous day temperature
 		ALLOCATE (P(NC)) !Rainfall at the interval in the cell
-        !ALLOCATE (Psingle(NC))  !Rainfall with single precision             !! Sly + Vinicius
 		ALLOCATE (TA(NC),UR(NC),VV(NC),SOL(NC),PA(NC))	!Temperature, Umidity, Wind, Insolation, Pressure
-		ALLOCATE (R2(NOBS),ERRV(NOBS),R2L(NOBS)) !COEF. NASH-SUTCLIFFE, VOLUME ERROR, COEF. NASH LOGARITHMS
 		ALLOCATE (WPREV(NC,NU)) 	!Amoint of water in the soil at the beginning of the forecasting cycle
 		ALLOCATE (VBASPREV(NC),VINTPREV(NC),VSUPPREV(NC)) !Volume of water in the minibasin at the beginning of the forecasting cycle
 		ALLOCATE (TAPREV(NC)) !Temperature at the beginning of the forecasting cycle
 		ALLOCATE (QM2PREV(NC+1),QJ2PREV(NC),QJ1PREV(NC)) !Streamflows at the beginning of the forecasting cycle
-		ALLOCATE (QPREV(NUMHIDG,100)) !Forecasted streamfows at interest points with multiple lead-times
+	
 		ALLOCATE (SIPREV(NC,NU)) 	!Intercepeted amount of water (forecating cycle)
 		ALLOCATE (QRIOINIPREV(NC,NUMUSK)) !Initial condition for MUSKINGUM CUNGE at forecast cycle
 		ALLOCATE (QCONTORMPREV(NC+1,25),QCONTORJPREV(NC+1,25)) !Boundary condition for MUSKINGUM CUNGE at forecast cycle
@@ -188,7 +178,7 @@ SUBROUTINE ALLOCA_VARS(IOP)
         
         !FMF 21/06/2015        
         ALLOCATE (QITUDO(NC)) !incremental discharges everytime and everywhere
-	    ALLOCATE (EVAPTUDO(NC)) !et everytime and everywhere
+	    ALLOCATE (EVAPTUDO(NC)) !ET
         ALLOCATE (ETINTERC(NC)) !CEAA
         ALLOCATE (EVAPURHAGUA(nc)) !CEAA
         ALLOCATE (ETSOILPLANT(NC)) !CEAA
@@ -204,8 +194,8 @@ SUBROUTINE ALLOCA_VARS(IOP)
         ALLOCATE (DINTMMDIA(NC)) !CEAA
         allocate (qceltudo(nc)) !ceaa
         ALLOCATE (SURFWAT(NC)) !CEAA
-        ALLOCATE (QBASTUDO(NC)) !catchment baseflows everytime and everywhere
-		ALLOCATE (WSATDEGREE(NC)) !soil moisture volme everytime and everywhere        
+        ALLOCATE (QBASTUDO(NC)) !catchment baseflows 
+		ALLOCATE (WSATDEGREE(NC)) !soil moisture volume       
 		ALLOCATE (TWS2(NC)) !Total Water Storage
         ALLOCATE (vflow(NC)) ! Flow velocities
         ALLOCATE (WriteHotFile(NT))
@@ -214,8 +204,8 @@ SUBROUTINE ALLOCA_VARS(IOP)
         allocate (Ind_Reserv(nC), iTini_Reserv(nC)) ! SIN_RESERV
 
     !****************************************************************************************************
-    !VINICIUS SIQUEIRA IN 07-11-2016 (English Date format)
-    !MGB-IPH for SOUTH AMERICA modifications
+    !VINICIUS SIQUEIRA IN 07-11-2016 
+    !MGB for SOUTH AMERICA modifications
     !Arrays declarations inside subroutines have been taken to this module
     !****************************************************************************************************
         
@@ -239,12 +229,7 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		DEALLOCATE (TAMM,URMM,VVMM)
 		DEALLOCATE (PAMM,SOLMM)
 		DEALLOCATE (PMB,KPM) !Average rainfall at each sub-basin
-		
-		if (flagaclimed/=1) then !#MV When using CRU file of South America (or not use time series), do not allocate!
-		    DEALLOCATE (TD,UD,VD,SOLD)
-            DEALLOCATE (PAD)
-		end if
-		
+				
 		DEALLOCATE (QREF) !Reference flow
 		DEALLOCATE (ICBOM)!Number (id) of the nearest climatological station to the minibasin center
 	 	DEALLOCATE (PUSO)!Proportion of uses in minibasin
@@ -268,9 +253,8 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		DEALLOCATE (DSUM,DINM,DBAM)!Averages over the SubBasins
 		DEALLOCATE (SIM,EM,WBM,PM2)!Averages over the SubBasins
 		DEALLOCATE (KCB) !Number of minibasins inside each subbasin
-		DEALLOCATE (QR,QOBS)!Calculated and Observed streamflow in the outlet of each microbasin
 		DEALLOCATE (SI)
-		DEALLOCATE (QRG) 	!Streamflow n the outlets of microbasins
+	!	DEALLOCATE (QRG) 	!Streamflow n the outlets of microbasins
 		DEALLOCATE (QRB) !Hydrograph for recording
 		DEALLOCATE (QM1,QJ1,QM2,QJ2) !Streamflows upstream and downstream in i
 		DEALLOCATE (PMB2,PMI2,PMS2,PJB2,PJI2,PJS2) !Proportions source of streamflow to the river
@@ -282,16 +266,13 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		DEALLOCATE (VBAS,VINT,VSUP)		!Volume at the minibasin
 		DEALLOCATE (TONTEM)		!Previous day temperature
 		DEALLOCATE (P) !Rainfall at the interval in the cell
-        !DEALLOCATE (Psingle)    !! Sly + Vinicius
 		DEALLOCATE (TA,UR,VV,SOL,PA)	!Temperature, Umidity, Wind, Insolation, Pressure
-		DEALLOCATE (R2,ERRV,R2L) !COEF. NASH-SUTCLIFFE, VOLUME ERROR, COEF. NASH LOGARITHMS
 		DEALLOCATE (QCEL1,QCEL2) !Originated streamflows at minibasins at the instants t E t+1 at minibasin i
 		DEALLOCATE (QLIDO) !Calculated streamflow for substitution
 		DEALLOCATE (PMB2PREV,PMI2PREV,PMS2PREV) !Proportions of origin of the flows in the river
 		DEALLOCATE (PJB2PREV,PJI2PREV,PJS2PREV) !Proportions of origin of the flows in the river
 
 		deallocate (OD) !RP
-		!deallocate (OD,hdFLAG) !Inertial modification
 		
 		DEALLOCATE (PPREV)
 		
@@ -324,13 +305,14 @@ SUBROUTINE ALLOCA_VARS(IOP)
         DEALLOCATE (YTUDO)      !! Sly + Vinicius
         DEALLOCATE (ALAGTUDO)
         DEALLOCATE (TWSTUDO)
+        DEALLOCATE (HANDTUDO)
         
 		!FMF 09/09/2015 
 		DEALLOCATE (RUGMAN) !Manning
 		
 		!****************************************************************************************************
-    !VINICIUS SIQUEIRA IN 07-11-2016 (English Date format)
-    !MGB-IPH for SOUTH AMERICA modifications
+    !VINICIUS SIQUEIRA IN 07-11-2016
+    !MGB for SOUTH AMERICA modifications
     !Arrays declarations inside subroutines have been taken to this module
     !****************************************************************************************************
 		

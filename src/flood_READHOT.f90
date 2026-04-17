@@ -69,18 +69,32 @@
 	
 	!DEFINE QUE NÃO PODEMOS TER VARIÁVEIS IMPLÍCITAS
 	IMPLICIT NONE
-    integer:: i,nStatVar,j
+    integer:: i,nStatVar,j,i_julian
     real(4),allocatable:: WB_stateVec(:)	 
-    real*8,allocatable:: h_stateVec(:)	
+    real*8,allocatable:: h_stateVec(:)
+    character(len=8) :: hotFilename
+    LOGICAL :: file_exists
 		
 	nStatVar=(nC*nU)+(6*nC)+(nC*nU)+(sum(NSUBT)+nC)+nC !
 	allocate(WB_stateVec(nStatVar))
 	
-    write(*,*)
-    write(*,*)'Reading Water Balance State Variables...'
+    !Get Julian day and corresponding calendar year, month and day.
+    i_julian=IDINI+INT((IT+HORAINI)/(86400./DTP))  
+    !Get the current date
+    call DateString(i_julian,IANO,IMES,IDIA,hotFilename)     
     
-        
-	    open(FILHOTSTART_WB,FILE=INPUT_DIRECTORY // 'StateVars_WB.hot',STATUS='old',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT') 
+    !Check if the hotstart exists
+     INQUIRE(FILE=INPUT_DIRECTORY_HOTSTART // 'StateVars_WB_'// trim(hotFilename) // '.hot', EXIST=file_exists)              
+        IF(file_exists==0) then 
+            write(*,*)'A problem occurred when reading StateVars_WB_'// trim(hotFilename) // '.hot. File does not exist, simulation aborted.'
+            pause
+            STOP !Exit program
+      endif
+    
+    write(*,*)
+    write(*,*)'Reading Water Balance State Variables for: ',hotFilename
+    
+    open(FILHOTSTART_WB,FILE=INPUT_DIRECTORY_HOTSTART // 'StateVars_WB_'// trim(hotFilename) // '.hot',STATUS='old',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT') 
 	
 	!******************************************************************************
 	read(FILHOTSTART_WB,REC=1) (WB_StateVec(i),i=1,nStatVar) ! Reading state variables:
@@ -140,10 +154,10 @@
     nStatVar=(9*nC)! Variables from inertial routing
     allocate(H_StateVec(nStatVar))
     
-    write(*,*)'Reading Hydraulic State Variables...'
+    write(*,*)'Reading Hydraulic State Variables for: ',hotFilename
     write(*,*)
     
-    open(FILHOTSTART_Inert,FILE=INPUT_DIRECTORY // 'StateVars_inertial.hot',STATUS='old',RECL=(nStatVar*2),FORM='UNFORMATTED',ACCESS='DIRECT')    
+    open(FILHOTSTART_Inert,FILE=INPUT_DIRECTORY_HOTSTART // 'StateVars_inertial_'// trim(hotFilename) // '.hot',STATUS='old',RECL=(nStatVar*2),FORM='UNFORMATTED',ACCESS='DIRECT')    
     read(FILHOTSTART_Inert,REC=1) (H_StateVec(i),i=1,nStatVar) ! Reading state variables:
     
     i=0

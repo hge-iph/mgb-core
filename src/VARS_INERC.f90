@@ -89,6 +89,7 @@
     
     REAL*8,ALLOCATABLE:: nMan(:)            !Rugosidade considerada no modelo Inercial !FMF 09/09/2015 
     
+    INTEGER thread_count                        !Number of processor threads to be used in OMP parallelization
     INTEGER,ALLOCATABLE:: HDFLAG(:)             !Código do modelo hidrodinâmico ou inercial
     INTEGER hdFLAG0                             !Flag do modelo hidrinâmico ou inercial
     INTEGER,ALLOCATABLE:: MINIMONT(:,:)         !MATRIZ COM RELAÇÕES TOPOLÓGICAS DE CADA MINI-BACIA

@@ -86,12 +86,14 @@
 	! Variables and parameters:
 	use VARS_INERC
 	use VARS_MAIN
+    use omp_lib
+    
 	implicit none
 		
     SURFWAT=0.0 !CEAA
 	!-------------------------------------------------------------------------------------
         
-    !$OMP PARALLEL NUM_THREADS(6)
+    !$OMP PARALLEL NUM_THREADS(thread_count)
     !$OMP DO PRIVATE(IB,Nentradas,SumQup,Areajtab,yjtab,Volume_temp)
     do iC=1,nC
     
@@ -119,26 +121,20 @@
             endif
             !! SIN_RESERV
            
-             !!Added to include evaporation of open waters from floodplain dynamics 
-             EVAPTUDO(IC)=EVAPTUDO(IC)+((E0agua(IC)*dtflood*Area2(iC)*1000000.0/(DTP*1000.))/(ACEL(IC)*1000)) !em mm/DTP            
-             ETOPENWAT(IC)=ETOPENWAT(IC)+((E0agua(IC)*dtflood*Area2(iC)*1000000.0/(DTP*1000.))/(ACEL(IC)*1000)) !em mm/DTP !CEAA   
+            !!Added to include evaporation of open waters from floodplain dynamics 
+            EVAPTUDO(IC)=EVAPTUDO(IC)+((E0agua(IC)*dtflood*Area2(iC)*1000000.0/(DTP*1000.))/(ACEL(IC)*1000)) !em mm/DTP            
+            ETOPENWAT(IC)=ETOPENWAT(IC)+((E0agua(IC)*dtflood*Area2(iC)*1000000.0/(DTP*1000.))/(ACEL(IC)*1000)) !em mm/DTP !CEAA   
             
-            !Interpolates the Area and Level from Volume
-       !    CALL hunt(VTAB(:,iC),Vol2(iC),jtab(iC),ATAB(:,iC),Areajtab,ZTAB(:,IC),yjtab,NPFL(IC)+2)           
-            !CALL STAGEAREA
-            CALL STAGEAREA(vol2,vtab,jtab,iC,ztab,atab,npfl,NC,yjtab,Areajtab) !Passing arguments to avoid errors in parallel mode 
-             
+            !Interpolates the Area and Level from Volume                   
+			CALL STAGEAREA(vol2,vtab,jtab,iC,ztab,atab,npfl,NC,yjtab,Areajtab) !Passing arguments to avoid errors in parallel mode
+                  
             Area2(iC) = min(Areajtab,ACEL(iC))
             
             !Updates variables:
             Yfl(iC)=max(yjtab,ZTAB(1,IC)+0.001)
-            !y2_fl=max(yjtab,ZTAB(1,IC)+0.001)
-            !y2_fl=y2_fl+0.001
             
             !Calculates depth
-            Hfl(iC)=Yfl(iC)-ZTAB(1,IC)
-            !Hfl(iC)=y2_fl-ZTAB(1,IC)
-            !Yfl(iC)=y2_fl       
+            Hfl(iC)=Yfl(iC)-ZTAB(1,IC)      
             
             !Updates the volume
             Vol1(iC)=Vol2(iC)                

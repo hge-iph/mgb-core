@@ -1,4 +1,3 @@
-
     !---------------------------------------------------------------------------------
     !  Licensing:
     !
@@ -19,9 +18,9 @@
     !along with this program.  If not, see <https://www.gnu.org/licenses/>.	
 	!
 	!---------------------------------------------------------------------------------
-    !  Version/Modified:  
+    !  Version/Modified: 
     !
-    !    2014.09.001 - 09 September 2014
+    !    2026.03.10 - 10 March 2026 (By: Vinicius Siqueira)    
     !
     !  Authors:
     !
@@ -30,8 +29,8 @@
     !    * Walter Collischonn
     !    * Rodrigo Cauduro Dias de Paiva
     !    * Diogo da Costa Buarque
-    !    * Paulo Pontes RÃ³genes
-    !    * Mino  Viana Sorribas
+    !    * Paulo Pontes Rógenes
+    !    * Mino Viana Sorribas
     !    * Fernando Mainardi Fan
     !    * Juan Martin Bravo 
     !    * Vinicius Alencar Siqueira
@@ -45,52 +44,57 @@
     !    Porto Alegre, 2001
     !    ISBN: XXXXXXXXXXX,
     !
+	!---------------------------------------------------------------------------------
+    !  Discussion:
+    ! 
+    !    This sub-routine write the selected variables on disk.
+    !
     !---------------------------------------------------------------------------------
     ! Variables and Parameters:
     ! *Variables declarations and routines calls are all commented below.
     !---------------------------------------------------------------------------------
-    !  Discussion:
-    ! 
-    !    This Sub-Routine find the best climatic station number to each unit-catchment
-    !
-    ! Usage:
-    !
-    !   * no files are opened in this routine
-    !
-    ! uses modules and functions
-    !
-    !    * module VARS_MAIN in VARSMAIN.f90
-    !
-    ! reads
-    !
-    ! * no files are read in this routine
-    !
-    ! creates
-    !
-    ! * no files are created in this routine
-    
     ! End of header
     !---------------------------------------------------------------------------------
+	
+	SUBROUTINE MET_INPUT_FILES(file_opt)
     
-	SUBROUTINE INTECLIM
+    
+    USE VARS_MAIN
+    implicit none
+    integer, intent(in) :: file_opt 
+    
+    !input met files
+    !Opening files before MODELO subroutine #Vinicius Siqueira
+    if (file_opt == 1) then
+       		
+		!Input binary file with interpolated rainfall data
+		OPEN(FILPLU,FILE=INPUT_DIRECTORY // 'CHUVAbin.pbi', STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')
+										 
+        if (flag_IN_TEMP==1)   OPEN(FILTEMP,FILE=INPUT_DIRECTORY // 'met_temp.pbi', &
+                                    STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')
+        
+		if (flag_IN_RAD==1)    OPEN(FILRAD,FILE=INPUT_DIRECTORY // 'met_radiation.pbi', &
+                                    STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')										
+									
+		if (flag_IN_RH==1)     OPEN(FILRELH,FILE=INPUT_DIRECTORY // 'met_relh.pbi', &
+                                    STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')
+        
+        if (flag_IN_WIND==1)   OPEN(FILWIND,FILE=INPUT_DIRECTORY // 'met_wind.pbi', &
+                                    STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')
+        
+        if (flag_IN_PRES==1)   OPEN(FILPRES,FILE=INPUT_DIRECTORY // 'met_wind.pbi', &
+                                    STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT') 
 
-    ! Variables and Parameters
-	USE VARS_MAIN
-	IMPLICIT NONE
-
-	REAL DMIN,DIST
-	INTEGER IP,IPMIN
-
-	DO IC=1,NC !unit-catchment loop
-		DMIN=1000000.0
-		DO IP=1,NCLI !Climatic station loop
-			DIST=((X(IC)-XYC(IP,1))**2.+(Y(IC)-XYC(IP,2))**2.)**0.5
-			IF(DIST.LT.DMIN)THEN !Save the best station number
-				DMIN=DIST
-				IPMIN=IP
-			ENDIF
-		ENDDO
-		ICBOM(IC)=IPMIN
-	ENDDO
-	RETURN
-	END
+	else
+		! Closing met files
+		close(FILPLU)
+		close(FILTEMP)
+		close(FILRAD)
+		close(FILRELH)
+		close(FILWIND)
+		close(FILPRES)
+		
+    end if
+    
+    end subroutine
+                      

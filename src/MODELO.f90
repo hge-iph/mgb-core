@@ -21,7 +21,7 @@
 	!---------------------------------------------------------------------------------
     !  Version/Modified:
     !
-    !    2014.25.11 - 25 November 2014 (By: Mino V. Sorribas)    
+    !    2026.03.11 - 11 March 2026 (By: Vinicius Siqueira)    
     !
     !  Authors:
     !
@@ -61,11 +61,6 @@
 	!	   achieved by calling (i) REDE, for Muskingum-Cunge Method or
 	!	   (ii) flood_inertial, for a 1D Hydrodynamic Model (w/ inertia and pressure)
 	!	
-	!	At the end discharge time series are stored in :
-	!		QRB: calculated discharge time series in all subbasins
-	!		QRG: calculated discharge time series in catchments pre-defined by user
-	!		QR:  calculated discharge time series in subbasin outlet w observed data
-	!	Those are recorded in files at the end when returns to SIMULA
 	!
 	!
 	!	 * iT value should not be changed inside subroutines!
@@ -85,7 +80,7 @@
     !
 	!	 * function CALDAT	      		in	  caldat.f90
     !    * module     VARS_MAIN   		in    VARS_MAIN.f90
-    !    * module     VARS_INERC  		in    VARSINERC.f90  !Quais? 
+    !    * module     VARS_INERC  		in    VARSINERC.f90   
  	!	 * subroutine LECHUVA	  		in	  LECHUVA.f90
 	!	 * subroutine LECLIMA	  		in	  LECLIMA.f90
 	!	 * subroutine CELULA	  		in	  CELULA.f90
@@ -114,183 +109,90 @@
 	SUBROUTINE MODELO
 
 	USE VARS_MAIN
-	USE VARS_INERC
-	!USE AUX_MOD
+	USE VARS_INERC	
 	IMPLICIT NONE
 	INTEGER K,KHID 					!indexes and counters
 	INTEGER KC,JB,JC,KB,JCB,MWP 	!... same
-      
-	if (flag_WriteHot==3) then 
-        !Then open file for read
-         open(46,FILE=INPUT_DIRECTORY // 'HotstartList.prev',STATUS='OLD',ACTION='READ')
-        
-         WriteHotFile=0
-         DO IT=1,NT !Check which ITs we need to write hotstart values
-            READ(46,*)WriteHotFile(IT)    
-         ENDDO
-    endif
-  
-    ! Initialize
-	IT=0  
     
-    Write(*,*)'         IT   Max_Flow   Percent_Complete' 
+    real time_increment 
+    real stats_max_q, stats_perc_comp ! Current statistics
+    
+    ! Write header for simulation statistics
+    Write(*,*)' IT         Date       Max flow (m3/s)   % Complete' 
+
+    ! Initialize model time step
+	IT=0 
     
     DO WHILE (IT<NT)
 		
+        ! Advance time
 		IT=IT+1
-		write(*,*)iT,maxval(QJ2),(100.*real(it)/real(NT)), ' %' !write time interval on screen			        
-		
-        !Write hotstart file for water balance and hydraulic state variables (only if Inertial routing is enabled) #VAS 
-    if (flag_WriteHot >= 2) then
-             call flood_WRITEHOT              
-    end if
+		        		       
+        ! Write hotstart file for water balance and hydraulic state variables (only if Inertial routing is enabled) #VAS 
+        if (flag_WriteHot == 2 .OR. flag_WriteHot == 3) then
+           call flood_WRITEHOT              
+        end if
         
-        !if(mod(it,100)==0)  write(*,*)100*IT/NT,' %'
-                 
-		JDIA=IDINI+INT((IT+HORAINI-1)/(86400./DTP)) 	! Gets calendar day (big number)
-		CALL CALDAT(JDIA,IMES,IDIA,IANO)
-
-		DIAH(IT)=IDIA !stores day corresponding to iT time interval
-		MESH(IT)=IMES !stores month corresponding to iT time interval
-		ANOH(IT)=IANO !stores year corresponding to iT time interval
-		HORAH(IT)=MOD(IT,24)+HORAINI 	!hour of day corresponding to iT time interval
-              
-		! Read rainfall data for all catchments in iT time-step
-		ITCHUVA=IT
-		CALL LECHUVA
-        	    
-		DO KC=1,NC
-			PM(KC)=PM(KC)+P(KC) !Cumulative rainfall (used later for average)
-		ENDDO		
-	
+        ! Check the time increment (in days) from simulation start                  
+        time_increment = (IT-1)*(DTP/86400.) + HORAINI*(3600./86400.)
+        
+        ! Get current calendar dates
+		JDIA = FLOOR(IDINI + time_increment)
+        
+        CALL CALDAT(JDIA,IMES,IDIA,IANO)
+                         
+        ! Get current hour of the day        
+        IHORA = INT(REAL(MOD(time_increment, 1.0) * 24., 4))
+       
+        ! Write simulation details on screen
+        ! Get simulation statistics
+        stats_max_q = maxval(QJ2)  ! Maximum flow for the entire model domain 
+        stats_perc_comp = (100. * real(it)/real(NT)) !% of simulation completion
+        WRITE(*,71) IT,IANO,IMES,IDIA,IHORA,0,stats_max_q,stats_perc_comp
+                 	    	
 		! Reads climate data
 		TONTEM=TA
-		CALL LECLIMA
-	
-		! Calls catchment routing/discharge for lateral inflow
-        DINFILT=0.0
-        
-        ! Initializes Evaptudo
-        EVAPTUDO=0.0
-        ETINTERC=0.0 !CEAA
-        ETSOILPLANT=0.0 !CEAA
-        ETOPENWAT=0.0 !CEAA
-        SOILWATER=0.0 !CEAA
-        VINTERC=0.0 !CEAA
-        CAPWATER=0.0 !CEAA
-        QCELTUDO=0.0 !CEAA
-        EVAPURHAGUA=0.0 !CEAA
-        
+        CALL READ_MET(IMES,IT) ! Read rainfall and other met variables 
+	    
+        ! Perform vertical water balance
 		CALL CELULA		
-        
-		! Saves detailed info for soil state variables in file NOSOLO.HIG.
-		! Uses JC index for catchment and JB index for URH of interest.
-		IF(ICALIB.EQ.0)THEN !only if not calibrating.
-			JB=1
-			JC=901 !CEAA
-			!JC=57
-			!WRITE(FILSOL,75)IT,P(JC),W(JC,JB),SI(JC,JB),ET(JC,JB),CAF(JC,JB),QBAS(JC),QINT(JC),QSUP(JC)
-            WRITE(FILSOL,75)IT,P(JC),EVQ(JC),EVAPURHAGUA(JC),SOILWATER(JC),ETINTERC(JC),EVAPTUDO(JC),CAPWATER(JC),vBASmmdia(JC),vINTmmdia(JC),vSUPmmdia(JC),dBASmmdia(JC),dINTmmdia(JC),dSUPmmdia(JC)  !CEAA
-			JB=2
-			JC=2
-			WRITE(FILSOL2,75)IT,P(JC),W(JC,JB),SI(JC,JB),ET(JC,JB),CAF(JC,JB),QBAS(JC),QINT(JC),QSUP(JC)			
-
-!			write(971,66) (E0agua(iC),iC=1,nC)
-!			write(972,66) (E0topo(iC),iC=1,nC)
-!			write(973,66) (E0sup(iC),iC=1,nC)
-
-		ENDIF
-
+       
 	    ! Call main river routing routine using Muskingum-Cunge Method
-		if(hdFLAG(1)==0)then									
+		if (hdFLAG(1)==0) then									
 		    CALL REDE
 		endif     
-		
+
 		! Calculates lateral inflow 
         do ic=1,nc
-		    QCEL2(IC)=QBAS(IC)+QINT(IC)+QSUP(IC) !sums surface, subsurface and           
-		enddo
-
+		    QCEL2(IC) = QBAS(IC) + QINT(IC) + QSUP(IC) !sums surface, subsurface and           
+        enddo
+        
         ! Calls river routing routine using Inertial Method
-        if(hdFLAG0>0)then
+        if (hdFLAG0>0) then
             CALL flood_inercial
         endif        
-
-		! Stores calculated discharges in sub-basins with observed data - for calibration and assessment.
-		DO K=1,NOBS
-			KHID=IQOBS(K) 		! outlet catchment id
-			QR(K,IT)=QJ2(KHID)  ! saves on QR(K,IT), that will be compared to QOBS in FOBJ routine.
-        ENDDO
             
         !Modified in order to write results in disk for each IT #Vinicius Siqueira 21/12/2016
-        !! Sly + Vinicius  !! Alocar 4 bytes before 
+        !! Sly + Vinicius  !! Alocar 4 bytes before         
         !=====================================================================                           
-            DO IC=1,NC                            
-                QTUDO(iC)=Q2fl(iC)                                                                      
-                YTUDO(iC)=Yfl(iC)
-                TWSTUDO(iC) =TWS2(iC)
-                ALAGTUDO(iC)=Area2(iC)
-                QCELTUDO(iC)=QCEL2(iC) !CEAA
-            ENDDO  
+        DO IC=1,NC                            
+            QTUDO(IC)=Q2fl(IC)                                                                      
+            YTUDO(IC)=Yfl(IC)
+            TWSTUDO(IC) =TWS2(IC)
+            ALAGTUDO(IC)=Area2(IC)
+            QCELTUDO(IC)=QCEL2(IC) 
+            HANDTUDO(IC) = Yfl(IC) - REAL(ZTAB(1,IC)) - REAL(HRIO(IC))
+        ENDDO  
         
-        WRITE(FILTUD,REC=IT)(QTUDO(IC),IC=1,NC) !Flow        
-        WRITE(1974,REC=IT)(EVAPTUDO(IC),IC=1,NC) !Evapo values        
-        WRITE(1975,REC=IT)(YTUDO(IC),IC=1,NC) !Y values
-        WRITE(1977,REC=IT)(TWSTUDO(IC),IC=1,NC) !TWS GRACE
-        WRITE(1978,REC=IT)(ALAGTUDO(IC),IC=1,NC) !Flooded Areas
-        
-        !WRITE(1980,REC=IT)(ETINTERC(IC),IC=1,NC) !CEAA
-        !WRITE(1981,REC=IT)(ETSOILPLANT(IC),IC=1,NC) !CEAA
-        !WRITE(1982,REC=IT)(ETOPENWAT(IC),IC=1,NC) !CEAA
-        !WRITE(1983,REC=IT)(SOILWATER(IC),IC=1,NC) !CEAA  
-        !WRITE(1984,REC=IT)(VBASMMDIA(IC),IC=1,NC) !CEAA  
-        !WRITE(1985,REC=IT)(VINTMMDIA(IC),IC=1,NC) !CEAA  
-        !WRITE(1986,REC=IT)(VSUPMMDIA(IC),IC=1,NC) !CEAA  
-        !WRITE(1987,REC=IT)(DBASMMDIA(IC),IC=1,NC) !CEAA  
-        !WRITE(1988,REC=IT)(DINTMMDIA(IC),IC=1,NC) !CEAA  
-        !WRITE(1989,REC=IT)(DSUPMMDIA(IC),IC=1,NC) !CEAA  
-        !WRITE(1990,REC=IT)(SURFWAT(IC),IC=1,NC) !CEAA  
-        !WRITE(1991,REC=IT)(QCELTUDO(IC),IC=1,NC) !CEAA  
-        !WRITE(1992,REC=IT)(EVAPURHAGUA(IC),IC=1,NC) !CEAA  
-        !WRITE(1993,REC=IT)(VINTERC(IC),IC=1,NC) !CEAA
-        !WRITE(1994,REC=IT)(WSATDEGREE(IC),IC=1,NC) !CEAA     
-        !WRITE(1991,REC=IT)(QCELTUDO(IC),IC=1,NC) !CEAA  
-    !            
+        ! Calls routine to write results on disk
+        CALL WRITE_OUTPUT
+   
         !=====================================================================                
-                  
-        
-		! Stores discharges for file ouput when in simulation model
-		IF(ICALIB.EQ.0)THEN 	! only if it is not calibration
-			
-            !This part had to be removed because Subasins are in irregular positions in South America Model #VAS
-			!DO KB=1,NB				! store discharge in sub-basin
-			!	JCB=IEXUT(KB) 		! outlet catchment of KB-th subbasin
-			!	QRB(KB,IT)=QJ2(JCB)
-			!ENDDO
-	
-			DO K=1,NUMHIDG 				! store discharge in catchments defined in PARHIG.HIG
-				KHID=IHIDG(K) 			! indexed catchment
-				QRG(K,IT)=QJ2(KHID) 	! stored in QRG
-				
-			if(hdFLAG0>0)then !Stores the water level for inertial model 	           
-                HRG(K,IT)=Hfl(KHID) ! stored in HRG                  
-            endif     
-				
-			ENDDO
-	
-			! Store discharge by water origin (i.e. surface, subsurface, groundwater) in a specified catchment
-			MWP=1 						!catchment (this is manual)
-			QB(IT)=QJ2(MWP)*PJB2(MWP)
-			QBI(IT)=QB(IT)+QJ2(MWP)*PJI2(MWP)
-			QBIS(IT)=QBI(IT)+QJ2(MWP)*PJS2(MWP)
-		ENDIF
-        
-	
+    
     ENDDO !End time loop
 	    
-
+71  FORMAT(I5,"    ",I4,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2,"  ",f10.1,"      ",f5.1," %")
 75	FORMAT(I6,13F10.4)
-
 66	FORMAT(<nC>F10.4)
 
      
