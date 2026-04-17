@@ -53,9 +53,9 @@
 &mgb_config_output
 
     OUT_FLOW	   = 1 						!River discharge (m³/s)     
-    OUT_WSE        = 0 						!Water surface elevation (m)
+    OUT_WSE        = 1 						!Water surface elevation (m)
     OUT_HAND       = 0 						!Water level rescaled to Hand Above Nearest Discharge (m)
-    OUT_TWS        = 0 						!Terrestrial Water Storage (mm)
+    OUT_TWS        = 1 						!Terrestrial Water Storage (mm)
     OUT_SM         = 0 						!Soil water content (mm)
 	OUT_SSAT       = 0 						!Soil saturation degree (0-1)
     OUT_RUNOFF     = 0 						!Total runoff (mm)
@@ -72,7 +72,7 @@
     OUT_DBAS       = 0 						!Groundwater flux from soil (mm)
     OUT_DINT       = 0 						!Subsurface flux from soil (mm)
     OUT_DSUP       = 0 						!Surface flux from soil (mm) 
-	OUT_FLAREA     = 0						!Flooded area (km²)
+	OUT_FLAREA     = 1						!Flooded area (km²)
 
 &end
 
