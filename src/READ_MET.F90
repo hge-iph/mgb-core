@@ -78,8 +78,8 @@
     
     ! Reads meteorological data at the same time interval of precipitation
 	if (flag_IN_TEMP==1) READ(FILTEMP,REC=it_read)(TA(KC),KC=1,NC)    
-    if (flag_IN_RAD==1)  READ(FILRAD,REC=it_read)(UR(KC),KC=1,NC) 
-    if (flag_IN_RH==1)   READ(FILRELH,REC=it_read)(SOL(KC),KC=1,NC) 
+    if (flag_IN_RAD==1)  READ(FILRAD,REC=it_read)(SOL(KC),KC=1,NC) 
+    if (flag_IN_RH==1)   READ(FILRELH,REC=it_read)(UR(KC),KC=1,NC) 
     if (flag_IN_WIND==1) READ(FILWIND,REC=it_read)(VV(KC),KC=1,NC) 
     if (flag_IN_PRES==1) READ(FILPRES,REC=it_read)(PA(KC),KC=1,NC) 
 
