@@ -144,13 +144,13 @@
     ! Checks if there are multiple time steps to write initial conditions. Useful for hindcasting
     if (flag_WriteHot==2) then 
         !Then open file for read
-         open(46,FILE=INPUT_DIRECTORY // 'HotstartList.prev',STATUS='OLD',ACTION='READ')
+         open(FILHOTLIST,FILE=INPUT_DIRECTORY // 'HotstartList.prev',STATUS='OLD',ACTION='READ')
         
          WriteHotFile=0
          DO IT=1,NT !Check which ITs we need to write hotstart values
-             READ(46,*)WriteHotFile(IT)  
+             READ(FILHOTLIST,*)WriteHotFile(IT)  
          ENDDO
-         CLOSE(46)
+         CLOSE(FILHOTLIST)
     endif
     
     ! Time loop for water balance and routing simulation

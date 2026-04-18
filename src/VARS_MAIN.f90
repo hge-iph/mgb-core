@@ -122,38 +122,37 @@
 	INTEGER,PARAMETER:: FILMED=6 !File of monthly mean climatological data
 	INTEGER,PARAMETER:: FILOBS=7 !File of observed streamflows
 	INTEGER,PARAMETER:: FILLIM=8 !File of parameters limits
-	INTEGER,PARAMETER:: FILPREV=999 !File of rain forecast data
+    INTEGER,PARAMETER:: FILCLIREG=9 !File of climate regions
 	INTEGER,PARAMETER:: FILSUBS=10 !Hydrographs of file read to substitute the calculated ones
-	INTEGER,PARAMETER:: FILOUTROS=11 !Hydrograph of file observed on the axis of san francisco
-	INTEGER,PARAMETER:: FILCALIB=12 !File with the description of parameters for calibration
-    INTEGER,PARAMETER:: FILRG=13 !File of geomorphological relationships
-    
-    ! Met forcing
-    INTEGER,PARAMETER:: FILPLU=5 !File of rainfall data
-    INTEGER,PARAMETER:: FILTEMP=51 !File of temperature data
-    INTEGER,PARAMETER:: FILRAD=52 !File of radiation data
-    INTEGER,PARAMETER:: FILRELH=53 !File of relative humidity data
-    INTEGER,PARAMETER:: FILWIND=54 !File of wind velocity data
-    INTEGER,PARAMETER:: FILPRES=55 !File of pressure data
     
     INTEGER,PARAMETER:: FILSTAGE=14 !Binary file of stage needed to fill ZTAB
     INTEGER,PARAMETER:: FILAREA=15  !Binary file of flooded area needed to fill ZTAB
     INTEGER,PARAMETER:: FILCLIMATEbin=16  !Binary file of climatological variables
     INTEGER,PARAMETER:: FILHOTSTART_WB=17 !Binary file of state variables
     INTEGER,PARAMETER:: FILHOTSTART_Inert=18 !Binary file of state variables
-
+	    
 	!Output Files
 	INTEGER,PARAMETER:: FILHID=21 !Hydrograph file of the sub-basins
 	INTEGER,PARAMETER:: FILPRP=22 !Hydrograph file with proportions
 	INTEGER,PARAMETER:: FILAJU=23 !Model Perfomance file
 	INTEGER,PARAMETER:: FILBAC=24 !Output file of averaged data to the basins
 	INTEGER,PARAMETER:: FILSOL=25 !Soil file (one HRU)
-	INTEGER,PARAMETER:: FILSOL2=25001 !Soil file (one HRU)
-	INTEGER,PARAMETER:: FILEVO=26 !EVOLUTION parameters file evolution
-	INTEGER,PARAMETER:: FILBOM=27 !File containing the best parameters yet
-    INTEGER,PARAMETER:: FILLOG=55 !File run log
+    INTEGER,PARAMETER:: FILLOG=26 !File run log
 
-    INTEGER,PARAMETER:: FIL_FLOW=28		   !File containing RIVER DISCHARGE
+    integer,PARAMETER:: FILCOTAREA=41 !File of reservoir data for simulation
+    integer,PARAMETER:: FILFACE=42 !File of face connections for inertial pseudo 2D routing
+    INTEGER,PARAMETER:: FILHOTLIST=46 !File of hotstart list
+    
+    ! Met forcing
+    INTEGER,PARAMETER:: FILPLU=50 !File of rainfall data
+    INTEGER,PARAMETER:: FILTEMP=51 !File of temperature data
+    INTEGER,PARAMETER:: FILRAD=52 !File of radiation data
+    INTEGER,PARAMETER:: FILRELH=53 !File of relative humidity data
+    INTEGER,PARAMETER:: FILWIND=54 !File of wind velocity data
+    INTEGER,PARAMETER:: FILPRES=55 !File of pressure data
+    
+    !Output binaries
+    INTEGER,PARAMETER:: FIL_FLOW=1973      !File containing RIVER DISCHARGE
     INTEGER,PARAMETER:: FIL_ET=1974		   !File containing EVAPOTRANSPIRATION
     INTEGER,PARAMETER:: FIL_WSE=1975	   !File containing WATER SURFACE ELEVATION
     INTEGER,PARAMETER:: FIL_HAND=1976	   !File containing HAND VALUES
@@ -382,8 +381,7 @@
     !FMF 21/06/2015
     INTEGER,ALLOCATABLE:: SUBJUS(:),ATIVABACIA(:) !Sub-basin downstream from the actual one, flag to activate sub-basin
     INTEGER ISUBSTAUX(NBP) !Number of cells where Q calculated must be substituted by the ones reads from files
-    INTEGER,PARAMETER:: FILFLOW2=29 !forecasting module discharge results
-	INTEGER,PARAMETER:: FILFLOW3=30 !incremental discharges from the forecasting module
+  
 	    
     REAL(4),ALLOCATABLE:: QITUDO(:) !Incremental discharges only everywhere #Vinicius Siqueira
     REAL(4),ALLOCATABLE:: EVAPTUDO(:) !Evapotranspiration only everywhere #Vinicius Siqueira
