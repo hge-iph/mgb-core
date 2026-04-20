@@ -118,15 +118,22 @@
 
 	! Returns month, day and year to the actual julian day - will use month for climatology
 	CALL CALDAT(JDIA,IMES,IDIA,IANO)
-    JDIA=JDIA-JULDAY(1,1,IANO)+1
+    JDIA=JDIA-JULDAY(1,1,IANO)+1 ! Needed for RADIACAO, thi is not good practice !VAS
     
-    TWS2=0.0 !VAS - Total water storage
-    VBASMMDIA=0.0 !CEAA
-    VINTMMDIA=0.0 !CEAA
-    VSUPMMDIA=0.0 !CEAA
-    DBASMMDIA=0.0 !CEAA
-    DINTMMDIA=0.0 !CEAA
-    DSUPMMDIA=0.0 !CEAA
+    ! Initializes variables to accumulate in URH loop !VAS
+    TWS2=0.0     
+    DINFILT=0.0    
+    
+    ! Initializes other variables to accumulate (are used to write output files)
+    EVAPTUDO=0.0
+    SOILWATER=0.0 
+    ETINTERC=0.0 !CEAA
+    ETSOILPLANT=0.0 !CEAA
+    ETOPENWAT=0.0 !CEAA    
+    VINTERC=0.0 !CEAA
+    CAPWATER=0.0 !CEAA
+    QCELTUDO=0.0 !CEAA
+    EVAPURHAGUA=0.0 !CEAA
     
 	! Catchments loop
 	DO IC=1,NC	 
@@ -255,13 +262,13 @@
             !Updates Terrestrial Water Storage (mm)
             TWS2(IC)=TWS2(IC)+(SI(IC,IU)+W(IC,IU))*(PUSO(IC,IU)/100.0) !VAS - GRACE
 
-            !Estoques
+            !Storages
             SOILWATER(IC)=SOILWATER(IC)+(W(IC,IU))*(PUSO(IC,IU)/100.0) !CEAA
-            CAPWATER(IC)=CAPWATER(IC)+(CAF(IC,IU))*(PUSO(IC,IU)/100.0) !CEAA
+            !CAPWATER(IC)=CAPWATER(IC)+(CAF(IC,IU))*(PUSO(IC,IU)/100.0) !CEAA
             VINTERC(IC)=VINTERC(IC)+SI(IC,IU)*(PUSO(IC,IU)/100.0) !CEAA
             
-		ENDDO !end HRU loop
-
+        ENDDO !end HRU loop
+      
 		! Takes water from groundwater reservoir by capilar flux      
         !Check Negative volumes after retrieving water from groundwater reservoir
         if(VBAS(IC)-DCAP*DTP<0.0)then
@@ -283,14 +290,14 @@
 		QSUP(IC)=VSUP(IC)/TKS(IC)
 		
 		! Updates Volumes (m3)
-		VBX=VBAS(IC)-QBAS(IC)*DTP       !VBX=VBAS(IC)-QBAS(IC)*3600.*24.
-		VIX=VINT(IC)-QINT(IC)*DTP       !VIX=VINT(IC)-QINT(IC)*3600.*24.
-		VSX=VSUP(IC)-QSUP(IC)*DTP       !VSX=VSUP(IC)-QSUP(IC)*3600.*24.
+		VBX=VBAS(IC)-QBAS(IC)*DTP       
+		VIX=VINT(IC)-QINT(IC)*DTP       
+		VSX=VSUP(IC)-QSUP(IC)*DTP       
             
 		! Assume that surface reservoir can have negative volumes to address floodplain evaporation !RP		
 		if (hdFLAG(iC)==0) then
 			IF(VSX.LT.0.0)THEN 		!surface
-				QSUP(IC)=VSUP(IC)/(DTP)            !QSUP(IC)=VSUP(IC)/(3600.*24.)
+				QSUP(IC)=VSUP(IC)/(DTP)            
 				VSUP(IC)=0.0
 			ELSE
 				VSUP(IC)=VSX
@@ -299,10 +306,10 @@
 
 			IF(VSUP(IC)<0.0)THEN 		
 				! Negative discharge is instantly taken in next time interval, without phase shift
-				QSUP(IC)=VSUP(IC)/(DTP)  !QSUP(IC)=VSUP(IC)/(3600.*24.)
+				QSUP(IC)=VSUP(IC)/(DTP)  
 				VSUP(IC)=0.0
 			ELSEIF(VSX<0.0)THEN
-				QSUP(IC)=VSUP(IC)/(DTP)            !QSUP(IC)=VSUP(IC)/(3600.*24.)
+				QSUP(IC)=VSUP(IC)/(DTP)            
 				VSUP(IC)=0.0
 			ELSE
 				VSUP(IC)=VSX
@@ -311,13 +318,13 @@
 		endif	
 
 		IF(VIX.LT.0.0)THEN !sub-surface
-			QINT(IC)=VINT(IC)/(DTP)             !QINT(IC)=VINT(IC)/(3600.*24.)
+			QINT(IC)=VINT(IC)/(DTP)             
 			VINT(IC)=0.0
 		ELSE
 			VINT(IC)=VIX
 		ENDIF
 		IF(VBX.LT.0.0)THEN !groundwater
-			QBAS(IC)=VBAS(IC)/(DTP)             !QBAS(IC)=VBAS(IC)/(3600.*24.)
+			QBAS(IC)=VBAS(IC)/(DTP)             
 			VBAS(IC)=0.0
 		ELSE
 			VBAS(IC)=VBX

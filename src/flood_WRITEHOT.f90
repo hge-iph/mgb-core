@@ -69,52 +69,40 @@
 	
   	!DEFINE QUE NÃO PODEMOS TER VARIÁVEIS IMPLÍCITAS
 	IMPLICIT NONE
-    integer:: i,nStatVar,j
+    integer i,nStatVar,j, i_julian
     real(4),allocatable:: WB_stateVec(:)	 
     real*8,allocatable:: h_stateVec(:)	 
-	character(8) strIT
-    character(len=12) :: hotFilename
-    character(len=12) :: hot_format_string
+	character(8) strIT 
+    character(len=8) :: hotFilename
     
 	nStatVar=(nC*nU)+(6*nC)+(nC*nU)+(sum(NSUBT)+nC)+nC !
-	allocate(WB_stateVec(nStatVar))
-	   
+	
+    !For option 1, model state variables are saved only at the end of simulation (i.e. They will allow starting the MGB one timestep after the end date)
+    if (flag_WriteHot == 1) then
+    
+        !Get Julian day and corresponding calendar year, month and day
+        i_julian=IDINI+INT((IT+HORAINI)/(86400./DTP))     
+              
+    !For option 2, check if the current IT is flagged to save MGB initial conditions for the beggining of each time step. 
+    !For option 3, model state variables will be saved for the beggining of each time step, and also for the end of simulation. flag_WriteHot will be automatically set to 1 at the end of simulation     
+    elseif ((flag_WriteHot == 2 .AND. WriteHotFile(IT)==1) .OR. (flag_WriteHot == 3)) then
+                                             
+       !Get Julian day and corresponding calendar year, month and day, but subtracting 1 since in this case ICs are saved at the beggining of the time step
+       i_julian=IDINI+INT((IT+HORAINI-1)/(86400./DTP))  
          
-    if (flag_WriteHot==1) then      
-	    open(FILHOTSTART_WB,FILE=OUTPUT_DIRECTORY // 'StateVars_WB.hot',STATUS='unknown',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT')
+    else
+       return !Exit subroutine  
+       
+    endif             
     
-    elseif (flag_WriteHot >= 2) then
-        
-        if (flag_WriteHot==3) then   !In this case checks if hotstart should be written at this timestep                              
-            if(WriteHotFile(IT)==0) then
-                deallocate(WB_stateVec)	 
-                return !Exit subroutine  
-            endif
-        end if        
-        
-        if (IT < 10) then
-            hot_format_string = "(A4,I1)"
-            write (hotFilename,hot_format_string)'0000',IT
-        elseif (IT < 100) then
-            hot_format_string = "(A3,I2)"
-            write (hotFilename,hot_format_string)'000',IT
-        elseif (IT < 1000) then
-            hot_format_string = "(A2,I3)"
-            write (hotFilename,hot_format_string)'00',IT
-        elseif (IT < 10000) then
-            hot_format_string = "(A1,I4)"
-            write (hotFilename,hot_format_string)'0',IT
-        elseif (IT < 100000) then
-            hot_format_string = "(I5)"
-            write (hotFilename,hot_format_string)IT
-        endif
-        
-        
-        open(FILHOTSTART_WB,FILE=OUTPUT_DIRECTORY // 'StateVars_WB_'// trim(hotFilename) // '.hot',STATUS='unknown',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT')
-    endif
+    !Get the current date
+    call DateString(i_julian,IANO,IMES,IDIA,hotFilename)  
     
-    write(*,*)'Writing Water Balance State Variables...'
+    open(FILHOTSTART_WB,FILE=INPUT_DIRECTORY_HOTSTART // 'StateVars_WB_'// trim(hotFilename) // '.hot',STATUS='unknown',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT')
+        
+    write(*,*)'Writing Water Balance State Variables for: ',hotFilename
     
+    allocate(WB_stateVec(nStatVar))
     !******************************************************************************
 	! Writing state variables:
 	i=0
@@ -138,7 +126,7 @@
 	enddo
 	do iC=1,nC
 			i=i+1
-			WB_StateVec(i)=TA(iC) !Temperature???
+			WB_StateVec(i)=TA(iC) !Temperature in previous time step
 	enddo
 	do iC=1,nC
 			i=i+1
@@ -173,15 +161,11 @@
 	    
     nStatVar=(9*nC)! Variables from inertial routing
     
-    write(*,*)'Writing Hydraulic State Variables...'
+    write(*,*)'Writing Hydraulic State Variables for: ',hotFilename
     !All variables below are in double precision (Real*8)
-    
-    if (flag_WriteHot==1) then
-	    open(FILHOTSTART_Inert,FILE=OUTPUT_DIRECTORY // 'StateVars_inertial.hot',STATUS='unknown',RECL=(nStatVar*2),FORM='UNFORMATTED',ACCESS='DIRECT')
-    elseif (flag_WriteHot>=2) then
-        open(FILHOTSTART_Inert,FILE=OUTPUT_DIRECTORY // 'StateVars_inertial_' // trim(hotFilename) // '.hot',STATUS='unknown',RECL=(nStatVar*2),FORM='UNFORMATTED',ACCESS='DIRECT')        
-    endif
-        
+       
+    open(FILHOTSTART_Inert,FILE=INPUT_DIRECTORY_HOTSTART // 'StateVars_inertial_' // trim(hotFilename) // '.hot',STATUS='unknown',RECL=(nStatVar*2),FORM='UNFORMATTED',ACCESS='DIRECT')   
+      
     allocate(H_stateVec(nStatVar))
     
     i=0

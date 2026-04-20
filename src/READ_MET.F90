@@ -1,5 +1,4 @@
-   
-    !---------------------------------------------------------------------------------
+ !---------------------------------------------------------------------------------
     !  Licensing:
     !
 	!Modelo de Grandes Bacias, South America version (MGB-SA). 
@@ -21,7 +20,7 @@
 	!---------------------------------------------------------------------------------
     !  Version/Modified: 
     !
-    !    2019.02.07 - 02 July 2019 (By: Vinicius Siqueira)    
+    !    2026.03.02 - 02 March 2026 (By: Vinicius Siqueira)    
     !
     !  Authors:
     !
@@ -58,62 +57,30 @@
     ! End of header
     !---------------------------------------------------------------------------------
     
-    SUBROUTINE LECLIMA
-	!esta subrotina prepara os dados climatologicos
+    SUBROUTINE READ_MET(mm, it_read)
+    
 	USE VARS_MAIN
 	IMPLICIT NONE
-	INTEGER KLI,MM,IYYY,ID
+	
+    INTEGER, INTENT(IN) :: mm ! Calendar month
+    INTEGER, INTENT(IN) :: it_read ! timestep for reading binaries
+    INTEGER KC
+    
+    ! Using vectorized read for monthly data   
+    if (flag_IN_TEMP==0) TA(:) = TAMM(:,mm)
+    if (flag_IN_RAD==0)  SOL(:) = SOLMM(:,mm)
+    if (flag_IN_RH==0)   UR(:) = URMM(:,mm)
+    if (flag_IN_WIND==0) VV(:) = VVMM(:,mm)
+    if (flag_IN_PRES==0) PA(:) = PAMM(:,mm)                            
 
-	!	VERIFICA EM QUE MES ESTAMOS
-	CALL caldat(JDIA,MM,id,iyyy)
+    ! Reads precipitation data
+    READ(FILPLU,REC=it_read)(P(KC),KC=1,NC) 
+    
+    ! Reads meteorological data at the same time interval of precipitation
+	if (flag_IN_TEMP==1) READ(FILTEMP,REC=it_read)(TA(KC),KC=1,NC)    
+    if (flag_IN_RAD==1)  READ(FILRAD,REC=it_read)(SOL(KC),KC=1,NC) 
+    if (flag_IN_RH==1)   READ(FILRELH,REC=it_read)(UR(KC),KC=1,NC) 
+    if (flag_IN_WIND==1) READ(FILWIND,REC=it_read)(VV(KC),KC=1,NC) 
+    if (flag_IN_PRES==1) READ(FILPRES,REC=it_read)(PA(KC),KC=1,NC) 
 
-	DO IC=1,NC
-		KLI=ICBOM(IC)
-        IF(flagaclimed==1) THEN
-            TA(IC)=TAMM(KLI,MM)
-            UR(IC)=URMM(KLI,MM)
-            VV(IC)=VVMM(KLI,MM)
-            SOL(IC)=SOLMM(KLI,MM)
-            PA(IC)=PAMM(KLI,MM)
-            cycle
-        ENDIF
-        
-		!TEMPERATURA DO AR
-		IF(TD(KLI,IT).LT.-200.0.OR.flagaclimed==1)THEN !TESTA FALHA (FALHA=-300.0)
-			TA(IC)=TAMM(KLI,MM)	!USA MEDIA MENSAL DO POSTO
-		ELSE
-			TA(IC)=TD(KLI,IT) !USA DADO REAL
-		ENDIF
-		
-		!UMIDADE RELATIVA
-		IF(UD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN !TESTA FALHA (FALHA=-1.0)
-			UR(IC)=URMM(KLI,MM)	!USA MEDIA MENSAL DO POSTO
-		ELSE
-			UR(IC)=UD(KLI,IT) !USA DADO REAL
-		ENDIF
-
-		!VELOCIDADE DO VENTO
-		IF(VD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN !TESTA FALHA (FALHA=-1.0)
-			VV(IC)=VVMM(KLI,MM) ! EM M/S
-		ELSE
-			VV(IC)=VD(KLI,IT) !USA DADO REAL
-		ENDIF	        
-
-		!HORAS DE SOL									
-		IF(SOLD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN
-			SOL(IC)=SOLMM(KLI,MM) !EM HORAS/DIA
-		ELSE
-			SOL(IC)=SOLD(KLI,IT) !USA DADO REAL
-		ENDIF
-
-		!PRESSAO ATMOSFERICA 
-		IF(PAD(KLI,IT).LT.0.0.OR.flagaclimed==1)THEN
-			PA(IC)=PAMM(KLI,MM) 
-		ELSE
-			PA(IC)=PAD(KLI,IT) !USA DADO REAL
-		ENDIF
-	ENDDO
-
-734	FORMAT(5F10.2)
-	RETURN
-	END
+end SUBROUTINE

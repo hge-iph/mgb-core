@@ -85,12 +85,15 @@
 	! Variables and parameters:
 	use VARS_INERC
 	use VARS_MAIN
+    use omp_lib
+    
 	implicit none
     INTEGER K,KHID 					!indexes and counters
 	!-------------------------------------------------------------------------------------
     
 	!Start catchment loop
-	!$OMP PARALLEL NUM_THREADS(6)
+	!$OMP PARALLEL NUM_THREADS(thread_count)
+    
     !$OMP DO PRIVATE(IB,y1,y2,z1,z2,iCJus,hflow,dxflow,bflow,xMan,q0,Sflow,q)
 	do iC=1,nC
 
@@ -196,13 +199,13 @@
 	!$OMP END PARALLEL
     
     !Loop que calcula a vazão nas interconexões entre minibacias.
-    if (PSEUDO_TwoD_INDEX==1) then !turn on lateral connections
+    if (flag_pseudo_two_d==1) then !turn on lateral connections
                 
     !PLEASE, BE CAREFUL CLEARING THESE VARIABLES! (Q2Viz and Q2face)
     Q2viz=0.0
     !Q2face=0.0
 
-    ! !$OMP PARALLEL DO NUM_THREADS(6) DEFAULT (SHARED)
+    ! !$OMP PARALLEL DO NUM_THREADS(thread_count) DEFAULT (SHARED)
      !PRIVATE ()
     do iFACE=1,nFACE
     

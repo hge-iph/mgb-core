@@ -181,7 +181,7 @@
 	write(*,*)'Radiation calculation is using sunshine'
     
     !Correct URH water area for hydrodynamic routing !CEAA
-    if(INERTIAL_INDEX==1) then    
+    if(flag_opt_rout==1) then    
     write(*,*)'Redistributing the area of HRU water to other uses'
     !LEUSO.F90 must be called before this
         do iC=1,nC

@@ -95,32 +95,23 @@
     ! end of header
     !---------------------------------------------------------------------------------
 
-	SUBROUTINE LECLIMED_bin
+	SUBROUTINE READ_CLIM_AVG
 	USE VARS_MAIN
 	IMPLICIT NONE
 	INTEGER IPCL,K,KK
-
-    !Open File of coordinates 
-	OPEN(FILMED,FILE=INPUT_DIRECTORY // ''//ACLIMED,STATUS='OLD')
-   
-	! Geographic coordinates of stations
-	DO IPCL=1,NCLI
-!		READ(FILMED,710)XYC(IPCL,1),XYC(IPCL,2)
-		READ(FILMED,*)XYC(IPCL,1),XYC(IPCL,2) ! RP formato livre
-	ENDDO
-
-    CLOSE(FILMED)
-    OPEN(FILCLIMATEbin,FILE=INPUT_DIRECTORY // 'medias_cru.bin',STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT') !Input binary file with interpolated rainfall data
+    
+    !Input binary file with interpolated rainfall data
+    OPEN(FILCLIMATEbin,FILE=INPUT_DIRECTORY // 'medias_cru.bin',STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT') 
     
     !Binary file of CRU climatology. Order of values:
     !1 - Surface Temperature        [months: 1 ... 12]
     !2 - Relative Humidity          [months: 1 ... 12]
-    !3 - Sunshine hours             [months: 1 ... 12]
+    !3 - Radiation                  [months: 1 ... 12]
     !4 - Wind Speed                 [months: 1 ... 12]
     !5 - Atmospheric pressure       [months: 1 ... 12]
     
     KK=1
-    ! near surface air temperature (oC)
+    ! near surface air temperature (ºC)
 	DO K=1,12
 	    READ(FILCLIMATEbin,REC=KK)(TAMM(IPCL,K),IPCL=1,NC)
         KK=KK+1
@@ -132,7 +123,7 @@
         KK=KK+1
 	ENDDO
 	
-	! Sunshine hours (horas/dia)
+	! Radiation (MJ/timestep) (can be also sunshine hours or sunshine %, check infoMGB)
  	DO K=1,12
  	    READ(FILCLIMATEbin,REC=KK)(SOLMM(IPCL,K),IPCL=1,NC)
         KK=KK+1

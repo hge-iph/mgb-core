@@ -18,10 +18,10 @@
     !You should have received a copy of the GNU General Public License
     !along with this program.  If not, see <https://www.gnu.org/licenses/>.	
 	!
-    !---------------------------------------------------------------------------------
+	!---------------------------------------------------------------------------------
     !  Version/Modified: 
     !
-    !    2014.26.11 - 25 November 2014 (By: Rodrigo Paiva)    
+    !    2022.06.04 - 04 June 2022 (By: Vinicius Siqueira)    
     !
     !  Authors:
     !
@@ -30,75 +30,58 @@
     !    * Walter Collischonn
     !    * Rodrigo Cauduro Dias de Paiva
     !    * Diogo da Costa Buarque
-    !    * Paulo Pontes RÃ³genes
+    !    * Paulo Pontes Rógenes
     !    * Mino  Viana Sorribas
     !    * Fernando Mainardi Fan
     !    * Juan Martin Bravo 
     !    * Vinicius Alencar Siqueira
-    !	 * Ayan Santos Fleischmann
-    !	 * Sly Wongchuig Correa
+	!	 * Ayan Santos Fleischmann
+	!	 * Sly Wongchuig Correa
     !
     !  Main Reference:
     !
     !    Walter Collischonn,
     !    Modelo de Grandes Bacias - Thesis
     !    Porto Alegre, 2001
-    !    ISBN: XXXXXXXXXXX,  
+    !    ISBN: XXXXXXXXXXX,
     !
-    !---------------------------------------------------------------------------------
-    !  Variables and Parameters:
-    !
-    !   *Variables declarations and routines calls are all commented below.
-	!	* All variables are global!?
-    !
-    !---------------------------------------------------------------------------------
+	!---------------------------------------------------------------------------------
     !  Discussion:
     ! 
-    !    This routine reads precipitation data
-
-	!
-	!	 LECHUVA is called inside subroutine Modelo.
-	!
-	!	 Saves global variable: 
-	!     	P = precipation at time t for all catchments (mm/dt)
-	!
-	!
-	!
+    !    This sub-routine creates string dates from integer numbers.
     !
-    !  	Usage:
     !
-    !    * no subroutine is called in this subroutine
-    !
-    !    where
-    !
-    !    * no arguments are passed in this subroutine
-    !
-    !    uses modules and functions
-    !
-    !    * module     VARS_MAIN   in      VARS_MAIN.f90
-    !
-    !	 opens
-    !
-    !    * Does not open files
-    !
-    !    reads
-    !
-    !    * CHUVAbin.pbi, the precipitation binary file
-    !
-    !    creates
-    !
-    !    * Does not create files
-    !    
+    !---------------------------------------------------------------------------------
+    ! Variables and Parameters:
+    ! *Variables declarations and routines calls are all commented below.
+    !---------------------------------------------------------------------------------
     ! End of header
     !---------------------------------------------------------------------------------
-
-	SUBROUTINE LECHUVA
-	USE VARS_MAIN
-	IMPLICIT NONE
-	INTEGER KC
-	! Reads precipitation data at current time interval (ITCHUVA)
-	READ(FILPLU,REC=ITCHUVA)(P(KC),KC=1,NC)                    !! Sly + Vinicius
+SUBROUTINE DateString(i_julian,i_year,i_month,i_day,strDate)
     
-    !P=dble(Psingle)
-	RETURN
-	END
+   USE VARS_MAIN
+
+   implicit none
+   integer, intent(in)  :: i_day, i_month, i_year, i_julian
+   character(8), intent(out) :: strDate
+             
+   call caldat(i_julian,i_month,i_day,i_year)
+      
+   !Adjust number formats
+   if ((i_day < 10).AND.(i_month < 10)) then                     
+        write (strDate,"(I4,A1,I1,A1,I1)")i_year,'0',i_month,'0',i_day
+        
+   elseif ((i_day < 10).AND.(i_month >= 10)) then        
+        write (strDate,"(I4,I2,A1,I1)")i_year,i_month,'0',i_day
+        
+   elseif ((i_day >= 10).AND.(i_month < 10)) then     
+        write (strDate,"(I4,A1,I1,I2)")i_year,'0',i_month,i_day
+                
+   else     
+        write (strDate,"(I4,I2,I2)")i_year,i_month,i_day
+        
+   endif
+    
+    END SUBROUTINE
+    
+    

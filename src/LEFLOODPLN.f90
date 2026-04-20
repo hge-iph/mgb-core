@@ -89,29 +89,29 @@
        
       
     !Opening the level x flooded area file
-    OPEN(41,FILE=INPUT_DIRECTORY // 'COTA_AREA.FLP',STATUS='OLD',action='READ')
+    OPEN(FILCOTAREA,FILE=INPUT_DIRECTORY // 'COTA_AREA.FLP',STATUS='OLD',action='READ')
     
     ! Reading data:
-    READ(41,*)
+    READ(FILCOTAREA,*)
     nPfl=0
-    DO WHILE(.NOT.EOF(41))
-	    READ(41,*) IC,ZFUNDOFL(IC),ZFL(NPFL(IC)+1,IC),AFL(NPFL(IC)+1,IC)
+    DO WHILE(.NOT.EOF(FILCOTAREA))
+	    READ(FILCOTAREA,*) IC,ZFUNDOFL(IC),ZFL(NPFL(IC)+1,IC),AFL(NPFL(IC)+1,IC)
         
         NPFL(iC)=NPFL(IC)+1
 	ENDDO
-    CLOSE(41)
+    CLOSE(FILCOTAREA)
    
     !ABRE ARQUIVO DE FACES
-    if (1==1) then
-    OPEN(42,FILE=INPUT_DIRECTORY // 'face.con',STATUS='OLD',action='READ')
+    if (1==0) then
+    OPEN(FILFACE,FILE=INPUT_DIRECTORY // 'face.con',STATUS='OLD',action='READ')
     
     !Número da face / Minibacia 1 / Minibacia 2 / Ymin da fronteira (m) / DX entre as minibacias (m):
     aux=0
-    DO WHILE(.NOT.EOF(42))
+    DO WHILE(.NOT.EOF(FILFACE))
         aux=aux+1
-	    READ(42,*) aux,nFACECAT1(aux),nFACEY1(aux),nFACECAT2(aux),nFACEY2(aux),nFACEDX(aux)
+	    READ(FILFACE,*) aux,nFACECAT1(aux),nFACEY1(aux),nFACECAT2(aux),nFACEY2(aux),nFACEDX(aux)
 	ENDDO
-    CLOSE(42)
+    CLOSE(FILFACE)
     nFACE=aux
     endif
 

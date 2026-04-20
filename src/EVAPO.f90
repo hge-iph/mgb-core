@@ -132,39 +132,16 @@
 	! Aerodynamic roughness of vegetation
 	RUG=0.1*ZX
 
-
 	! Aerodynamic resistance is based on Bremicker work		
-	!Fix wind speed at 2m to 10m above the ground
-	
-    !IF (flagaclimed == 1) then
-    !IF (CRU_INDEX == 1) then
-		! If use CRU data, then wind is already at 10m
-	!	VVX=VVX
-	!else
-		!VVX=VVX*((LOG(10.0/RUG))/LOG(2.0/RUG)) !EQ. 3.46		!why it is commented ??? #mv
-!		write(*,*)'VVX,RUG = ',VVX,RUG
-!		pause
-	!endif	
-
+	! Fix wind speed at 2m to 10m above the ground
+	! Considering VVX input as wind at 10m
 	VVX=VVX+0.1 !	Avoid zero value issues    
     VVX2 = VVX/((LOG(10.0/RUG))/LOG(2.0/RUG)) !wind speed at 2m for calculation of RA and potential evapotranspiration
-
-
-	!Aerodynamic resistance of LARSIM model
-	!IF(ZX.LT.10.0) THEN
-	!	RA=(6.25/VVX)*(LOG(10.0/RUG))**2.0 !EQ. 3.25
-	!ELSE
-	!	RA=94.0/VVX !EQ. 3.26
-	!
-	!ENDIF
-
 
 	! Aerodynamic resistance according to Shuttleworth
 	ZX=MIN(ZX,12.5) !limits vegetation height to avoid problems
 	RA=((LOG((10.-ZX*0.67)/(ZX*0.123)))*(LOG((10.-ZX*0.67)/(ZX*0.0123))))/(0.41*0.41*VVX)
 	RAEP=(4.72*(LOG(2./0.00137))**2.)/(1.+0.536*VVX2)   !RA for open water evaporation ! (EQ.4.2.29) from Shuttleworth
-!    write(*,*)'RA-evapo,zx,vvx = ',RA,zx,vvx
-!    pause
 	
 	! Calculate Surface Resistance (RSX) for soil moisture conditions
 	WL= 0.8*WMX 		! Limit from which soil moisture dont limit evapotranspiration !EVAPO 0.8 ATUALIZADO
@@ -197,7 +174,7 @@
 	! Updates Rainfall
 	PX=PX-(SF-SIX)
 
-	! Potential Evaporation from interceptation (note: rsx = 0.0)	
+	! Potential Evaporation from interception (note: rsx = 0.0)	
 	EIX=((DEL*RLX+MSPA*CSPA*D/RA)/(DEL+GAMA*(1.0+0.0/RA)))*((1000.0*DTP)/(CLATE*MESP)) 		!mm/dtp
 	EIXP=((DEL*RLX+MSPA*CSPA*D/RAEP)/(DEL+GAMA*(1.0+0.0/RAEP)))*((1000.0*DTP)/(CLATE*MESP)) !mm/dtp !open water (Shuttleworth)
     
@@ -209,13 +186,12 @@
 	! Calculates evaporative demand fraction after evaporation
 	FDE=(EIX-REIX)/EIX
 
-	! Calculates Penman in mm/dtpCALCULA PENMANN DIRETO EM MM/DIA
-	!EX=((DEL*RLX+MSPA*CSPA*D/RA)/(DEL+GAMA*(1.0+RSX/RA)))*((1000.0*3600.0*24.)/(CLATE*MESP)) !mm/day
+	! Calculates Penman in mm/dtp	
 	EX=((DEL*RLX+MSPA*CSPA*D/RA)/(DEL+GAMA*(1.0+RSX/RA)))*((1000.0*DTP)/(CLATE*MESP)) 		  !mm/dtp
 	EX=FDE*EX   																	! evaporation through soil+plant 
 	ETX=EX+REIX 																	! total evaporation (interceptation+ soil/plant)
 
 	EX=EX*1.0
-	
+	    
 	RETURN
 	END

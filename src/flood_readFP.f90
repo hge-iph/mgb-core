@@ -119,16 +119,16 @@
     CLOSE (FILAREA) !Close floodplain area binary file
          
     !ABRE ARQUIVO DE FACES
-    if (PSEUDO_TwoD_INDEX==1) then
-    OPEN(42,FILE=INPUT_DIRECTORY // 'face.con',STATUS='OLD',action='READ')
+    if (flag_pseudo_two_d==1) then
+    OPEN(FILFACE,FILE=INPUT_DIRECTORY // 'face.con',STATUS='OLD',action='READ')
     
     !Número da face / Minibacia 1 / Minibacia 2 / Ymin da fronteira (m) / DX entre as minibacias (m):
     aux=0
-    DO WHILE(.NOT.EOF(42))
+    DO WHILE(.NOT.EOF(FILFACE))
         aux=aux+1
-	    READ(42,*) nFACECAT1(aux),nFACECAT2(aux),nFACEDX(aux)
+	    READ(FILFACE,*) nFACECAT1(aux),nFACECAT2(aux),nFACEDX(aux)
 	ENDDO
-    CLOSE(42)
+    CLOSE(FILFACE)
     nFACE=aux
     endif      
       

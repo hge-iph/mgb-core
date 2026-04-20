@@ -86,9 +86,7 @@
 	
 	CHARACTER(8) INPUT_DIRECTORY !('.\INPUT\')
 	CHARACTER(9) OUTPUT_DIRECTORY !('.\OUTPUT\')
-    
-    !CHARACTER(13) INPUT_DIRECTORY !('C:\MGB\INPUT\')
-	!CHARACTER(14) OUTPUT_DIRECTORY !('C:\MGB\OUTPUT\')
+    CHARACTER(11) INPUT_DIRECTORY_HOTSTART !('.\Hotstart\')
 	
 	!Minibasins and muskingum-cunge routing
 	INTEGER,PARAMETER:: NUP=12 !MAXIMUM NUMBER OF HRUs
@@ -104,10 +102,8 @@
 	INTEGER NCLI !number of climatological stations
     INTEGER NREG !number of climate regions
 	INTEGER NB !number of sub-basins
-	INTEGER NOBS,IQOBS(NBP) !Number of observed streamflow series, number of minibasins with observed data
-	INTEGER NUMHIDG,IHIDG(NBP) !Number of hydrographs you want to save in a file, number of minibasins in which the hydrograph is desired
+
 	INTEGER NUMSUBST,ISUBST(NBP) !Number of minibasins where streamflow calculated will be replaced by the information read from a file
-	!INTEGER,ALLOCATABLE:: IOBSAUX(:)!Number of observed streamflow series
 	INTEGER,PARAMETER:: NMAXHID=500 !Maximum number of points taht one wants hydrographs output to be saved
 	INTEGER :: nSIN  ! MUDEI ! numero de reservatorios, SIN=162 + 3 postos subs da Amazonia
 
@@ -122,47 +118,79 @@
 	INTEGER,PARAMETER:: FILFIX=1 !File of fixed parameters
 	INTEGER,PARAMETER:: FILVAR=2 !File of calibrated parameters
 	INTEGER,PARAMETER:: FILUSO=3 !File of parameters associated with the HRU's
-	INTEGER,PARAMETER:: FILHIG=4 !File of minibasins informations
-	INTEGER,PARAMETER:: FILPLU=5 !File of rainfall data
+	INTEGER,PARAMETER:: FILHIG=4 !File of minibasins informations	
 	INTEGER,PARAMETER:: FILMED=6 !File of monthly mean climatological data
 	INTEGER,PARAMETER:: FILOBS=7 !File of observed streamflows
 	INTEGER,PARAMETER:: FILLIM=8 !File of parameters limits
-	INTEGER,PARAMETER:: FILPREV=999 !File of rain forecast data
+    INTEGER,PARAMETER:: FILCLIREG=9 !File of climate regions
 	INTEGER,PARAMETER:: FILSUBS=10 !Hydrographs of file read to substitute the calculated ones
-	INTEGER,PARAMETER:: FILOUTROS=11 !Hydrograph of file observed on the axis of san francisco
-	INTEGER,PARAMETER:: FILCALIB=12 !File with the description of parameters for calibration
-    INTEGER,PARAMETER:: FILRG=13 !File of geomorphological relationships
     
     INTEGER,PARAMETER:: FILSTAGE=14 !Binary file of stage needed to fill ZTAB
     INTEGER,PARAMETER:: FILAREA=15  !Binary file of flooded area needed to fill ZTAB
     INTEGER,PARAMETER:: FILCLIMATEbin=16  !Binary file of climatological variables
     INTEGER,PARAMETER:: FILHOTSTART_WB=17 !Binary file of state variables
     INTEGER,PARAMETER:: FILHOTSTART_Inert=18 !Binary file of state variables
-
+	    
 	!Output Files
 	INTEGER,PARAMETER:: FILHID=21 !Hydrograph file of the sub-basins
 	INTEGER,PARAMETER:: FILPRP=22 !Hydrograph file with proportions
 	INTEGER,PARAMETER:: FILAJU=23 !Model Perfomance file
 	INTEGER,PARAMETER:: FILBAC=24 !Output file of averaged data to the basins
 	INTEGER,PARAMETER:: FILSOL=25 !Soil file (one HRU)
-	INTEGER,PARAMETER:: FILSOL2=25001 !Soil file (one HRU)
-	INTEGER,PARAMETER:: FILEVO=26 !EVOLUTION parameters file evolution
-	INTEGER,PARAMETER:: FILBOM=27 !File containing the best parameters yet
-	INTEGER,PARAMETER:: FILTUD=28 !File containing all mini-basins calculated hydrographs
-    INTEGER,PARAMETER:: FILLOG=55 !File run log
+    INTEGER,PARAMETER:: FILLOG=26 !File run log
 
+    integer,PARAMETER:: FILCOTAREA=41 !File of reservoir data for simulation
+    integer,PARAMETER:: FILFACE=42 !File of face connections for inertial pseudo 2D routing
+    INTEGER,PARAMETER:: FILHOTLIST=46 !File of hotstart list
+    
+    ! Met forcing
+    INTEGER,PARAMETER:: FILPLU=50 !File of rainfall data
+    INTEGER,PARAMETER:: FILTEMP=51 !File of temperature data
+    INTEGER,PARAMETER:: FILRAD=52 !File of radiation data
+    INTEGER,PARAMETER:: FILRELH=53 !File of relative humidity data
+    INTEGER,PARAMETER:: FILWIND=54 !File of wind velocity data
+    INTEGER,PARAMETER:: FILPRES=55 !File of pressure data
+    
+    !Output binaries
+    INTEGER,PARAMETER:: FIL_FLOW=1973      !File containing RIVER DISCHARGE
+    INTEGER,PARAMETER:: FIL_ET=1974		   !File containing EVAPOTRANSPIRATION
+    INTEGER,PARAMETER:: FIL_WSE=1975	   !File containing WATER SURFACE ELEVATION
+    INTEGER,PARAMETER:: FIL_HAND=1976	   !File containing HAND VALUES
+    INTEGER,PARAMETER:: FIL_TWS=1977	   !File containing TERRESTRIAL WATER STORAGE
+    INTEGER,PARAMETER:: FIL_FLOOD=1978	   !File containing FLOODED AREA
+    INTEGER,PARAMETER:: FIL_SSATD=1979     !File containing SOIL SATURATION DEGREE
+    INTEGER,PARAMETER:: FIL_ETINT=1980	   !File containing ET of INTERC. WATER
+    INTEGER,PARAMETER:: FIL_ETSOILVEG=1981 !File containing ET from SOIL+VEGETATION
+    INTEGER,PARAMETER:: FIL_ETOPENW=1982   !File containing ET from OPEN WATERS
+    INTEGER,PARAMETER:: FIL_SOILWATER=1983 !File containing SOIL WATER CONTENT
+    INTEGER,PARAMETER:: FIL_VBAS=1984      !File containing GROUNDWATER RESERVOIR VOLUME
+    INTEGER,PARAMETER:: FIL_VINT=1985      !File containing SUBSURFACE RESERVOIR VOLUME
+    INTEGER,PARAMETER:: FIL_VSUP=1986      !File containing SURFACE RESERVOIR VOLUME
+    INTEGER,PARAMETER:: FIL_VINTERC=1987   !File containing INTERCEPTED WATER RESERVOIR 
+    INTEGER,PARAMETER:: FIL_DBAS=1988      !File containing GROUNDWATER FLUX from SOIL
+    INTEGER,PARAMETER:: FIL_DINT=1989      !File containing SUBSURFACE FLUX from SOIL
+    INTEGER,PARAMETER:: FIL_DSUP=1990      !File containing SURFACE FLUX from SOIL
+    INTEGER,PARAMETER:: FIL_SURFWAT=1991   !File containing SURFACE WATER STORAGE
+    INTEGER,PARAMETER:: FIL_RUNOFF=1992    !File containing RUNOFF
+    INTEGER,PARAMETER:: FIL_ETURHWAT=1993  !File containing ET FROM URH WATER
+    
+    !Flags for input met forcing (monthly averages / time series)
+    integer flag_IN_TEMP, flag_IN_RAD, flag_IN_RH, flag_IN_WIND, flag_IN_PRES
+    
+    !Flags for output variables
+    INTEGER flag_OUT_FLOW, flag_OUT_SM, flag_OUT_WSE, flag_OUT_HAND, flag_OUT_TWS, flag_OUT_RUNOFF, flag_OUT_SURFWAT
+    INTEGER flag_OUT_SSATD, flag_OUT_ET, flag_OUT_ETINT, flag_OUT_ETSOILVEG, flag_OUT_ETOPENWAT, flag_OUT_ETURHWAT
+    INTEGER flag_OUT_VBAS, flag_OUT_VINT, flag_OUT_VSUP, flag_OUT_VINTERC, flag_OUT_FLAREA
+    INTEGER flag_OUT_DBAS, flag_OUT_DINT, flag_OUT_DSUP
+    
 !	!Calibration
-	INTEGER ICALIB
 	REAL,ALLOCATABLE:: R2(:),ERRV(:),R2L(:) !coef. nash, error in volumes, coef nash logarithms
 	REAL VFO(NFP) !Vector with values of the objective functions
 
 	!Variables with dimensions used
-	!REAL,ALLOCATABLE:: CORR(:) !Corrects the value of the parameters
-	!REAL,ALLOCATABLE:: QTUDO(:,:),HTUDO(:,:),YTUDO(:,:),QVIZTUDO(:,:) !Minibasins streamflow at all locations in all time steps
     REAL(4),ALLOCATABLE:: QTUDO(:),HTUDO(:),YTUDO(:),QVIZTUDO(:) !Minibasins streamflow at all locations in all time steps #Results are written for each timestep    
-	REAL(4),ALLOCATABLE:: TWSTUDO(:),ALAGTUDO(:)                 !! Sly + Vinicius
+	REAL(4),ALLOCATABLE:: TWSTUDO(:),ALAGTUDO(:),HANDTUDO(:)                 !! Sly + Vinicius
     
-    REAL,ALLOCATABLE:: QR(:,:),QOBS(:,:) !Streamflow in the outlets of all sub-basins
 	REAL,ALLOCATABLE:: QLIDO(:,:) !Streamflow at some point to replace the calculated values
 	INTEGER,ALLOCATABLE:: KCB(:)!Nnumber of cells in each sub-basin
 	
@@ -194,7 +222,7 @@
 	CHARACTER (20) ARQOBS
 	
 	!Name of the file that have the streamflows to override the flows calculated in some minibasins
-	CHARACTER (20) ARQSUBST
+!	CHARACTER (20) ARQSUBST
 	
 	!File name to record the output hydrographs
 	CHARACTER (20) ARQHID(NMAXHID)
@@ -253,11 +281,11 @@
 	REAL,ALLOCATABLE:: QBAS(:),QINT(:),QSUP(:)		!Flows in the minibasins
 	REAL,ALLOCATABLE:: VBAS(:),VINT(:),VSUP(:)		!Volumes in the minibasins
 	REAL,ALLOCATABLE:: TONTEM(:)		!Temperature the day before
-	!REAL(4),ALLOCATABLE:: P(:) !Rainfall at the interval in the cell
-	REAL(4),ALLOCATABLE:: P(:) !Rainfall at the interval in the cell         !! Sly + Vinicius
-    !REAL(4),ALLOCATABLE:: Psingle(:)
+	
+	REAL(4),ALLOCATABLE:: P(:) !Rainfall at the interval in the cell         !! Sly + Viniciu    
+	REAL(4),ALLOCATABLE:: TA(:),UR(:),VV(:),SOL(:),PA(:)	!Temperature, humidity, wind, insolation, pressure    
     
-	REAL,ALLOCATABLE:: TA(:),UR(:),VV(:),SOL(:),PA(:)	!Temperature, humidity, wind, insolation, pressure
+	!REAL,ALLOCATABLE:: UR(:),VV(:),SOL(:),PA(:)	!Temperature, humidity, wind, insolation, pressure
 	INTEGER HORAINI !Time that the simulation starts
 	INTEGER JDIA !Julian day
 	CHARACTER (40) TITULO !Variable alpha  to read titles in the input files
@@ -283,10 +311,10 @@
 	REAL ED,ES !Vapor pressures (real, Saturation)
 	REAL SLONG !Longwave radiation
 
-    INTEGER CRU_INDEX !Indicates whether the climatological averages come from CRU or INMET data format    
-    INTEGER RESERV_INDEX !Flag for reservoir Simulation
-    INTEGER INERTIAL_INDEX !Flag for inertial model
-    INTEGER PSEUDO_TwoD_INDEX !Flag for pseudo 2D model (ipucas)
+    INTEGER CLI_INDEX !Indicates whether the climatological averages (radiation) come from CRU, INMET, or WorldClim data format    
+    INTEGER flag_RES_SUB !Flag for reservoir Simulation
+    INTEGER flag_opt_rout !Flag for inertial model
+    INTEGER flag_pseudo_two_d !Flag for pseudo 2D model (ipucas)
     
 	!Variables from Subroutine CELULA
 	!Auxiliaries
@@ -346,23 +374,15 @@
 	integer,allocatable::	sbtFLAG(:)	! RP
 
 	! Variables to calculate indicators of maximum evapotranspiration:
-	real,allocatable:: E0agua(:),E0TOPO(:),E0SUP(:)
-	INTEGER :: flagaclimed   !To indicate that we are working with CRU
+	real,allocatable:: E0agua(:),E0TOPO(:),E0SUP(:)	
 	INTEGER,ALLOCATABLE:: DIAH(:),MESH(:),ANOH(:),HORAH(:) !Date and time corresponding to the time interval counter
 
     !Forecasting module extra variables
     !FMF 21/06/2015
     INTEGER,ALLOCATABLE:: SUBJUS(:),ATIVABACIA(:) !Sub-basin downstream from the actual one, flag to activate sub-basin
     INTEGER ISUBSTAUX(NBP) !Number of cells where Q calculated must be substituted by the ones reads from files
-    INTEGER,PARAMETER:: FILTUD2=29 !forecasting module discharge results
-	INTEGER,PARAMETER:: FILTUD3=30 !incremental discharges from the forecasting module
-	
-	!FMF 21/06/2015
-	!REAL,ALLOCATABLE:: QITUDO(:,:) !Incremental discharges everywhere
-	!REAL,ALLOCATABLE:: EVAPTUDO(:,:) !Evapotranspiration everytime and everywhere
-    !REAL,ALLOCATABLE:: QBASTUDO(:,:) !catchment baseflow  everytime and everywhere
-	!REAL,ALLOCATABLE:: WSATDEGREE(:,:) !soil moisture volume everytime and everywhere
-    
+  
+	    
     REAL(4),ALLOCATABLE:: QITUDO(:) !Incremental discharges only everywhere #Vinicius Siqueira
     REAL(4),ALLOCATABLE:: EVAPTUDO(:) !Evapotranspiration only everywhere #Vinicius Siqueira
     REAL(4),ALLOCATABLE:: QBASTUDO(:) !catchment baseflow only everywhere #Vinicius Siqueira
@@ -377,7 +397,6 @@
     real,allocatable::  vflow(:) !For computing flow velocities
     integer, allocatable :: WriteHotFile(:)
     
-	INTEGER CONT_MES_NIGER,CONT_ANO_NIGER !CONTADOR DE NUMERO DE MESES PARA PREC_NIGER_MES
 	!CONTROL VARIABLES
 	INTEGER SUBini,SUBfim !Control especial cases of run
     integer, dimension(:), allocatable :: Ind_Reserv ! Indice para minibacias do barramento ! SIN_RESERV
@@ -398,16 +417,8 @@
     !Arrays declarations inside subroutines have been taken to this module
     !****************************************************************************************************
     
-    !****SUBROUTINE SIMULA vars****
-    
-    !REAL QPERMA(NC,100) 			                ! Discharge values in Exceedance Probability Curve for each catchment
-	!REAL HPERMA(NC,100) 			                ! Water Depth values in Exceedance Probability Curve for each catchment
-	!REAL VPERMA(NC,100) 			                ! Velocity values in Exceedance Probability Curve for each catchment
-    !REAL QMES90(NC,12),QMES95(NC,12),QMLT(NC,12)   ! Q90, Q95 and Long-term Mean Discharge for each month in each catchment
-    
-    
     !****SUBROUTINE CELULA vars****
-    REAL, ALLOCATABLE :: TKB(:),TKI(:),TKS(:)                    ! Delay and concentration times	
+    REAL, ALLOCATABLE :: TKB(:),TKI(:),TKS(:)            ! Delay and concentration times	
     
     !****SUBROUTINE REDE vars****
     REAL, ALLOCATABLE :: PMB1(:),PMI1(:),PMS1(:)           !PROPORÇÕES DE ORIGEM

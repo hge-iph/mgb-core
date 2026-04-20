@@ -140,10 +140,10 @@
     CLOSE(FILVAR)
 
     !Open Climate Region file
-    OPEN(1960,FILE=INPUT_DIRECTORY // 'climate_regions.fix',STATUS='OLD')
-    READ(1960,71)cabev
+    OPEN(FILCLIREG,FILE=INPUT_DIRECTORY // 'climate_regions.fix',STATUS='OLD')
+    READ(FILCLIREG,71)cabev
     DO I=1,NC
-        READ(1960,74)M,REGCLI(I)
+        READ(FILCLIREG,74)M,REGCLI(I)
     END DO
         
     

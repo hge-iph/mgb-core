@@ -93,8 +93,6 @@
 	!Initializes aggregating time step loop variable
     tflood=0.0
     
-!	AFLTUDO(1,IT)=0.0 !inicializa a variável de areas inundadas no inland delta
-    
 	!Intertial Routing loop
     do while (tflood<dtflood0)
         
@@ -106,10 +104,7 @@
 		
 		!Updates the loop variable
         tflood=tflood+dtflood
-        
-		!Write information about timestep, iteration and time interval on console
-!		write(*,*) 'Flood inundation iT=',iT, 100.*tflood/dtflood0,'%',', dt=',dtflood,' s'
-        
+                
 		! Calls the inertial routing equation:
         call flood_discharge
         ! Calls the continuity equation:
