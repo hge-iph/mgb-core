@@ -11,13 +11,13 @@ This branch introduces the first regression case: `magdalena`.
 ## Canonical Test Command
 
 ```powershell
-ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
 ```
 
 ## Manual Regression Command
 
 ```powershell
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/Release/mgb_model.exe --work-dir C:\mgbmagtest
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/windows/Release/mgb_model.exe --work-dir C:\mgbmagtest
 ```
 
 ## Runtime Staging Behavior

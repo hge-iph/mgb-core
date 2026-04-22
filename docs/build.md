@@ -14,9 +14,9 @@ The bootstrap build in this branch is currently validated for Windows x64 with I
 Run from the repository root:
 
 ```cmd
-cmake -S . -B build
-cmake --build build --config Release
-ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+cmake -S . -B build/windows
+cmake --build build/windows --config Release
+ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
 ```
 
 ## Experimental Linux Command
@@ -33,9 +33,9 @@ source /opt/intel/oneapi/setvars.sh
 Then run from the repository root:
 
 ```bash
-FC=ifx cmake -S . -B build-linux -DCMAKE_BUILD_TYPE=Release
-cmake --build build-linux
-ctest --test-dir build-linux --output-on-failure -R regression_magdalena
+FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
+cmake --build build/linux
+ctest --test-dir build/linux --output-on-failure -R regression_magdalena
 ```
 
 ## Current Build Scope

@@ -7,7 +7,7 @@ src/x64/**
 input_example/**
 /Input/**
 /Output/**
-/build/**
+/build/
 /Testing/**
 /CMakeFiles/**
 

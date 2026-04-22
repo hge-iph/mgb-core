@@ -14,7 +14,7 @@ Legacy Fortran hydrology and hydrodynamics model under bootstrap for collaborati
 Run from the repository root:
 
 ```powershell
-cmake -S . -B build
-cmake --build build --config Release
-ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+cmake -S . -B build/windows
+cmake --build build/windows --config Release
+ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
 ```
