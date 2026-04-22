@@ -24,6 +24,9 @@ input_example/**
 __pycache__/
 *.pyc
 
+# VSCODE caches
+.vscode/
+
 # Files in main path
 *.htm
 *.log
