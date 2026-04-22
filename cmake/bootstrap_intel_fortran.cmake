@@ -21,6 +21,7 @@ function(mgb_configure_bootstrap_target target)
             target_link_options(${target} PRIVATE
                 $<$<LINK_LANGUAGE:Fortran>:-qopenmp>
                 $<$<LINK_LANGUAGE:Fortran>:-qmkl=parallel>
+                $<$<AND:$<LINK_LANGUAGE:Fortran>,$<CONFIG:Release>>:-ipo>
             )
         else()
             message(FATAL_ERROR "Intel Fortran bootstrap flags are configured only for Windows and Linux.")
