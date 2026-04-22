@@ -1,49 +1,47 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Mission
 
-This repository contains the MGB hydrology and hydrodynamics model, currently bootstrapped as a legacy Fortran project. Core model sources live in `src/`; mixed-case extensions are intentional (`.f90` and `.F90`) and are listed explicitly in `CMakeLists.txt`. Build helpers are in `cmake/`, especially `cmake/BootstrapIntelFortran.cmake`. Documentation lives in `docs/`, with `docs/build.md`, `docs/testing.md`, `docs/architecture-bootstrap.md`, and `docs/portability.md` as the main references. Regression tests and fixtures live under `tests/regression/`; the current case is `tests/regression/magdalena/`.
+This repository contains a legacy Fortran hydrological model being prepared for maintainable collaborative development. Modernization should improve structure, portability, documentation, and regression safety without casually changing scientific behavior.
 
-## Build, Test, and Development Commands
+## Current Development Scope
 
-Run commands from the repository root. The validated bootstrap environment is Windows x64 with Intel oneAPI `ifx`.
+Focus first on infrastructure that makes later refactors safer:
 
-```cmd
-cmake -S . -B build
-```
+- Preserve and improve the CMake-based build.
+- Expand regression coverage before risky restructuring.
+- Prepare Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
+- Add Sphinx user documentation and in-repo developer documentation.
+- Clean unused variables, stale comments, and confusing code incrementally.
 
-Configures the CMake build tree.
+Do not claim support for platforms or compilers that have not been validated. The current documented baseline remains Windows x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
 
-```cmd
-cmake --build build --config Release
-```
+## Change Boundaries
 
-Builds the `mgb_model` executable.
+- Keep PRs focused and reviewable. Avoid large mixed changes.
+- Do not combine algorithm changes with formatting, cleanup, or module restructuring.
+- Preserve input/output file formats and model outputs unless the PR explicitly documents and tests the change.
+- Separate IO restructuring from hydrology and routing logic changes.
+- Prefer small behavior-preserving steps that can be checked by regression tests.
 
-```cmd
-ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
-```
+## Fortran Modernization
 
-Runs the Magdalena regression gate.
+- Prefer modules with clear responsibility and explicit interfaces.
+- Reduce global-state coupling gradually; avoid broad rewrites just to make code look modern.
+- Keep comments useful: explain intent, assumptions, units, file formats, and non-obvious hydrological behavior. Remove comments that merely repeat the code.
+- Follow existing naming and layout conventions unless a PR is explicitly improving them in a narrow area.
 
-```cmd
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/Release/mgb_model.exe --work-dir C:\mgbmagtest
-```
+## Git Contribution Flow
 
-Runs the regression harness manually and preserves the working directory.
+- `main` is the stable branch.
+- Use feature branches for development work.
+- Pull requests are preferred for all changes, especially source, build, tests, docs structure, and regression data.
+- Small documentation or metadata fixes may be committed directly by maintainers.
+- PR descriptions should explain behavior impact and list build/test evidence.
 
-## Coding Style & Naming Conventions
+## Validation
 
-Follow the existing Fortran style in nearby files. Keep source filenames and routine names consistent with current legacy naming, including uppercase module-oriented files such as `VARS_MAIN.f90` and flood routines such as `flood_timestep.f90`. Prefer small, localized edits and avoid broad formatting-only churn. Update `CMakeLists.txt` when adding or removing source files because sources are enumerated explicitly.
-
-## Testing Guidelines
-
-Use CTest for the standard regression path. The regression runner stages `Input`, creates `Output`, runs with `MGB_NONINTERACTIVE=1`, and compares selected files against `tests/regression/magdalena/expected`. When changing numerical behavior, update fixtures only with a clear rationale and document tolerance changes in `tests/regression/magdalena/manifest.json`.
-
-## Commit & Pull Request Guidelines
-
-Recent history uses short conventional prefixes such as `docs:`, `feat:`, and `fix:`. Keep subjects imperative and focused on intent. This repository also expects Lore-style commit trailers when useful, for example `Constraint:`, `Rejected:`, `Confidence:`, `Scope-risk:`, `Tested:`, and `Not-tested:`. Pull requests should describe behavioral impact, list verification commands, link related issues, and mention any changed regression fixtures or tolerances.
-
-## Security & Configuration Tips
-
-Do not commit local build outputs, `.omx/` runtime state, generated regression work directories, or machine-specific oneAPI configuration. Keep secrets and local paths out of fixtures and documentation examples unless they are clearly placeholders.
+- For source or build changes, run the canonical CMake build and `regression_magdalena` when the platform supports it.
+- For portability work, document the exact OS, compiler, CMake command, and any known failing assumptions.
+- For refactors, provide regression evidence showing unchanged outputs or explicitly document output changes.
+- For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/build.md`, `docs/testing.md`, and `docs/portability.md`.
