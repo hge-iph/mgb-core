@@ -242,7 +242,7 @@
             !Média dos dx de IC e ICJUS
             dxflow=DBLE(nFACEDX(iFACE))       !Verificar se precisa de um limitador do dx
             
-            !Variables below were moved to infoMGB.sim
+            !Variables below were moved to infomgb.sim
             !bflow_overland=10.0 !Width for connections                                    			
             !xMan_overland=0.1
                 

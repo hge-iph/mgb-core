@@ -6,7 +6,7 @@ This bootstrap phase does not refactor model internals. It adds only the minimum
 
 At startup the main program:
 
-- reads `infoMGB.sim`
+- reads `infomgb.sim`
 - allocates state
 - loads static parameters, topology, and climate inputs
 - opens runtime input and output files

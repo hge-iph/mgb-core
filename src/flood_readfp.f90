@@ -1,0 +1,137 @@
+	  
+    !---------------------------------------------------------------------------------
+    !  Licensing:
+    !
+	!Modelo de Grandes Bacias, South America version (MGB-SA). 
+    !Copyright (C) 2019  Hidrologia de Grande Escala (HGE)
+	!
+    !This program is free software: you can redistribute it and/or modify
+    !it under the terms of the GNU General Public License as published by
+    !the Free Software Foundation, either version 3 of the License, or
+    !any later version.
+	!
+    !This program is distributed in the hope that it will be useful,
+    !but WITHOUT ANY WARRANTY; without even the implied warranty of
+    !MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    !GNU General Public License for more details.
+	!
+    !You should have received a copy of the GNU General Public License
+    !along with this program.  If not, see <https://www.gnu.org/licenses/>.	
+	!
+    !---------------------------------------------------------------------------------
+    !  Version/Modified: 
+    !
+    ! 2015.07.20 - 20 July 2016 by Vinícius Siqueira)
+    !
+    !  Authors:
+    !
+    !    Original fortran version by Walter Collischonn
+    !    Present fortran version by:
+    !    * Walter Collischonn
+    !    * Rodrigo Cauduro Dias de Paiva
+    !    * Diogo da Costa Buarque
+    !    * Paulo Pontes Rógenes
+    !    * Mino  Viana Sorribas
+    !    * Fernando Mainardi Fan
+    !    * Juan Martin Bravo 
+    !
+    !  Main Reference:
+    !
+    !    Walter Collischonn,
+    !    Modelo de Grandes Bacias - Thesis
+    !    Porto Alegre, 2001
+    !    ISBN: XXXXXXXXXXX,
+    !
+    !---------------------------------------------------------------------------------
+    ! Variables and Parameters:
+    ! *Variables declarations and routines calls are all commented below.
+    !---------------------------------------------------------------------------------
+    !  Discussion:
+    ! 
+    !    This sub-routine reads the level x flooded area from PrePro (Inertial version).
+    !
+    !
+    ! Usage:
+    !
+    ! *
+    !
+    ! uses modules, functions, and subroutines
+    !
+    ! * USE VARS_MAIN
+    ! * USE VARS_INERC (only to Inertial version)
+    !
+    ! opens
+    !
+    ! * cota_area.flp
+    !
+    ! reads
+    !
+    ! * cota_area.flp
+    !
+    ! creates
+    !
+    ! * no files are created in this routine
+    !
+    ! End of header
+    !---------------------------------------------------------------------------------
+    
+    SUBROUTINE flood_readFP
+
+    !  Variables and Parameters:
+    USE VARS_MAIN
+    USE VARS_INERC
+    IMPLICIT NONE
+    INTEGER aux,K,COUNTER,io_status
+    INTEGER, PARAMETER:: dy_floodplain=1  !Increment in floodplain is assumed to be 1m         
+    INTEGER, PARAMETER:: points_floodplain=100 !Standard number of elevation points in floodplain
+    
+    NPFL=points_floodplain !Setting the number of floodplain elevations
+    
+    !Opening the level x flooded area files    
+    OPEN(FILSTAGE,FILE=INPUT_DIRECTORY // 'flood_stage.bin',STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT') !input binary file with interpolated rainfall data
+           
+    !The Structure of StageArea.bin file is as follows:
+    !2 - Water Level elevations [IC = 1,2... NC] as INTEGER(KIND=4)
+    !3 - Floodplain elevations  [i = 1, 2 ... points_floodplain] as REAL(KIND=8)
+    
+    K=1
+    READ(FILSTAGE,REC=K)(ZFUNDOFL(IC),IC=1,NC) 
+    !Fills the Z values of floodplain increment
+    DO IC=1,NC
+        DO aux=1,points_floodplain
+            !For each point floodplain increment, computes the elevation
+            ZFL(aux,IC)=INT(dy_floodplain*aux)+ZFUNDOFL(IC) !Multiplications between Integer and Real Must be verified 
+        ENDDO
+    ENDDO
+    
+    CLOSE (FILSTAGE) !Close water level binary file
+    
+    !Reads the Floodplain Areas
+    !Values are in real*8. RECL must be multiplied by 2    
+    OPEN(FILAREA,FILE=INPUT_DIRECTORY // 'flood_area.bin',STATUS='old',RECL=(2*points_floodplain),FORM='UNFORMATTED',ACCESS='DIRECT') !input binary file with Floodplain area 
+    
+    K=1
+    DO IC=1,NC
+         READ(FILAREA,REC=K)(AFL(aux,IC),aux=1,points_floodplain)
+         K=K+1
+    ENDDO
+    
+    CLOSE (FILAREA) !Close floodplain area binary file
+         
+    !ABRE ARQUIVO DE FACES
+    if (flag_pseudo_two_d==1) then
+    OPEN(FILFACE,FILE=INPUT_DIRECTORY // 'face.con',STATUS='OLD',action='READ')
+    
+    !Número da face / Minibacia 1 / Minibacia 2 / Ymin da fronteira (m) / DX entre as minibacias (m):
+    aux=0
+    DO
+        READ(FILFACE,*,IOSTAT=io_status) nFACECAT1(aux+1),nFACECAT2(aux+1),nFACEDX(aux+1)
+        IF (io_status .NE. 0) EXIT
+        aux=aux+1
+    ENDDO
+    CLOSE(FILFACE)
+    nFACE=aux
+    endif      
+      
+    RETURN
+    END

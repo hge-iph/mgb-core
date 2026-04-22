@@ -10,11 +10,11 @@ Focus first on infrastructure that makes later refactors safer:
 
 - Preserve and improve the CMake-based build.
 - Expand regression coverage before risky restructuring.
-- Prepare Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
+- Maintain validated Windows and Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
 - Add Sphinx user documentation and in-repo developer documentation.
 - Clean unused variables, stale comments, and confusing code incrementally.
 
-Do not claim support for platforms or compilers that have not been validated. The current documented baseline remains Windows x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
+Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
 
 ## Change Boundaries
 
@@ -41,7 +41,7 @@ Do not claim support for platforms or compilers that have not been validated. Th
 
 ## Validation
 
-- For source or build changes, run the canonical CMake build and `regression_magdalena` when the platform supports it.
+- For source or build changes, run the CMake build and `regression_magdalena` on the affected supported platform when available.
 - For portability work, document the exact OS, compiler, CMake command, and any known failing assumptions.
 - For refactors, provide regression evidence showing unchanged outputs or explicitly document output changes.
 - For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/build.md`, `docs/testing.md`, and `docs/portability.md`.

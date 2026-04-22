@@ -7,7 +7,7 @@ src/x64/**
 input_example/**
 /Input/**
 /Output/**
-/build/**
+/build/
 /Testing/**
 /CMakeFiles/**
 
@@ -23,6 +23,9 @@ input_example/**
 # Python caches
 __pycache__/
 *.pyc
+
+# VSCODE caches
+.vscode/
 
 # Files in main path
 *.htm

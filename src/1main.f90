@@ -1,4 +1,4 @@
-   
+
     !---------------------------------------------------------------------------------
     !  Licensing:
     !
@@ -16,12 +16,12 @@
     !GNU General Public License for more details.
 	!
     !You should have received a copy of the GNU General Public License
-    !along with this program.  If not, see <https://www.gnu.org/licenses/>.	
+    !along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	!
 	!---------------------------------------------------------------------------------
-    !  Version/Modified: 
+    !  Version/Modified:
     !
-    !    2026.02.07 - 07 February 2026 (By: Vinicius Siqueira)    
+    !    2026.02.07 - 07 February 2026 (By: Vinicius Siqueira)
     !
     !  Authors:
     !
@@ -33,7 +33,7 @@
     !    * Paulo Pontes Rógenes
     !    * Mino  Viana Sorribas
     !    * Fernando Mainardi Fan
-    !    * Juan Martin Bravo 
+    !    * Juan Martin Bravo
     !    * Vinicius Alencar Siqueira
 	!	 * Ayan Santos Fleischmann
 	!	 * Sly Wongchuig Correa
@@ -44,11 +44,11 @@
     !
     !  Reference for the South America Model version:
     !
-    !    Siqueira, V. A., Paiva, R. C. D., Fleischmann, A. S., Fan, F. M., Ruhoff, A. L., Pontes, P. R. M., Paris, A., Calmant, S., and Collischonn, W.: 
-    !    Toward continental hydrologic–hydrodynamic modeling in South America, Hydrol. Earth Syst. Sci., 22, 4815-4842, 2018.    
+    !    Siqueira, V. A., Paiva, R. C. D., Fleischmann, A. S., Fan, F. M., Ruhoff, A. L., Pontes, P. R. M., Paris, A., Calmant, S., and Collischonn, W.:
+    !    Toward continental hydrologic–hydrodynamic modeling in South America, Hydrol. Earth Syst. Sci., 22, 4815-4842, 2018.
     !
     !
-	!---------------------------------------------------------------------------------       
+	!---------------------------------------------------------------------------------
     !
     !***************MODELO HIDROLÓGICO DE GRANDES BACIAS (MGB)************************
     !
@@ -110,7 +110,7 @@
     !	Tucci, C. E. M. ; Dias, P. L. S. ; Clarke, R. T. ; Sampaio, G. O. ; Collischonn, W. . Long-term flow forecasts based on climate and hydrologic modeling: Uruguay river basin. Water Resources Research, New York, v. 39, n.7, p. 1-2, 2003.
     !	Collischonn, W. ; Tucci, C. E. M. . Ajuste multiobjetivo dos parâmetros de um modelo hidrológico. Revista Brasileira de Recursos Hídricos, Porto Alegre, v. 8, n.3, p. 27-39, 2003.
     !	Collischonn, W. ; Tucci, C. E. M. . Simulação hidrológica de grandes bacias. Revista Brasileira de Recursos Hídricos, v. 6, n.2, 2001.
-    !   COLLISCHONN, W. Modelagem de Grandes Bacias - ph.d. Thesis. 2001 
+    !   COLLISCHONN, W. Modelagem de Grandes Bacias - ph.d. Thesis. 2001
     !
     !    Older source codes have been distributed by some people in
     !    past research, thus any other Large Scale Model with similar source
@@ -120,7 +120,7 @@
     !
     !---------------------------------------------------------------------------------
     !  Discussion:
-    ! 
+    !
     !    This is the main routine of the model.
     !    This routines starts the model, open some input files and calls
     !    model simulation modes (i.e. simulation, calibration) etc...
@@ -137,17 +137,17 @@
     !	*Module	VARS_CALIB  !module containing the variables used in the model calibration
     !	*Module	VARS_INERC  !module containing the variables of the model Local Inertial flow routing model
     !	*Function	TEMPO(0,ISEED)  ! INICIA CONTAGEM DO TEMPO
-    !	*Subroutine	LEFIX 	!Suboutine that reads the model main input files with the running main information 
+    !	*Subroutine	LEFIX 	!Suboutine that reads the model main input files with the running main information
     !	*Subroutine	ALLOCA_VARS(0) !Allocate the model main variables
     !	*Subroutine	ALLOCA_VARSINERC(0) !Allocate the variables of the model Local Inertial flow routing model
-    !	*Subroutine	LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: ALBIAF.FIX)
-    !	*Subroutine	LEUSO !Subroutine for reading the file with calibrated parameters (File: PARUSO.CAL)
-    !	*Subroutine	LECELL !Subroutine for reading the file with the model MiniBasins information (File: MINI.GTP)
-    !	*Subroutine	LEFLOODPLN !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: COTA_AREA.FLP)
+    !	*Subroutine	LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: albiaf.fix)
+    !	*Subroutine	LEUSO !Subroutine for reading the file with calibrated parameters (File: paruso.cal)
+    !	*Subroutine	LECELL !Subroutine for reading the file with the model MiniBasins information (File: mini.gtp)
+    !	*Subroutine	LEFLOODPLN !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: cota_area.flp)
     !	*Subroutine	LECLIMED !Subroutine for reading the file with mensal climate information (File: MEDIAS.CLM)
     !	*Subroutine	ARQCLISUB	  !Subroutine for reading the files with daily/hourly meteorological information (Files with extension .CLI)
     !	*Subroutine	LEQOBS	!Subroutine for reading the file observed streamflow data (File with extension .QOB)
-    !	*Subroutine	LESUBST !Then calls the subroutine for the reading the file with to be substituded streamflow data (File: QSUBST.QSB) 
+    !	*Subroutine	LESUBST !Then calls the subroutine for the reading the file with to be substituded streamflow data (File: QSUBST.QSB)
     !	*Subroutine	PARCEL !Calculates parameters related to MicroBains and rivers
     !	*Subroutine	PARCUNGE !Calcualtes Muskingum-Cunge parameters
     !	*Subroutine	flood_TOPO !Creates a matrix with topology information that is used in the Local Inertial routing method
@@ -163,9 +163,9 @@
     !
     !	 opens
     !
-    !    * CHUVAbin.pbi, the precipitation binary file
+    !    * chuvabin.pbi, the precipitation binary file
     !    * NOSOLO.tx, information about soil water at one minibasin
-    !    * AJUSTE.fob, model performance coeficcients
+    !    * ajuste.fob, model performance coeficcients
     !
     !    reads
     !
@@ -174,7 +174,7 @@
     !    creates
     !
     !    * NOSOLO.tx, information about soil water at one minibasin
-    !    * AJUSTE.fob, model performance coeficcients
+    !    * ajuste.fob, model performance coeficcients
     !
     !---------------------------------------------------------------------------------
     !  Variables and Parameters:
@@ -182,94 +182,93 @@
     !---------------------------------------------------------------------------------
     ! End of header
     !---------------------------------------------------------------------------------
-    
+
 !TESTE
    PROGRAM MGB_Inercial
-    
-!  Calls used libraries and modules 
 
-	USE PORTLIB     !library to calculate the processing time
-	USE IFPORT      !library to calculate the processing time
+!  Calls used libraries and modules
 	USE VARS_MAIN   !module containing the main variables used in the model
-	USE VARS_INERC  !module containing the variables of the model Local Inertial flow routing model    
+	USE VARS_INERC  !module containing the variables of the model Local Inertial flow routing model
 
-!  Variables declaration 
+!  Variables declaration
 
 	IMPLICIT NONE !States that non declared variables cannot be used
 	INTEGER JULDAY !Variable used for day of the year calculation on a Julian calendar
-	REAL(4) TIME_SECONDS !Variable to calculate the processing time
-    REAL(4):: ZERO=0.0
-    INTEGER ISEED
+	REAL(8) TIME_SECONDS !Variable to calculate the processing time
+    INTEGER clock_start
+    INTEGER clock_end
+    INTEGER clock_rate
+    INTEGER clock_max
+    INTEGER clock_ticks
     CHARACTER(8) NONINTERACTIVE_ENV
     LOGICAL NONINTERACTIVE
 !  Statements used to calculate the processing time
-    
-	CALL TEMPO(0,ISEED)  ! INICIA CONTAGEM DO TEMPO
-	TIME_SECONDS = SECNDS(ZERO)	
+
+    CALL SYSTEM_CLOCK(COUNT=clock_start, COUNT_RATE=clock_rate, COUNT_MAX=clock_max)
     NONINTERACTIVE = .FALSE.
     NONINTERACTIVE_ENV = ''
     CALL GET_ENVIRONMENT_VARIABLE('MGB_NONINTERACTIVE',NONINTERACTIVE_ENV)
     IF (TRIM(ADJUSTL(NONINTERACTIVE_ENV)) == '1') NONINTERACTIVE = .TRUE.
 
-!   Input and Output Directories and log file
-    INPUT_DIRECTORY = TRIM(adjustl(('.\Input\')))
-    OUTPUT_DIRECTORY = TRIM(adjustl(('.\Output\')))
-    INPUT_DIRECTORY_HOTSTART = TRIM(adjustl(('.\Hotstart\')))
-    
-	OPEN(FILLOG,FILE=OUTPUT_DIRECTORY // 'LOG_MGB.txt',STATUS='UNKNOWN') !Output file with simulation LOG
+!   Input and output directories and log file
+    INPUT_DIRECTORY = TRIM(adjustl(('./input/')))
+    OUTPUT_DIRECTORY = TRIM(adjustl(('./output/')))
+    INPUT_DIRECTORY_HOTSTART = TRIM(adjustl(('./hotstart/')))
+
+	OPEN(FILLOG,FILE=OUTPUT_DIRECTORY // 'log_mgb.txt',STATUS='UNKNOWN') !output file with simulation LOG
 
 !  Write the model name in the black box
-    WRITE(*,*)'Modelo Hidrologico de Grandes Bacias: MGB v2'     
+    WRITE(*,*)'Modelo Hidrologico de Grandes Bacias: MGB v2'
     WRITE(FILLOG,*)'Modelo Hidrologico de Grandes Bacias: MGB v2'
-   
+
 !  Call subroutines related to input files that are readen only once reading and MGB-IPH variables allocation
-	WRITE(*,*)'Reading infoMGB.sim file...'
-	WRITE(FILLOG,*)'Reading infoMGB.sim file...'
-	
-    !Suboutine that reads the model main input files with the running main information 
-	CALL READ_INFOMGB 
-    
+	WRITE(*,*)'Reading infomgb.sim file...'
+	WRITE(FILLOG,*)'Reading infomgb.sim file...'
+
+    !Suboutine that reads the model main input files with the running main information
+	CALL READ_INFOMGB
+
     WRITE(*,*)'Allocating variables...'
 	WRITE(FILLOG,*)'Allocating variables...'
-	CALL ALLOCA_VARS(0) !Allocate the model main variables    
+	CALL ALLOCA_VARS(0) !Allocate the model main variables
 	CALL ALLOCA_VARSINERC(0) !Allocate the variables of the model Local Inertial flow routing model
-    		   	
+
 	!IDINI=JULDAY(IMES,IDIA,IANO) !Calculate the first day of the simulation in the Julian calendar
 	WRITE(*,*)'Reading fixed parameters file...'
 	WRITE(FILLOG,*)'Reading fixed parameters file...'
-	CALL LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: ALBIAF.FIX)
+	CALL LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: albiaf.fix)
 	WRITE(*,*)'Reading calibrated parameters file...'
 	WRITE(FILLOG,*)'Reading calibrated parameters file...'
-	CALL LEUSO !Subroutine for reading the file with calibrated parameters (File: PARUSO.CAL)
-	WRITE(*,*)'Reading model topology (MINI.GTP) file...'
+	CALL LEUSO !Subroutine for reading the file with calibrated parameters (File: paruso.cal)
+	WRITE(*,*)'Reading model topology (mini.gtp) file...'
 	WRITE(FILLOG,*)'Reading calibrated parameters file...'
-	CALL LECELL !Subroutine for reading the file with the model catchments (minibasins) information (File: MINI.GTP)
-	
+	CALL LECELL !Subroutine for reading the file with the model catchments (minibasins) information (File: mini.gtp)
+
 	WRITE(*,*)'Reading observed flows, substituted flows, and climate files...'
 	WRITE(FILLOG,*)'Reading observed flows, substituted flows, and climate files...'
-	
-	CALL READ_CLIM_AVG !Subroutine for reading climate file in binary format (South America Model)   
+
+	CALL READ_CLIM_AVG !Subroutine for reading climate file in binary format (South America Model)
     WRITE(FILLOG,*)'CLIMED OK'
-	
+
     IF(NUMSUBST>0)THEN !If it was identified in the LEFIX routine that streamflow substitution is being done
-		CALL LESUBST !Then calls the subroutine for the reading the file with to be substituded streamflow data (File: QSUBST.QSB) 
-	ENDIF 
+		CALL LESUBST !Then calls the subroutine for the reading the file with to be substituded streamflow data (File: QSUBST.QSB)
+	ENDIF
 	WRITE(FILLOG,*)'QSUBS OK'
 
     !*****************************************************************
-	! Hydrodynamic modeling:        
+	! Hydrodynamic modeling:
     If (flag_opt_rout==1) THEN
         hdFLAG=1
     Else
         hdFLAG=0
-    end if    
-	      
+    end if
+
 	hdFLAG0=sum(hdFLAG) ! Test
 	If(hdFLAG(1)==1)THEN
         WRITE(*,*)'Reading Floodplain data...'
 	    WRITE(FILLOG,*)'Reading Floodplain data...'
-  
-	    !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: COTA_AREA.FLP)
+
+	    !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: cota_area.flp)
         CALL flood_readFP !Binary read of floodplain data
 	    WRITE(FILLOG,*)'FLOODPLAIN READ OK'
 	ENDIF
@@ -286,8 +285,8 @@
 	CALL PARCUNGE !Calcualtes Muskingum-Cunge parameters
     WRITE(FILLOG,*)'PARCUNGE Routine OK'
     WRITE(*,*)'PARCUNGE OK'
-    
-    If(hdFLAG(1)==1)THEN       
+
+    If(hdFLAG(1)==1)THEN
 	    CALL flood_TOPO !Creates a matrix with topology information that is used in the Local Inertial routing method
 	    WRITE(FILLOG,*)'FLOOD TOPOLOGY OK'
 	    WRITE(*,*)'FLOOD TOPOLOGY OK'
@@ -299,12 +298,12 @@
 
 !  End of subroutines that calculates Unit-catchments, rivers channels, and floodplains characteristics
 
-!  Openning of MGB Input files that are read during the simulation
+!  Openning of MGB input files that are read during the simulation
     WRITE(*,*)'Opening input meteorological files...'
     WRITE(FILLOG,*)'Opening input meteorological files...'
 	call MET_INPUT_FILES(1)
-    
-!  End of openning MGB-IPH main Input and Output files that are read and written over the simulation
+
+!  End of openning MGB-IPH main input and output files that are read and written over the simulation
 
 !  Ask for verification
 !  Informs the model general setup
@@ -313,7 +312,7 @@
     WRITE(FILLOG,'(A30,I8)')'Number of catchments:',NC
     WRITE(FILLOG,'(A30,I8)')'Number of subbasins:',NB
     WRITE(FILLOG,'(A30,I8)')'Number of HRUs:',NU
-    WRITE(FILLOG,'(A30,4I5)')'Start date (yyyy mm dd hh):', IANO,IMES,IDIA,HORAINI 
+    WRITE(FILLOG,'(A30,4I5)')'Start date (yyyy mm dd hh):', IANO,IMES,IDIA,HORAINI
     WRITE(FILLOG,'(A30,F16.2)')'Time step (s):',DTP
     WRITE(FILLOG,'(A30,I8)')'Number of time steps:',NT
     WRITE(FILLOG,'(A30,I8)')'Number of substitution gauges:',NUMSUBST
@@ -342,12 +341,12 @@
     WRITE(*,'(A30,I8)')'Number of catchments:',NC
     WRITE(*,'(A30,I8)')'Number of subbasins:',NB
     WRITE(*,'(A30,I8)')'Number of HRUs:',NU
-    WRITE(*,'(A30,4I5)')'Start date (dd mm yyyy hh):',IDIA,IMES,IANO,HORAINI 
+    WRITE(*,'(A30,4I5)')'Start date (dd mm yyyy hh):',IDIA,IMES,IANO,HORAINI
     WRITE(*,'(A30,F16.2)')'Time step (s):',DTP
     WRITE(*,'(A30,I8)')'Number of time steps:',NT
     WRITE(*,'(A30,I8)')'Number of substitution gauges:',NUMSUBST
     WRITE(*,'(A30,I8)')'Number of climate gauges:',NCLI
-    WRITE(*,'(A30,I8)')'Number of climate regions:',NREG    
+    WRITE(*,'(A30,I8)')'Number of climate regions:',NREG
     WRITE(*,'(A30,2I8)')'Sim. interval for subasins:',SUBini,SubFim
     write(*,*)
     WRITE(*,*),'Opt. Monthly radiation (0=sun.hours; 1=sun.perc; 2=radiation):'
@@ -373,18 +372,17 @@
         WRITE(*,*)'REMEMBER THAT RESULT FILES WILL BE OVERWRITTEN. ARE YOU SURE?'
         READ(*,*)
     ENDIF
-    
+
     WRITE(*,*)'SIMULATION MODE' !Warns about the chosen mode
 	WRITE(FILLOG,*)'SIMULATION MODE' !Warns about the chosen mode
 	CALL SIMULA !Subroutine that calls a standard model simulation run
-    
-!  After running the model, finish the time count, close all files, and clean all variables 
 
-	CALL TEMPO(1,0)  !Finish time count 
+!  After running the model, finish the time count, close all files, and clean all variables
+
     call MET_INPUT_FILES(0)
-    
+
 	CALL ALLOCA_VARS(1) !Cleans main variables
-    
+
 ! End of closings and cleanings
 
 ! Inform the user that the model run is over and informations about total processing time
@@ -392,10 +390,16 @@
 	WRITE(*,*)'MGB MODEL ENDED SUCCESSFULLY'
 	WRITE(FILLOG,*)'MGB MODEL ENDED SUCCESSFULLY'
 	print *, char(7)
-	TIME_SECONDS = SECNDS(TIME_SECONDS)
+    CALL SYSTEM_CLOCK(COUNT=clock_end)
+    IF (clock_end >= clock_start) THEN
+        clock_ticks = clock_end - clock_start
+    ELSE
+        clock_ticks = (clock_max - clock_start + 1) + clock_end
+    ENDIF
+    TIME_SECONDS = DBLE(clock_ticks) / DBLE(clock_rate)
 	WRITE(*,*)'TOTAL TIME:',TIME_SECONDS/60.,'MINUTES'
 	WRITE(FILLOG,*)'TOTAL TIME:',TIME_SECONDS/60.,'MINUTES'
-    
+
     IF (NONINTERACTIVE) THEN
         WRITE(*,*)'NON-INTERACTIVE MODE ENABLED. EXIT PROMPT SKIPPED.'
         WRITE(FILLOG,*)'NON-INTERACTIVE MODE ENABLED. EXIT PROMPT SKIPPED.'
@@ -403,11 +407,11 @@
 	    WRITE(*,*)'PRESS ENTER TO CLOSE...'
 	    WRITE(FILLOG,*)'PRESS ENTER TO CLOSE...'
     ENDIF
-	
+
     CLOSE(FILLOG)
-    
+
     IF (.NOT. NONINTERACTIVE) THEN
-	    PAUSE
+	    READ(*,*)
     ENDIF
-	
-	END         
+
+	END

@@ -8,16 +8,24 @@ This branch introduces the first regression case: `magdalena`.
 - Regression runner: `tests/regression/run_regression.py`
 - Regression comparator: `tests/regression/compare_regression.py`
 
-## Canonical Test Command
+## Windows
 
 ```powershell
-ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
 ```
 
-## Manual Regression Command
-
 ```powershell
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/Release/mgb_model.exe --work-dir C:\mgbmagtest
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/windows/Release/mgb_model.exe --work-dir C:\mgbmagtest
+```
+
+## Linux
+
+```bash
+ctest --test-dir build/linux --output-on-failure -R regression_magdalena
+```
+
+```bash
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/linux/mgb_model --work-dir /tmp/mgbmagtest
 ```
 
 ## Runtime Staging Behavior
@@ -25,8 +33,8 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena 
 For each run, the regression harness:
 
 1. creates a runtime directory
-2. copies `tests/regression/magdalena/Input` to `<runtime>/Input`
-3. creates `<runtime>/Output`
+2. copies `tests/regression/magdalena/input` to `<runtime>/input`
+3. creates `<runtime>/output`
 4. runs the model with `cwd=<runtime>` and `MGB_NONINTERACTIVE=1`
 5. compares selected outputs against `tests/regression/magdalena/expected`
 
@@ -41,10 +49,10 @@ For each run, the regression harness:
 
 Compared outputs:
 
-- `QTUDO.MGB`
-- `YTUDO.MGB`
-- `TWSTUDO.MGB`
-- `FLOODTUDO.MGB`
+- `qtudo.mgb`
+- `ytudo.mgb`
+- `twstudo.mgb`
+- `floodtudo.mgb`
 
 Current manifest tolerances:
 
