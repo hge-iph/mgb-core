@@ -23,4 +23,4 @@ ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
 
 - Canonical build definition: `CMakeLists.txt`
 - Current supported backend in this phase: Windows + Intel `ifx`
-- Current explicit Intel flags are defined in `cmake/BootstrapIntelFortran.cmake`
+- Current explicit Intel flags are defined in `cmake/bootstrap_intel_fortran.cmake`

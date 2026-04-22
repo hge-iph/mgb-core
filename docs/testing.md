@@ -25,8 +25,8 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena 
 For each run, the regression harness:
 
 1. creates a runtime directory
-2. copies `tests/regression/magdalena/Input` to `<runtime>/Input`
-3. creates `<runtime>/Output`
+2. copies `tests/regression/magdalena/input` to `<runtime>/input`
+3. creates `<runtime>/output`
 4. runs the model with `cwd=<runtime>` and `MGB_NONINTERACTIVE=1`
 5. compares selected outputs against `tests/regression/magdalena/expected`
 
@@ -41,10 +41,10 @@ For each run, the regression harness:
 
 Compared outputs:
 
-- `QTUDO.MGB`
-- `YTUDO.MGB`
-- `TWSTUDO.MGB`
-- `FLOODTUDO.MGB`
+- `qtudo.mgb`
+- `ytudo.mgb`
+- `twstudo.mgb`
+- `floodtudo.mgb`
 
 Current manifest tolerances:
 

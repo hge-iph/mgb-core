@@ -28,8 +28,8 @@ def prepare_work_dir(case_dir: Path, work_dir: Path | None) -> tuple[Path, tempf
 
 def stage_case(case_dir: Path, manifest: dict, work_dir: Path) -> tuple[Path, Path]:
     input_dir = case_dir / manifest["input_dir"]
-    output_dir = work_dir / "Output"
-    shutil.copytree(input_dir, work_dir / "Input")
+    output_dir = work_dir / "output"
+    shutil.copytree(input_dir, work_dir / "input")
     output_dir.mkdir(parents=True, exist_ok=True)
     return input_dir, output_dir
 

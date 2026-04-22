@@ -140,10 +140,10 @@
     !	*Subroutine	LEFIX 	!Suboutine that reads the model main input files with the running main information 
     !	*Subroutine	ALLOCA_VARS(0) !Allocate the model main variables
     !	*Subroutine	ALLOCA_VARSINERC(0) !Allocate the variables of the model Local Inertial flow routing model
-    !	*Subroutine	LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: ALBIAF.FIX)
-    !	*Subroutine	LEUSO !Subroutine for reading the file with calibrated parameters (File: PARUSO.CAL)
-    !	*Subroutine	LECELL !Subroutine for reading the file with the model MiniBasins information (File: MINI.GTP)
-    !	*Subroutine	LEFLOODPLN !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: COTA_AREA.FLP)
+    !	*Subroutine	LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: albiaf.fix)
+    !	*Subroutine	LEUSO !Subroutine for reading the file with calibrated parameters (File: paruso.cal)
+    !	*Subroutine	LECELL !Subroutine for reading the file with the model MiniBasins information (File: mini.gtp)
+    !	*Subroutine	LEFLOODPLN !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: cota_area.flp)
     !	*Subroutine	LECLIMED !Subroutine for reading the file with mensal climate information (File: MEDIAS.CLM)
     !	*Subroutine	ARQCLISUB	  !Subroutine for reading the files with daily/hourly meteorological information (Files with extension .CLI)
     !	*Subroutine	LEQOBS	!Subroutine for reading the file observed streamflow data (File with extension .QOB)
@@ -163,9 +163,9 @@
     !
     !	 opens
     !
-    !    * CHUVAbin.pbi, the precipitation binary file
+    !    * chuvabin.pbi, the precipitation binary file
     !    * NOSOLO.tx, information about soil water at one minibasin
-    !    * AJUSTE.fob, model performance coeficcients
+    !    * ajuste.fob, model performance coeficcients
     !
     !    reads
     !
@@ -174,7 +174,7 @@
     !    creates
     !
     !    * NOSOLO.tx, information about soil water at one minibasin
-    !    * AJUSTE.fob, model performance coeficcients
+    !    * ajuste.fob, model performance coeficcients
     !
     !---------------------------------------------------------------------------------
     !  Variables and Parameters:
@@ -211,20 +211,20 @@
     CALL GET_ENVIRONMENT_VARIABLE('MGB_NONINTERACTIVE',NONINTERACTIVE_ENV)
     IF (TRIM(ADJUSTL(NONINTERACTIVE_ENV)) == '1') NONINTERACTIVE = .TRUE.
 
-!   Input and Output Directories and log file
-    INPUT_DIRECTORY = TRIM(adjustl(('.\Input\')))
-    OUTPUT_DIRECTORY = TRIM(adjustl(('.\Output\')))
-    INPUT_DIRECTORY_HOTSTART = TRIM(adjustl(('.\Hotstart\')))
+!   Input and output directories and log file
+    INPUT_DIRECTORY = TRIM(adjustl(('./input/')))
+    OUTPUT_DIRECTORY = TRIM(adjustl(('./output/')))
+    INPUT_DIRECTORY_HOTSTART = TRIM(adjustl(('./hotstart/')))
     
-	OPEN(FILLOG,FILE=OUTPUT_DIRECTORY // 'LOG_MGB.txt',STATUS='UNKNOWN') !Output file with simulation LOG
+	OPEN(FILLOG,FILE=OUTPUT_DIRECTORY // 'log_mgb.txt',STATUS='UNKNOWN') !output file with simulation LOG
 
 !  Write the model name in the black box
     WRITE(*,*)'Modelo Hidrologico de Grandes Bacias: MGB v2'     
     WRITE(FILLOG,*)'Modelo Hidrologico de Grandes Bacias: MGB v2'
    
 !  Call subroutines related to input files that are readen only once reading and MGB-IPH variables allocation
-	WRITE(*,*)'Reading infoMGB.sim file...'
-	WRITE(FILLOG,*)'Reading infoMGB.sim file...'
+	WRITE(*,*)'Reading infomgb.sim file...'
+	WRITE(FILLOG,*)'Reading infomgb.sim file...'
 	
     !Suboutine that reads the model main input files with the running main information 
 	CALL READ_INFOMGB 
@@ -237,13 +237,13 @@
 	!IDINI=JULDAY(IMES,IDIA,IANO) !Calculate the first day of the simulation in the Julian calendar
 	WRITE(*,*)'Reading fixed parameters file...'
 	WRITE(FILLOG,*)'Reading fixed parameters file...'
-	CALL LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: ALBIAF.FIX)
+	CALL LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: albiaf.fix)
 	WRITE(*,*)'Reading calibrated parameters file...'
 	WRITE(FILLOG,*)'Reading calibrated parameters file...'
-	CALL LEUSO !Subroutine for reading the file with calibrated parameters (File: PARUSO.CAL)
-	WRITE(*,*)'Reading model topology (MINI.GTP) file...'
+	CALL LEUSO !Subroutine for reading the file with calibrated parameters (File: paruso.cal)
+	WRITE(*,*)'Reading model topology (mini.gtp) file...'
 	WRITE(FILLOG,*)'Reading calibrated parameters file...'
-	CALL LECELL !Subroutine for reading the file with the model catchments (minibasins) information (File: MINI.GTP)
+	CALL LECELL !Subroutine for reading the file with the model catchments (minibasins) information (File: mini.gtp)
 	
 	WRITE(*,*)'Reading observed flows, substituted flows, and climate files...'
 	WRITE(FILLOG,*)'Reading observed flows, substituted flows, and climate files...'
@@ -269,7 +269,7 @@
         WRITE(*,*)'Reading Floodplain data...'
 	    WRITE(FILLOG,*)'Reading Floodplain data...'
   
-	    !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: COTA_AREA.FLP)
+	    !Subroutine for reading the file with a table containing a table of water-depth vs. area at each MiniBasin obtained by DEM preprocessing (File: cota_area.flp)
         CALL flood_readFP !Binary read of floodplain data
 	    WRITE(FILLOG,*)'FLOODPLAIN READ OK'
 	ENDIF
@@ -299,12 +299,12 @@
 
 !  End of subroutines that calculates Unit-catchments, rivers channels, and floodplains characteristics
 
-!  Openning of MGB Input files that are read during the simulation
+!  Openning of MGB input files that are read during the simulation
     WRITE(*,*)'Opening input meteorological files...'
     WRITE(FILLOG,*)'Opening input meteorological files...'
 	call MET_INPUT_FILES(1)
     
-!  End of openning MGB-IPH main Input and Output files that are read and written over the simulation
+!  End of openning MGB-IPH main input and output files that are read and written over the simulation
 
 !  Ask for verification
 !  Informs the model general setup
