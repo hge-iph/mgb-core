@@ -1,18 +1,26 @@
 # Portability
 
-Linux support remains a project requirement. This branch prepares an
-experimental Intel `ifx` Linux build path, but it is not a validated supported
-baseline until the Linux build and regression case have been run successfully.
+## Supported Build Environments
 
-## Current Position
+The current validated build environments are:
 
-- validated build path in this phase: Windows x64 + Intel `ifx`
-- experimental build path: Linux + Intel `ifx`
-- canonical build definition: CMake
-- regression harness is designed so the runtime layout is explicit and not tied to the repository root
+- Windows x64 with Intel `ifx`
+- Linux x64 with Intel `ifx`
 
-## Known Portability Constraints
+Both builds use CMake. Build commands are documented in `docs/build.md`.
 
-- Intel-specific build assumptions remain in the current codebase
-- direct-access unformatted binary I/O will need careful validation across toolchains
-- `gfortran` support remains out of scope for this bootstrap step
+## Runtime Layout
+
+The model uses lowercase runtime directories:
+
+- `input/`
+- `output/`
+- `hotstart/`
+
+The regression harness stages runtime files into a temporary working directory,
+so tests are not tied to the repository root.
+
+## Remaining Portability Constraints
+
+- Direct-access unformatted binary I/O must be revalidated before changing compiler families.
+- `gfortran` support remains a future target and is not currently validated.

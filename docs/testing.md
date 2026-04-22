@@ -8,16 +8,24 @@ This branch introduces the first regression case: `magdalena`.
 - Regression runner: `tests/regression/run_regression.py`
 - Regression comparator: `tests/regression/compare_regression.py`
 
-## Canonical Test Command
+## Windows
 
 ```powershell
 ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
 ```
 
-## Manual Regression Command
-
 ```powershell
 python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/windows/Release/mgb_model.exe --work-dir C:\mgbmagtest
+```
+
+## Linux
+
+```bash
+ctest --test-dir build/linux --output-on-failure -R regression_magdalena
+```
+
+```bash
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/linux/mgb_model --work-dir /tmp/mgbmagtest
 ```
 
 ## Runtime Staging Behavior

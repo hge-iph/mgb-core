@@ -1,15 +1,19 @@
 # Build
 
-The bootstrap build in this branch is currently validated for Windows x64 with Intel `ifx` in a oneAPI environment.
+This project uses CMake with Intel `ifx`. Validated build directories are kept
+under `build/` by operating system:
 
-## Prerequisites
+- Windows: `build/windows`
+- Linux: `build/linux`
 
-- Intel oneAPI installed and loaded with (cmd):
+## Windows
+
+Prerequisites:
+
+- Intel oneAPI installed and loaded:
   - `call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"`
 - CMake available in that environment
 - Visual Studio Build Tools available through the configured oneAPI environment
-
-## Canonical Local Command
 
 Run from the repository root:
 
@@ -19,28 +23,25 @@ cmake --build build/windows --config Release
 ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
 ```
 
-## Experimental Linux Command
+## Linux
 
-Linux support is prepared for Intel `ifx`, but remains experimental until the
-build and regression case are validated on Linux.
+Prerequisites:
 
-Load oneAPI first:
+- Intel oneAPI installed and loaded:
+  - `source /opt/intel/oneapi/setvars.sh`
+- CMake available in that environment
+
+Run from the repository root:
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
-```
-
-Then run from the repository root:
-
-```bash
 FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
 cmake --build build/linux
 ctest --test-dir build/linux --output-on-failure -R regression_magdalena
 ```
 
-## Current Build Scope
+## Build Definition
 
 - Canonical build definition: `CMakeLists.txt`
-- Current validated backend in this phase: Windows + Intel `ifx`
-- Experimental Linux backend: Intel `ifx`
-- Current explicit Intel flags are defined in `cmake/bootstrap_intel_fortran.cmake`
+- Intel Fortran flags: `cmake/bootstrap_intel_fortran.cmake`
+- Validated compiler: Intel `ifx`

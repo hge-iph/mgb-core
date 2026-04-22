@@ -9,7 +9,7 @@ Legacy Fortran hydrology and hydrodynamics model under bootstrap for collaborati
 - [Architecture Bootstrap](docs/architecture-bootstrap.md)
 - [Portability](docs/portability.md)
 
-## Canonical Local Flow
+## Windows
 
 Run from the repository root:
 
@@ -17,4 +17,15 @@ Run from the repository root:
 cmake -S . -B build/windows
 cmake --build build/windows --config Release
 ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
+```
+
+## Linux
+
+Run from the repository root:
+
+```bash
+source /opt/intel/oneapi/setvars.sh
+FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
+cmake --build build/linux
+ctest --test-dir build/linux --output-on-failure -R regression_magdalena
 ```
