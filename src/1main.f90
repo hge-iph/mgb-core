@@ -194,15 +194,17 @@
 
 	IMPLICIT NONE !States that non declared variables cannot be used
 	INTEGER JULDAY !Variable used for day of the year calculation on a Julian calendar
-	REAL(4) TIME_SECONDS !Variable to calculate the processing time
-    REAL(4) TIME_START
-    INTEGER ISEED
+	REAL(8) TIME_SECONDS !Variable to calculate the processing time
+    INTEGER clock_start
+    INTEGER clock_end
+    INTEGER clock_rate
+    INTEGER clock_max
+    INTEGER clock_ticks
     CHARACTER(8) NONINTERACTIVE_ENV
     LOGICAL NONINTERACTIVE
 !  Statements used to calculate the processing time
 
-	CALL TEMPO(0,ISEED)  ! INICIA CONTAGEM DO TEMPO
-	CALL CPU_TIME(TIME_START)
+    CALL SYSTEM_CLOCK(COUNT=clock_start, COUNT_RATE=clock_rate, COUNT_MAX=clock_max)
     NONINTERACTIVE = .FALSE.
     NONINTERACTIVE_ENV = ''
     CALL GET_ENVIRONMENT_VARIABLE('MGB_NONINTERACTIVE',NONINTERACTIVE_ENV)
@@ -377,7 +379,6 @@
 
 !  After running the model, finish the time count, close all files, and clean all variables
 
-	CALL TEMPO(1,0)  !Finish time count
     call MET_INPUT_FILES(0)
 
 	CALL ALLOCA_VARS(1) !Cleans main variables
@@ -389,8 +390,13 @@
 	WRITE(*,*)'MGB MODEL ENDED SUCCESSFULLY'
 	WRITE(FILLOG,*)'MGB MODEL ENDED SUCCESSFULLY'
 	print *, char(7)
-	CALL CPU_TIME(TIME_SECONDS)
-	TIME_SECONDS = TIME_SECONDS - TIME_START
+    CALL SYSTEM_CLOCK(COUNT=clock_end)
+    IF (clock_end >= clock_start) THEN
+        clock_ticks = clock_end - clock_start
+    ELSE
+        clock_ticks = (clock_max - clock_start + 1) + clock_end
+    ENDIF
+    TIME_SECONDS = DBLE(clock_ticks) / DBLE(clock_rate)
 	WRITE(*,*)'TOTAL TIME:',TIME_SECONDS/60.,'MINUTES'
 	WRITE(FILLOG,*)'TOTAL TIME:',TIME_SECONDS/60.,'MINUTES'
 
