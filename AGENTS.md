@@ -1,0 +1,47 @@
+# Repository Guidelines
+
+## Mission
+
+This repository contains a legacy Fortran hydrological model being prepared for maintainable collaborative development. Modernization should improve structure, portability, documentation, and regression safety without casually changing scientific behavior.
+
+## Current Development Scope
+
+Focus first on infrastructure that makes later refactors safer:
+
+- Preserve and improve the CMake-based build.
+- Expand regression coverage before risky restructuring.
+- Prepare Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
+- Add Sphinx user documentation and in-repo developer documentation.
+- Clean unused variables, stale comments, and confusing code incrementally.
+
+Do not claim support for platforms or compilers that have not been validated. The current documented baseline remains Windows x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
+
+## Change Boundaries
+
+- Keep PRs focused and reviewable. Avoid large mixed changes.
+- Do not combine algorithm changes with formatting, cleanup, or module restructuring.
+- Preserve input/output file formats and model outputs unless the PR explicitly documents and tests the change.
+- Separate IO restructuring from hydrology and routing logic changes.
+- Prefer small behavior-preserving steps that can be checked by regression tests.
+
+## Fortran Modernization
+
+- Prefer modules with clear responsibility and explicit interfaces.
+- Reduce global-state coupling gradually; avoid broad rewrites just to make code look modern.
+- Keep comments useful: explain intent, assumptions, units, file formats, and non-obvious hydrological behavior. Remove comments that merely repeat the code.
+- Follow existing naming and layout conventions unless a PR is explicitly improving them in a narrow area.
+
+## Git Contribution Flow
+
+- `main` is the stable branch.
+- Use feature branches for development work.
+- Pull requests are preferred for all changes, especially source, build, tests, docs structure, and regression data.
+- Small documentation or metadata fixes may be committed directly by maintainers.
+- PR descriptions should explain behavior impact and list build/test evidence.
+
+## Validation
+
+- For source or build changes, run the canonical CMake build and `regression_magdalena` when the platform supports it.
+- For portability work, document the exact OS, compiler, CMake command, and any known failing assumptions.
+- For refactors, provide regression evidence showing unchanged outputs or explicitly document output changes.
+- For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/build.md`, `docs/testing.md`, and `docs/portability.md`.
