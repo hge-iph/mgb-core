@@ -184,7 +184,6 @@
 	DO K=1,NUMHIDG
 	    READ(FILFIX,*)IHIDG(K)!,ARQHID(K) ! ID codes of catchments where discharge time series will be saved. 
 	    !WRITE(*,*)IHIDG(K)!,ARQHID(K) !ENABLE TO SHOW IN THE SCREEN
-	    ! pause
 	ENDDO
 	!WRITE(*,*) (IHIDG(K),K=1,NUMHIDG)
 	!READ(*,*)

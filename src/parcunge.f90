@@ -115,7 +115,7 @@
 			IF(NTRECH.GT.NUMUSK)THEN 
                 write(*,*),IC
 				WRITE(*,*) 'ntrech number greater then', NUMUSK,' in parcunge subroutine!!!'
-				PAUSE 'STOP - Anything is wrong '
+				ERROR STOP 'ntrech number greater than NUMUSK in parcunge'
 			ENDIF
 			DT(IC)=DTCAL
 			NSUBT(IC)=NTRECH

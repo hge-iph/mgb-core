@@ -7,10 +7,10 @@
     ! Read date in format "YYYY-MM-DD HH:mm"
     read(date_full,'(I4,1X,I2,1X,I2,1X,I2,1X,I2)') y,mm,d,h,m
     
-    if (h > 23) pause 'Hour cannot be larger than 23.'
-    if (h < 0) pause 'Hour cannot be negative.'
-    if (mm < 1 .OR. d < 1 .OR. y < 1) pause 'Calendar date cannot be negative.'
-    if (mm > 12 .OR. d > 31) pause 'Calendar date is not allowed.'
+    if (h > 23) error stop 'Hour cannot be larger than 23.'
+    if (h < 0) error stop 'Hour cannot be negative.'
+    if (mm < 1 .OR. d < 1 .OR. y < 1) error stop 'Calendar date cannot be negative.'
+    if (mm > 12 .OR. d > 31) error stop 'Calendar date is not allowed.'
     
     end subroutine
     

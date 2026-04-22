@@ -84,9 +84,6 @@ close(159)
 !! Desligando a SIMULACAO DOS RESERVATORIOS
 !Ind_Reserv=0
 !CELJUS2=CELJUS
-
-!pause
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Mudando a curva cota-volume para as minibacias dos lagos (lagos_minibacia)
 
@@ -114,8 +111,6 @@ do while (lagos_minibacia(j)>0)
     j=j+1
 
 enddo
-!pause
-
 Qdefl=-1 ! Defluencia inicial é noData
  
 if (Substitui_res>0)then

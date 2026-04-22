@@ -81,7 +81,7 @@
     USE VARS_MAIN
     USE VARS_INERC
     IMPLICIT NONE
-    INTEGER aux,K,COUNTER
+    INTEGER aux,K,COUNTER,io_status
     INTEGER, PARAMETER:: dy_floodplain=1  !Increment in floodplain is assumed to be 1m         
     INTEGER, PARAMETER:: points_floodplain=100 !Standard number of elevation points in floodplain
     
@@ -124,10 +124,11 @@
     
     !Número da face / Minibacia 1 / Minibacia 2 / Ymin da fronteira (m) / DX entre as minibacias (m):
     aux=0
-    DO WHILE(.NOT.EOF(FILFACE))
+    DO
+        READ(FILFACE,*,IOSTAT=io_status) nFACECAT1(aux+1),nFACECAT2(aux+1),nFACEDX(aux+1)
+        IF (io_status .NE. 0) EXIT
         aux=aux+1
-	    READ(FILFACE,*) nFACECAT1(aux),nFACECAT2(aux),nFACEDX(aux)
-	ENDDO
+    ENDDO
     CLOSE(FILFACE)
     nFACE=aux
     endif      

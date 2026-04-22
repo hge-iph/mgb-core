@@ -84,7 +84,7 @@
     USE VARS_MAIN
     USE VARS_INERC
     IMPLICIT NONE
-    integer aux
+    integer aux, io_status
     
        
       
@@ -94,11 +94,11 @@
     ! Reading data:
     READ(FILCOTAREA,*)
     nPfl=0
-    DO WHILE(.NOT.EOF(FILCOTAREA))
-	    READ(FILCOTAREA,*) IC,ZFUNDOFL(IC),ZFL(NPFL(IC)+1,IC),AFL(NPFL(IC)+1,IC)
-        
+    DO
+        READ(FILCOTAREA,*,IOSTAT=io_status) IC,ZFUNDOFL(IC),ZFL(NPFL(IC)+1,IC),AFL(NPFL(IC)+1,IC)
+        IF (io_status .NE. 0) EXIT
         NPFL(iC)=NPFL(IC)+1
-	ENDDO
+    ENDDO
     CLOSE(FILCOTAREA)
    
     !ABRE ARQUIVO DE FACES
@@ -107,10 +107,10 @@
     
     !Número da face / Minibacia 1 / Minibacia 2 / Ymin da fronteira (m) / DX entre as minibacias (m):
     aux=0
-    DO WHILE(.NOT.EOF(FILFACE))
-        aux=aux+1
-	    READ(FILFACE,*) aux,nFACECAT1(aux),nFACEY1(aux),nFACECAT2(aux),nFACEY2(aux),nFACEDX(aux)
-	ENDDO
+    DO
+        READ(FILFACE,*,IOSTAT=io_status) aux,nFACECAT1(aux),nFACEY1(aux),nFACECAT2(aux),nFACEY2(aux),nFACEDX(aux)
+        IF (io_status .NE. 0) EXIT
+    ENDDO
     CLOSE(FILFACE)
     nFACE=aux
     endif
