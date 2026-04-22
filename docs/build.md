@@ -19,8 +19,28 @@ cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
 ```
 
+## Experimental Linux Command
+
+Linux support is prepared for Intel `ifx`, but remains experimental until the
+build and regression case are validated on Linux.
+
+Load oneAPI first:
+
+```bash
+source /opt/intel/oneapi/setvars.sh
+```
+
+Then run from the repository root:
+
+```bash
+FC=ifx cmake -S . -B build-linux -DCMAKE_BUILD_TYPE=Release
+cmake --build build-linux
+ctest --test-dir build-linux --output-on-failure -R regression_magdalena
+```
+
 ## Current Build Scope
 
 - Canonical build definition: `CMakeLists.txt`
-- Current supported backend in this phase: Windows + Intel `ifx`
+- Current validated backend in this phase: Windows + Intel `ifx`
+- Experimental Linux backend: Intel `ifx`
 - Current explicit Intel flags are defined in `cmake/bootstrap_intel_fortran.cmake`
