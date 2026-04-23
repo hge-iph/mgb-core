@@ -6,6 +6,8 @@ include(CTest)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(bootstrap_intel_fortran)
 
+option(ENABLE_FORTRAN_DIAGNOSTICS "Enable opt-in Intel Fortran diagnostics" OFF)
+
 if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "IntelLLVM|Intel")
     message(FATAL_ERROR "The bootstrap build currently supports Intel Fortran only. Current compiler: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
@@ -80,5 +82,4 @@ if(BUILD_TESTING)
                 --exe $<TARGET_FILE:mgb_model>
     )
 endif()
-
 
