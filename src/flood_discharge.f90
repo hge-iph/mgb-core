@@ -88,7 +88,6 @@
     use omp_lib
     
 	implicit none
-    INTEGER K,KHID 					!indexes and counters
 	!-------------------------------------------------------------------------------------
     
 	!Start catchment loop

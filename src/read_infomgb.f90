@@ -83,7 +83,7 @@
     
     !Variables for mgb_forcing
     INTEGER TS_TEMP, TS_RAD, TS_RH, TS_WIND, TS_PRES
-    INTEGER N_CLI_STATIONS, OPT_MONTH_RAD
+    INTEGER OPT_MONTH_RAD
     
     !Variables for mgb_routing 
     INTEGER OPT_ROUTING, N_THREADS  

@@ -193,7 +193,6 @@
 !  Variables declaration
 
 	IMPLICIT NONE !States that non declared variables cannot be used
-	INTEGER JULDAY !Variable used for day of the year calculation on a Julian calendar
 	REAL(8) TIME_SECONDS !Variable to calculate the processing time
     INTEGER clock_start
     INTEGER clock_end

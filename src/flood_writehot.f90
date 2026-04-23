@@ -72,7 +72,6 @@
     integer i,nStatVar,j, i_julian
     real(4),allocatable:: WB_stateVec(:)	 
     real*8,allocatable:: h_stateVec(:)	 
-	character(8) strIT 
     character(len=8) :: hotFilename
     
 	nStatVar=(nC*nU)+(6*nC)+(nC*nU)+(sum(NSUBT)+nC)+nC !

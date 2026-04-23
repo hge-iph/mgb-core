@@ -86,9 +86,7 @@
     use IFPORT
     
     implicit none
-    REAL(8) elapsed_time 
-    
-    
+
     !-------------------------------------------------------------------------------------
 	!Initializes aggregating time step loop variable
     tflood=0.0
