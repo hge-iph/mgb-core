@@ -111,8 +111,6 @@
 	USE VARS_MAIN
 	USE VARS_INERC	
 	IMPLICIT NONE
-	INTEGER K,KHID 					!indexes and counters
-	INTEGER KC,JB,JC,KB,JCB,MWP 	!... same
     
     real time_increment 
     real stats_max_q, stats_perc_comp ! Current statistics

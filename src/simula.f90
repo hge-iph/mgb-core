@@ -105,19 +105,7 @@
 	USE VARS_MAIN
 	USE VARS_INERC
 	IMPLICIT NONE
-	INTEGER KB,K					!counters
-	CHARACTER*10 ALFAQ(NC)			!auxiliar string
-	REAL,ALLOCATABLE:: QSOR(:) 		!observed discharges (without "missing data") for sorting and exceedance probaility curve
-	CHARACTER (10):: strIHIDG
-	CHARACTER (50):: strARQUIVO	
-	INTEGER MES,KSOR,IPOS90,IPOS95 				  !indexes and counter
-	INTEGER CONTAMES(12)						  !counts number of existent data for mean calculation
-	INTEGER IAUX,IPOS,IPERMA
-	
-    INTEGER ITini
-    INTEGER:: i,j
-	REAL std,Qmean
-	     
+
     ! Call routine to open (1) output files on disk 
     call OUTPUT_FILES(1)
     
