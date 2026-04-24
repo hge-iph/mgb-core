@@ -137,7 +137,7 @@
     !	*Module	VARS_CALIB  !module containing the variables used in the model calibration
     !	*Module	VARS_INERC  !module containing the variables of the model Local Inertial flow routing model
     !	*Function	TEMPO(0,ISEED)  ! INICIA CONTAGEM DO TEMPO
-    !	*Subroutine	LEFIX 	!Suboutine that reads the model main input files with the running main information
+    !	*Subroutine	READ_INFOMGB !Subroutine that reads the model main input files with the running main information
     !	*Subroutine	ALLOCA_VARS(0) !Allocate the model main variables
     !	*Subroutine	ALLOCA_VARSINERC(0) !Allocate the variables of the model Local Inertial flow routing model
     !	*Subroutine	LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: albiaf.fix)
@@ -193,7 +193,6 @@
 !  Variables declaration
 
 	IMPLICIT NONE !States that non declared variables cannot be used
-	INTEGER JULDAY !Variable used for day of the year calculation on a Julian calendar
 	REAL(8) TIME_SECONDS !Variable to calculate the processing time
     INTEGER clock_start
     INTEGER clock_end
@@ -250,7 +249,7 @@
 	CALL READ_CLIM_AVG !Subroutine for reading climate file in binary format (South America Model)
     WRITE(FILLOG,*)'CLIMED OK'
 
-    IF(NUMSUBST>0)THEN !If it was identified in the LEFIX routine that streamflow substitution is being done
+    IF(NUMSUBST>0)THEN !If the input setup identified that streamflow substitution is being done
 		CALL LESUBST !Then calls the subroutine for the reading the file with to be substituded streamflow data (File: QSUBST.QSB)
 	ENDIF
 	WRITE(FILLOG,*)'QSUBS OK'

@@ -85,8 +85,7 @@ use VARS_INERC
 use VARS_MAIN
 implicit none
 
-integer ii
-real*8 FINT,Vol2_ini,ALFA, BETA
+real*8 FINT,ALFA, BETA
 !-------------------------------------------------------------------------------------
 dtflood0=DBLE(DTP)
 Q2viz=0.0

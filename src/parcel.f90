@@ -98,7 +98,6 @@
 	USE VARS_INERC
 	IMPLICIT NONE
 	INTEGER IW
-	INTEGER AUXRG
 
 	! Calculates Time of Concentration (i.e. time of travel) for Catchment
 	DO IW=1,NC

@@ -83,6 +83,9 @@
     !Parameters and variables
     USE VARS_MAIN
     USE VARS_INERC
+
+    INTEGER J
+    INTEGER K
     
     MINIMONT=0 
  

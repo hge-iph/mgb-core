@@ -88,7 +88,7 @@
 	IMPLICIT NONE
 	REAL DX		                                                       !Space-step
 	REAL XXX,AK		                                                   !X E K: Muskingum-Cunge parameters
-	REAL QMX1,QMX2,QJX1,QJX2,QAUX,DTCAL,DEN,VT 	                       !Auxiliary variables
+	REAL QMX1,QMX2,QJX1,QJX2,DTCAL,DEN,VT 	                       !Auxiliary variables
 	INTEGER JUS                                                        !Auxiliary variables
 	INTEGER NTRECH,NTC                                                 !Sub-Rivers number / Number of intervals in a day
 	REAL C1,C2,C3 	                                                   !Muskingum-Cunge coefficients
