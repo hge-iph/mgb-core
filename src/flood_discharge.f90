@@ -142,10 +142,7 @@
                 !River width
                 bflow=DBLE(BRIO(iC)) + DBLE(BRIO(iCJus))
                 bflow=bflow/2.
-            else
-				!Water depth is computed in the center of river reach.				
-				!dxflow=DBLE(SRIO(IC)*1000.) + DBLE(dxart*1000.)
-                !dxflow=dxflow/2.                
+            else     
                 
                 !This modification is due to the (almost) even lengths resulting from the Reach-Length segmentation # VAS
                 !Considering the upstream length
