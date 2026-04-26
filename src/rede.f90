@@ -55,7 +55,7 @@
     !
     ! Usage:
     !
-    ! *CALL MUSK(QMX1,QMX2,QJX1,QJX2,NTRECH,NTC,C1,C2,C3)
+    ! *CALL MUSK(QJX1,QJX2,NTRECH,NTC,C1,C2,C3)
     !
     ! uses modules, functions, and subroutines
     !
@@ -199,7 +199,7 @@
 			NTRECH=NSUBT(IC)
 			NTC=DTP/DT(IC)			                !NTC=3600.*24./DT(IC) 	
 		
-			CALL MUSK(QMX1,QMX2,QJX1,QJX2,NTRECH,NTC,C1,C2,C3)
+			CALL MUSK(QJX1,QJX2,NTRECH,NTC,C1,C2,C3)
 			QJ2(IC)=QJX2
 
 	
