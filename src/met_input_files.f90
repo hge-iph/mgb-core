@@ -82,7 +82,7 @@
         if (flag_IN_WIND==1)   OPEN(FILWIND,FILE=INPUT_DIRECTORY // 'met_wind.pbi', &
                                     STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')
         
-        if (flag_IN_PRES==1)   OPEN(FILPRES,FILE=INPUT_DIRECTORY // 'met_wind.pbi', &
+        if (flag_IN_PRES==1)   OPEN(FILPRES,FILE=INPUT_DIRECTORY // 'met_pres.pbi', &
                                     STATUS='old',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT') 
 
 	else
