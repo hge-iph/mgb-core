@@ -91,10 +91,7 @@
 	!Minibasins and muskingum-cunge routing
 	INTEGER,PARAMETER:: NUP=12 !MAXIMUM NUMBER OF HRUs
 	INTEGER,PARAMETER:: NBP=505 !@ (DCB 2013_01_25 NBP=300) !MAXIMUM NUMBER OF SUB-BASINS
-	INTEGER,PARAMETER:: NCLIP=501 !@ (DCB 2013_01_25 NCLIP=300) !Maximum number of climatological stations
 	INTEGER,PARAMETER:: NUMUSK=150 !Maximum number of stretchs for MUSKINGUM CUNGE routing
-	INTEGER,PARAMETER:: NFP=3 !Number of objective functions for each gauge
-	INTEGER,PARAMETER:: NTMUP=20 !Number of points in the table of non-linear muskingun Cunge
 	
 	!Numbers
 	INTEGER NC,NU !minibasins, uses
@@ -104,14 +101,10 @@
 	INTEGER NB !number of sub-basins
 
 	INTEGER NUMSUBST,ISUBST(NBP) !Number of minibasins where streamflow calculated will be replaced by the information read from a file
-	INTEGER,PARAMETER:: NMAXHID=500 !Maximum number of points taht one wants hydrographs output to be saved
 	INTEGER :: nSIN  ! MUDEI ! numero de reservatorios, SIN=162 + 3 postos subs da Amazonia
 
 	!Counters
 	INTEGER IT !Time Interval
-
-	!Numbers of files daily climatological data
-	INTEGER,ALLOCATABLE:: NARQ(:)
 
 	!Variables with numbers of files
 	!input Files
@@ -119,9 +112,6 @@
 	INTEGER,PARAMETER:: FILVAR=2 !File of calibrated parameters
 	INTEGER,PARAMETER:: FILUSO=3 !File of parameters associated with the HRU's
 	INTEGER,PARAMETER:: FILHIG=4 !File of minibasins informations	
-	INTEGER,PARAMETER:: FILMED=6 !File of monthly mean climatological data
-	INTEGER,PARAMETER:: FILOBS=7 !File of observed streamflows
-	INTEGER,PARAMETER:: FILLIM=8 !File of parameters limits
     INTEGER,PARAMETER:: FILCLIREG=9 !File of climate regions
 	INTEGER,PARAMETER:: FILSUBS=10 !Hydrographs of file read to substitute the calculated ones
     
@@ -132,11 +122,6 @@
     INTEGER,PARAMETER:: FILHOTSTART_Inert=18 !Binary file of state variables
 	    
 	!output Files
-	INTEGER,PARAMETER:: FILHID=21 !Hydrograph file of the sub-basins
-	INTEGER,PARAMETER:: FILPRP=22 !Hydrograph file with proportions
-	INTEGER,PARAMETER:: FILAJU=23 !Model Perfomance file
-	INTEGER,PARAMETER:: FILBAC=24 !output file of averaged data to the basins
-	INTEGER,PARAMETER:: FILSOL=25 !Soil file (one HRU)
     INTEGER,PARAMETER:: FILLOG=26 !File run log
 
     integer,PARAMETER:: FILCOTAREA=41 !File of reservoir data for simulation
@@ -183,12 +168,8 @@
     INTEGER flag_OUT_VBAS, flag_OUT_VINT, flag_OUT_VSUP, flag_OUT_VINTERC, flag_OUT_FLAREA
     INTEGER flag_OUT_DBAS, flag_OUT_DINT, flag_OUT_DSUP
     
-!	!Calibration
-	REAL,ALLOCATABLE:: R2(:),ERRV(:),R2L(:) !coef. nash, error in volumes, coef nash logarithms
-	REAL VFO(NFP) !Vector with values of the objective functions
-
 	!Variables with dimensions used
-    REAL(4),ALLOCATABLE:: QTUDO(:),HTUDO(:),YTUDO(:),QVIZTUDO(:) !Minibasins streamflow at all locations in all time steps #Results are written for each timestep    
+    REAL(4),ALLOCATABLE:: QTUDO(:),YTUDO(:) !Minibasins streamflow at all locations in all time steps #Results are written for each timestep    
 	REAL(4),ALLOCATABLE:: TWSTUDO(:),ALAGTUDO(:),HANDTUDO(:)                 !! Sly + Vinicius
     
 	REAL,ALLOCATABLE:: QLIDO(:,:) !Streamflow at some point to replace the calculated values
@@ -197,9 +178,6 @@
 	!Mean vales at each Sub-basin
 	REAL,ALLOCATABLE:: DSUM(:,:),DINM(:,:),DBAM(:,:)
 	REAL,ALLOCATABLE:: SIM(:,:),EM(:,:),WBM(:,:),PM2(:,:)
-	
-	!Streamflow in accordance with the origin for each one of the time steps
-	REAL,ALLOCATABLE:: QB(:),QBI(:),QBIS(:)
 	
 	INTEGER IDIA,IMES,IANO,IDINI,IHORA !Date and day of the Julian 
 	REAL,ALLOCATABLE:: QESP(:)!Especific baseflow (M3/S/KM2)
@@ -211,28 +189,13 @@
 	INTEGER,ALLOCATABLE:: NSUBT(:)
 	REAL,ALLOCATABLE:: DT(:)
 	REAL,ALLOCATABLE:: CEL(:),TIND(:)!River celerity and concentration time of the minibasin
-	
-	!File names of daily climatological data
-	CHARACTER (20) ARQCLI(NCLIP)
-	
-	!File names of monthly climatological data
-	CHARACTER (20) ACLIMED
-	
-	!File name of the streamflows observed data
-	CHARACTER (20) ARQOBS
-	
-	!Name of the file that have the streamflows to override the flows calculated in some minibasins
-!	CHARACTER (20) ARQSUBST
-	
-	!File name to record the output hydrographs
-	CHARACTER (20) ARQHID(NMAXHID)
-	
+		
 	!Parameters related to the soil
 	REAL,ALLOCATABLE:: WM(:,:),B(:,:),KINS(:,:),KBAS(:,:)
-	REAL,ALLOCATABLE:: WMOLD(:,:),BOLD(:,:),KBOLD(:,:),KIOLD(:,:)
+
 	REAL,ALLOCATABLE:: PLAM(:,:),CAP(:,:),WC(:,:),KINF(:,:)
 	REAL,ALLOCATABLE:: CI(:),CB(:),CS(:)!Propagation parameters of the minibasin
-	REAL,ALLOCATABLE:: CIOLD(:),CSOLD(:)!Copy of the parameters of propagation in the minibasin
+
 	CHARACTER (10) AUSO(NUP)!Names of the HRUs
 	
 	!Parameters related to minibasins
@@ -248,13 +211,10 @@
 	REAL,ALLOCATABLE:: ACEL(:),ACUR(:),SRIO(:),DECL(:)
 	!Proportion of HRUs in the minibasins
 	REAL,ALLOCATABLE:: PUSO(:,:)
-	INTEGER,ALLOCATABLE:: ICBOM(:)!Number of climatological stations in the cell
 	REAL,ALLOCATABLE:: QREF(:) !Reference streamflow
 	REAL QRX !Reference streamflow (auxiliary variable)
-	! temp., humidity, wind, insolation, pressure, daily at each station
-	REAL,ALLOCATABLE:: TD(:,:),UD(:,:),VD(:,:),SOLD(:,:),PAD(:,:) 
-	REAL,ALLOCATABLE:: PMB(:)!By basin average rainfall
-	INTEGER,ALLOCATABLE:: KPM(:) !Auxiliar variable
+
+
 	! temp., humidity, wind, insolation, pressure, monthly values
 	REAL(4),ALLOCATABLE:: TAMM(:,:),URMM(:,:),VVMM(:,:),PAMM(:,:)
 	REAL(4),ALLOCATABLE:: SOLMM(:,:)
@@ -269,8 +229,6 @@
 	!More variables
 	REAL,ALLOCATABLE:: SI(:,:) !Amount of water intercepted in the surface
 	REAL XLADO,DH,ARX !Length of the minibasin side, difference in altitude, area (auxiliary variable)
-	REAL,ALLOCATABLE:: QRG(:,:)	!Stores hydrographs where you want to record them
-	REAL,ALLOCATABLE:: QRB(:,:)	!Stores hydrographs at the outlets
 	REAL,ALLOCATABLE:: QM1(:),QJ1(:),QM2(:),QJ2(:) !Streamflows upstream and downstream in the cell i at times 1 and 2
 	REAL,ALLOCATABLE:: QCEL1(:),QCEL2(:) !Streamflows originated in the cell at time t and t + 1 in cell i
 	REAL,ALLOCATABLE:: PMB2(:),PMI2(:),PMS2(:),PJB2(:),PJI2(:),PJS2(:) !Proportions of origin of the flows in   the river
@@ -285,15 +243,12 @@
 	REAL(4),ALLOCATABLE:: P(:) !Rainfall at the interval in the cell         !! Sly + Viniciu    
 	REAL(4),ALLOCATABLE:: TA(:),UR(:),VV(:),SOL(:),PA(:)	!Temperature, humidity, wind, insolation, pressure    
     
-	!REAL,ALLOCATABLE:: UR(:),VV(:),SOL(:),PA(:)	!Temperature, humidity, wind, insolation, pressure
 	INTEGER HORAINI !Time that the simulation starts
 	INTEGER JDIA !Julian day
-	CHARACTER (40) TITULO !Variable alpha  to read titles in the input files
 	REAL DTP !Time interval of main calculation (in seconds given in the input file)
-	REAL PEVAPO !Parameter that multiplies the evaporation
 	!Variables related to radiation
 	REAL GLAT !Latitude in decimal degrees (- south)
-	REAL SOLX,T1,TAR2 !Insolation (hours of sun) and temperature (°c)
+	REAL SOLX,T1 !Insolation (hours of sun) and temperature (°c)
 	REAL ALBX !ALBEDO
 	REAL RLX !Resulting net radiation  (MJ/m2/dia)
 	REAL RDIA !Julian day (real)
@@ -343,44 +298,15 @@
 
 	INTEGER IB,IU !Counter of Sub-basins and HRUs
 	
-	REAL,ALLOCATABLE:: PPREV(:,:)
-	REAL,ALLOCATABLE:: QPREV(:,:)
-	REAL,ALLOCATABLE:: WPREV(:,:) 	!Amount of water in the soil at the beginning of the forecasting cycle
-	REAL,ALLOCATABLE:: VBASPREV(:),VINTPREV(:),VSUPPREV(:) !Minibasin volume of water at the beginning of the forecasting loop
-	REAL,ALLOCATABLE:: TAPREV(:) !Temperature on the start of the loop of forecasting
-	REAL,ALLOCATABLE:: QM2PREV(:),QJ2PREV(:),QJ1PREV(:) !Streamflow in the minibasins at the beginning of the forecasting loop
-	REAL,ALLOCATABLE:: SIPREV(:,:) !interception storage (forecast loop)
-	INTEGER ITCHUVA
-
 	REAL,ALLOCATABLE:: QCONTORM(:,:),QCONTORJ(:,:) !Flow of boundary condition of MUSKINGUM CUNGE
 	REAL,ALLOCATABLE:: QRIOINI(:,:) !Initial condition for MUSKINGUM CUNGE in the river stretch
 
-	REAL,ALLOCATABLE:: QCONTORMPREV(:,:),QCONTORJPREV(:,:) !Flow of boundary condition for MUSKINGUM CUNGE at the beginning of the forecasting loop
-	REAL,ALLOCATABLE:: QRIOINIPREV(:,:) !Initial condition for MUSKINGUM CUNGE in the river stretch at the beginning of the forecasting loop
-
-	REAL,ALLOCATABLE:: QCEL1PREV(:),QCEL2PREV(:) !Sum of flows generated in the minibasins
-	REAL,ALLOCATABLE:: PMB2PREV(:),PMI2PREV(:),PMS2PREV(:) !Proportions of origin of the flows in the river
-	REAL,ALLOCATABLE:: PJB2PREV(:),PJI2PREV(:),PJS2PREV(:) !Proportions of origin of the flows in the river
-
-
-	REAL,ALLOCATABLE:: BPLAN(:) !Width of the floodplain (includes own river)
-	REAL,ALLOCATABLE:: HCALHA1(:),HCALHA2(:) !Depht that starts and that the floodplain is totally flooded
-	REAL,ALLOCATABLE:: QMUP(:,:),AMUP(:,:),BMUP(:,:),CMUP(:,:) !Table muskingum non-linear
-	INTEGER,ALLOCATABLE:: ICODMUSK(:) !Code that indicates whether linear (0) or nonlinear (1)
-
 	integer,allocatable:: OD(:) !RP
-	real,allocatable:: CalibFLAG(:,:)
-	real,allocatable:: CBOLD(:),PLAMOLD(:,:),CAPOLD(:,:),WCOLD(:,:)
+
 	integer,allocatable::	sbtFLAG(:)	! RP
 
 	! Variables to calculate indicators of maximum evapotranspiration:
 	real,allocatable:: E0agua(:),E0TOPO(:),E0SUP(:)	
-	INTEGER,ALLOCATABLE:: DIAH(:),MESH(:),ANOH(:),HORAH(:) !Date and time corresponding to the time interval counter
-
-    !Forecasting module extra variables
-    !FMF 21/06/2015
-    INTEGER,ALLOCATABLE:: SUBJUS(:),ATIVABACIA(:) !Sub-basin downstream from the actual one, flag to activate sub-basin
-    INTEGER ISUBSTAUX(NBP) !Number of cells where Q calculated must be substituted by the ones reads from files
   
 	    
     REAL(4),ALLOCATABLE:: QITUDO(:) !Incremental discharges only everywhere #Vinicius Siqueira
@@ -405,7 +331,6 @@
 	
 	!MANNING !FMF 09/09/2015 
 	REAL,ALLOCATABLE:: RUGMAN(:) !Manning coefficient
-    REAL,ALLOCATABLE:: ETPOTENCIAL(:) !ETPOTENCIAL
     
     REAL ACELX
     

@@ -15,7 +15,6 @@ use VARS_INERC
 
 implicit none
 
-!integer,parameter :: nSIN=162       ! numero de reservatorios
 integer :: nlagos, nlagos_tudo      ! numero de minibacias do lago
 integer :: lixo1, i, j, k, iTini    ! variavel auxiliar para leitura
 integer :: flag_Simu, flag_lago     ! flags se ocorre simulação e se o lago é desconsiderado no flood_tab
@@ -24,8 +23,7 @@ integer :: mm,dd,aa, nT2, julday    ! variaveis de tempo
 integer, dimension(nC) :: lagos_minibacia ! minibacias que fazem parte dos lagos dos reservatorios
 real    :: VOLINCR                  ! volume incremental
 character(len=15)   :: lixo_char    ! leitura do nome dos reservatorios
-! Qdefl
-! Ind_Reserv
+
 
 allocate(Qdefl(nT,nSIN))
 
@@ -81,9 +79,6 @@ do i=1,nSIN
 enddo
 close(159)
 
-!! Desligando a SIMULACAO DOS RESERVATORIOS
-!Ind_Reserv=0
-!CELJUS2=CELJUS
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Mudando a curva cota-volume para as minibacias dos lagos (lagos_minibacia)
 
