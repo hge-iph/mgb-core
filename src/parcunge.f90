@@ -88,9 +88,7 @@
 	REAL DX		
 	REAL DECLIV,ALONG,CLX 	
 
-	!RUGMAN=0.030 !roughness can be set to 0,03 in all rivers !FMF 09/09/2015 
 
-	ICODMUSK=0 
 	DO IC=1,NC
 		IF(OD(IC)>1)THEN ! Unit-Catchmento order
 			COEF=1.67*DECL(IC)**0.3/RUGMAN(IC)**0.6 !FMF 09/09/2015 

@@ -76,7 +76,7 @@
     ! End of header
     !---------------------------------------------------------------------------------
     
-	SUBROUTINE MUSK(QMX1,QMX2,QJX1,QJX2,NTRECH,NTC,C1,C2,C3)
+	SUBROUTINE MUSK(QJX1,QJX2,NTRECH,NTC,C1,C2,C3)
 
     ! Variables and Parameters
 	USE VARS_MAIN
@@ -86,7 +86,7 @@
 	!Muskingum-Cunge Coefficients 
 	REAL C1,C2,C3
 	!Auxiliary variables
-	REAL QMX1,QMX2,QJX1,QJX2
+	REAL QJX1,QJX2
 	!Sub-Rivers number / Number of intervals in a day
 	INTEGER NTRECH,NTC
 	
