@@ -109,18 +109,6 @@
 		TIND(IW)=3600.*((0.868*XLADO**3.0)/DH)**0.385	!Concentration Time by Kirpich eq. (ni seconds)
 	ENDDO
            
-	!--------------------------------------------------------------------------------------- !PR 15SET14
-	! Code for river width and depth based on Geomorphological relations assigned in REGION subroutine	
-	if(1==0)then
-	    ! Calculates width, depth and reference discharge for MC-Method
-	    DO IC=1,NC
-	    	ARX=ACUR(IC)  	! Cumulative Drainage Area
-	    	CALL REGION		! Subroutine calculates river width and full bank depth
-	    	BRIO(IC)=BRX	 ! store river width
-	    	HRIO(IC)=HRX !	 ! store full bank depth
-	    	QREF(IC)=QRX 	 ! store reference discharge for Muskingum-Cunge calcs.
-	    END DO	
-	endif
 	
 	RETURN
 	END
