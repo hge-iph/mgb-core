@@ -232,7 +232,6 @@
 	CALL ALLOCA_VARS(0) !Allocate the model main variables
 	CALL ALLOCA_VARSINERC(0) !Allocate the variables of the model Local Inertial flow routing model
 
-	!IDINI=JULDAY(IMES,IDIA,IANO) !Calculate the first day of the simulation in the Julian calendar
 	WRITE(*,*)'Reading fixed parameters file...'
 	WRITE(FILLOG,*)'Reading fixed parameters file...'
 	CALL LEVAR !Subroutine for reading the file with fixed parameters (ALBEDOS, IAF, RS, Z; mounthly) (File: albiaf.fix)
@@ -311,7 +310,7 @@
     WRITE(FILLOG,'(A30,I8)')'Number of catchments:',NC
     WRITE(FILLOG,'(A30,I8)')'Number of subbasins:',NB
     WRITE(FILLOG,'(A30,I8)')'Number of HRUs:',NU
-    WRITE(FILLOG,'(A30,4I5)')'Start date (yyyy mm dd hh):', IANO,IMES,IDIA,HORAINI
+    WRITE(FILLOG,'(A30,4I5)')'Start date (yyyy mm dd hh):', IANO,IMES,IDIA,IHORA
     WRITE(FILLOG,'(A30,F16.2)')'Time step (s):',DTP
     WRITE(FILLOG,'(A30,I8)')'Number of time steps:',NT
     WRITE(FILLOG,'(A30,I8)')'Number of substitution gauges:',NUMSUBST
@@ -340,7 +339,7 @@
     WRITE(*,'(A30,I8)')'Number of catchments:',NC
     WRITE(*,'(A30,I8)')'Number of subbasins:',NB
     WRITE(*,'(A30,I8)')'Number of HRUs:',NU
-    WRITE(*,'(A30,4I5)')'Start date (dd mm yyyy hh):',IDIA,IMES,IANO,HORAINI
+    WRITE(*,'(A30,4I5)')'Start date (dd mm yyyy hh):',IDIA,IMES,IANO,IHORA
     WRITE(*,'(A30,F16.2)')'Time step (s):',DTP
     WRITE(*,'(A30,I8)')'Number of time steps:',NT
     WRITE(*,'(A30,I8)')'Number of substitution gauges:',NUMSUBST

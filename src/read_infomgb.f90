@@ -63,13 +63,15 @@
 	    
     USE VARS_MAIN
     USE VARS_INERC
+    use utils_time, only: julday_rl, caldat_rl, time_diff
+    use utils_date, only: date_parser
     
 	IMPLICIT NONE
   
     !*************************************************************************************************
     !Variables for mgb_config_global    
       
-    INTEGER JULDAY
+   ! INTEGER JULDAY
     INTEGER N_UNIT_CATCHM, N_HRUS 
     INTEGER N_SUBASINS, N_CLI_REGIONS
     INTEGER HOTSTART_READ, HOTSTART_WRITE, SUBASIN_START, SUBASIN_END  
@@ -77,9 +79,8 @@
     INTEGER OPT_RES_SUB, N_RES_SUB
     character(len=40) :: SIM_START_DATE, SIM_END_DATE
     
-    integer minute
     integer i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end
-    real    j_start, j_end
+    real(8) jday_end
     
     !Variables for mgb_forcing
     INTEGER TS_TEMP, TS_RAD, TS_RH, TS_WIND, TS_PRES
@@ -133,17 +134,14 @@
     SUBfim          = SUBASIN_END 
     
      ! Parse start and end simulation dates from strings
-    CALL date_parser(SIM_START_DATE,IANO,IMES,IDIA,HORAINI,minute)
+    CALL date_parser(SIM_START_DATE,IANO,IMES,IDIA,IHORA,IMINUTO)
     CALL date_parser(SIM_END_DATE,i_yr_end,i_mo_end,i_day_end,i_hr_end,i_min_end)
         
     ! Compute number of time steps using start/end julian day and hour
-    j_start = JULDAY(IMES,IDIA,IANO) + real(HORAINI)/24.    
-    j_end = JULDAY(i_mo_end,i_day_end,i_yr_end) + real(i_hr_end)/24. 
-    NT = FLOOR((j_end - j_start) * (86400./DTP)) + 1    
-   
-    !Calculate the first day of the simulation in the Julian calendar
-    IDINI=JULDAY(IMES,IDIA,IANO) 
-    
+    jday     = julday_rl(IANO,IMES,IDIA,IHORA,IMINUTO)
+    jday_end = julday_rl(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end) 
+    NT =       time_diff(jday_end, jday, real(DTP,8)) + 1
+        
     !Namelist definition - (MGB met CONFIG)
     namelist /mgb_config_forcing/     &
     

@@ -66,36 +66,30 @@
     !DECLARAÇÃO DE VARIÁVEIS
 	USE VARS_MAIN
     USE VARS_INERC
+    use utils_time, only: caldat_rl
+    use utils_date, only: date_string
 	
   	!DEFINE QUE NÃO PODEMOS TER VARIÁVEIS IMPLÍCITAS
 	IMPLICIT NONE
-    integer i,nStatVar,j, i_julian
+    integer i,nStatVar,j
     real(4),allocatable:: WB_stateVec(:)	 
     real*8,allocatable:: h_stateVec(:)	 
-    character(len=8) :: hotFilename
+    character(len=10) :: hotFilename
     
 	nStatVar=(nC*nU)+(6*nC)+(nC*nU)+(sum(NSUBT)+nC)+nC !
 	
     !For option 1, model state variables are saved only at the end of simulation (i.e. They will allow starting the MGB one timestep after the end date)
     if (flag_WriteHot == 1) then
     
-        !Get Julian day and corresponding calendar year, month and day
-        i_julian=IDINI+INT((IT+HORAINI)/(86400./DTP))     
+        ! compute calendar date
+        call caldat_rl(jday,IANO,IMES,IDIA,IHORA,IMINUTO)  
               
     !For option 2, check if the current IT is flagged to save MGB initial conditions for the beggining of each time step. 
-    !For option 3, model state variables will be saved for the beggining of each time step, and also for the end of simulation. flag_WriteHot will be automatically set to 1 at the end of simulation     
-    elseif ((flag_WriteHot == 2 .AND. WriteHotFile(IT)==1) .OR. (flag_WriteHot == 3)) then
-                                             
-       !Get Julian day and corresponding calendar year, month and day, but subtracting 1 since in this case ICs are saved at the beggining of the time step
-       i_julian=IDINI+INT((IT+HORAINI-1)/(86400./DTP))  
-         
-    else
-       return !Exit subroutine  
-       
+    !For option 3, model state variables will be saved for the beggining of each time step, and also for the end of simulation. flag_WriteHot will be automatically set to 1 at the end of simulation            
     endif             
     
-    !Get the current date
-    call DateString(i_julian,IANO,IMES,IDIA,hotFilename)  
+    !Set the current datestring to save file (skipping minute)
+    hotFilename = date_string(IANO,IMES,IDIA,IHORA)  
     
     open(FILHOTSTART_WB,FILE=INPUT_DIRECTORY_HOTSTART // 'statevars_wb_'// trim(hotFilename) // '.hot',STATUS='unknown',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT')
         

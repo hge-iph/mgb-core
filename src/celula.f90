@@ -108,17 +108,16 @@
 	
 	USE VARS_MAIN
 	USE VARS_INERC
+    use utils_time, only: julday_int
 
 	IMPLICIT NONE
 	
 	REAL DSUP,DINT,DBAS             ! Drainage water depths from vertical balance (i.e. surface, subsurf,gw)
     REAL DSUPaccum, DINTaccum, DBASaccum    !Accumulated runoffs for HRUs
 	REAL DSB,DIB,DBB				! Catchment contribution to sub-basin water by source (i.e. surface, subsurf, gw)
-	INTEGER JULDAY
-
-	! Returns month, day and year to the actual julian day - will use month for climatology
-	CALL CALDAT(JDIA,IMES,IDIA,IANO)
-    JDIA=JDIA-JULDAY(1,1,IANO)+1 ! Needed for RADIACAO, thi is not good practice !VAS
+	
+	! Gets day of the year (DOY) for computing radiation
+    doy = julday_int(IANO,IMES,IDIA) - julday_int(IANO,1,1) + 1
     
     ! Initializes variables to accumulate in URH loop !VAS
     TWS2=0.0     
