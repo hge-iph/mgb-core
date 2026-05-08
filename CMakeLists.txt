@@ -15,52 +15,49 @@ endif()
 set(CMAKE_Fortran_FLAGS_RELEASE "" CACHE STRING "Bootstrap release flags" FORCE)
 
 set(MGB_MODEL_SOURCES
-    src/julday.f90
-    src/date_parser.f90
-    src/stagearea.f90
     src/fint.f90
-    src/caldat.f90
+    src/tempo.f90
+    src/stagearea.f90
+    src/semente.f90
+    src/utils_date.f90
     src/vars_inerc.f90
     src/vars_main.f90
-    src/leuso.f90
-    src/musk.f90
-    src/met_input_files.f90
-    src/lecell.f90
-    src/tempo.f90
-    src/flood_timestep.f90
-    src/evapo.f90
-    src/solo.f90
-    src/flood_discharge.f90
-    src/semente.f90
-    src/read_clim_avg.f90
-    src/alloca_varsinerc.f90
-    src/region.f90
-    src/flood_inercial.f90
+    src/utils_time.f90
     src/simula.f90
-    src/flood_ini.f90
-    src/radiacao.f90
     src/condinic.f90
-    src/alloca_vars.f90
-    src/modelo.f90
-    src/levar.f90
-    src/le_reserv.f90
-    src/read_met.f90
-    src/read_infomgb.f90
-    src/flood_readhot.f90
-    src/flood_readfp.f90
-    src/datestring.f90
-    src/write_output.f90
-    src/flood_continuity.f90
-    src/rede.f90
-    src/flood_topo.f90
-    src/parcunge.f90
-    src/parcel.f90
-    src/lesubst.f90
-    src/lefloodpln.f90
-    src/flood_writehot.f90
-    src/flood_tab.f90
     src/1main.f90
+    src/solo.f90
+    src/read_clim_avg.f90
+    src/flood_topo.f90
+    src/flood_discharge.f90
+    src/radiacao.f90
+    src/flood_tab.f90
+    src/flood_inercial.f90
+    src/leuso.f90
+    src/le_reserv.f90
+    src/met_input_files.f90
+    src/flood_readfp.f90
+    src/musk.f90
+    src/rede.f90
+    src/parcunge.f90
+    src/alloca_varsinerc.f90
+    src/alloca_vars.f90
+    src/write_output.f90
+    src/evapo.f90
+    src/read_met.f90
+    src/flood_timestep.f90
+    src/flood_continuity.f90
+    src/flood_writehot.f90
+    src/flood_ini.f90
+    src/parcel.f90
+    src/lecell.f90
     src/celula.f90
+    src/levar.f90
+    src/lefloodpln.f90
+    src/lesubst.f90
+    src/flood_readhot.f90
+    src/modelo.f90
+    src/read_infomgb.f90
 )
 
 add_executable(mgb_model ${MGB_MODEL_SOURCES})
