@@ -310,7 +310,7 @@
     WRITE(FILLOG,'(A30,I8)')'Number of catchments:',NC
     WRITE(FILLOG,'(A30,I8)')'Number of subbasins:',NB
     WRITE(FILLOG,'(A30,I8)')'Number of HRUs:',NU
-    WRITE(FILLOG,'(A30,4I5)')'Start date (yyyy mm dd hh):', IANO,IMES,IDIA,IHORA
+    WRITE(FILLOG,'(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)')'Start date:',iyear,imonth,iday,ihour,iminute
     WRITE(FILLOG,'(A30,F16.2)')'Time step (s):',DTP
     WRITE(FILLOG,'(A30,I8)')'Number of time steps:',NT
     WRITE(FILLOG,'(A30,I8)')'Number of substitution gauges:',NUMSUBST
@@ -339,7 +339,7 @@
     WRITE(*,'(A30,I8)')'Number of catchments:',NC
     WRITE(*,'(A30,I8)')'Number of subbasins:',NB
     WRITE(*,'(A30,I8)')'Number of HRUs:',NU
-    WRITE(*,'(A30,4I5)')'Start date (dd mm yyyy hh):',IDIA,IMES,IANO,IHORA
+    WRITE(*,'(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)')'Start date:',iyear,imonth,iday,ihour,iminute
     WRITE(*,'(A30,F16.2)')'Time step (s):',DTP
     WRITE(*,'(A30,I8)')'Number of time steps:',NT
     WRITE(*,'(A30,I8)')'Number of substitution gauges:',NUMSUBST

@@ -134,17 +134,17 @@
         end if
         
         ! compute calendar date
-        call caldat_rl(jday,IANO,IMES,IDIA,IHORA,IMINUTO)
+        call caldat_rl(jday,iyear,imonth,iday,ihour,iminute)
         
         ! Write simulation details on screen
         ! Get simulation statistics
         stats_max_q = maxval(QJ2)  ! Maximum flow for the entire model domain 
         stats_perc_comp = (100. * real(it)/real(NT)) !% of simulation completion
-        WRITE(*,71) IT,IANO,IMES,IDIA,IHORA,IMINUTO,stats_max_q,stats_perc_comp
+        WRITE(*,71) IT,iyear,imonth,iday,ihour,iminute,stats_max_q,stats_perc_comp
                  	    	
 		! Reads climate data
 		TONTEM=TA
-        CALL READ_MET(IMES,IT) ! Read rainfall and other met variables 
+        CALL READ_MET(imonth,IT) ! Read rainfall and other met variables 
 	    
         ! Perform vertical water balance
 		CALL CELULA		
@@ -180,12 +180,12 @@
         CALL WRITE_OUTPUT
    
         ! Advance Julian date for next time step
-        jday = julday_rl(IANO,IMES,IDIA,IHORA,IMINUTO) &
+        jday = julday_rl(iyear,imonth,iday,ihour,iminute) &
                       + (real(DTP,wp) / 86400.0_wp)  
     
     ENDDO !End time loop
 	    
-71  FORMAT(I5,"    ",I4,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2,"  ",f10.1,"      ",f5.1," %")
+71  FORMAT(I5,"    ",I4,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2,"  ",f10.1,"      ",f6.2," %")
 75	FORMAT(I6,13F10.4)
 66	FORMAT(<nC>F10.4)
 

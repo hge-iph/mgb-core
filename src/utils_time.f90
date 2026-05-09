@@ -28,14 +28,14 @@
    
      
     ! function to compute julian date (real)
-    function julday_rl(year,mon,day,hour,min) result(jdr) 
+    function julday_rl(year,month,day,hour,min) result(jdr) 
         implicit none  
         
-        integer, intent(in) :: year, mon, day, hour, min
+        integer, intent(in) :: year, month, day, hour, min
         integer :: jd_number 
         real(wp) :: jdr  
         
-        jd_number = julday_int(year, mon, day)
+        jd_number = julday_int(year, month, day)
            
         jdr = real(jd_number,wp) &
             + real(hour,wp) / 24.0_wp &

@@ -179,7 +179,7 @@
 	REAL,ALLOCATABLE:: DSUM(:,:),DINM(:,:),DBAM(:,:)
 	REAL,ALLOCATABLE:: SIM(:,:),EM(:,:),WBM(:,:),PM2(:,:)
 	
-	INTEGER IDIA,IMES,IANO,IHORA,IMINUTO !Date and day of the Julian 
+	INTEGER iday,imonth,iyear,ihour,iminute !Date and day of the Julian 
     integer doy !Day of the year
     real(8) jday !Julian date (real)
     

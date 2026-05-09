@@ -117,7 +117,7 @@
 	REAL DSB,DIB,DBB				! Catchment contribution to sub-basin water by source (i.e. surface, subsurf, gw)
 	
 	! Gets day of the year (DOY) for computing radiation
-    doy = julday_int(IANO,IMES,IDIA) - julday_int(IANO,1,1) + 1
+    doy = julday_int(iyear,imonth,iday) - julday_int(iyear,1,1) + 1
     
     ! Initializes variables to accumulate in URH loop !VAS
     TWS2=0.0     
@@ -170,10 +170,10 @@
 			XL=PLAM(IB,IU)		             ! lambda parameter from ARNO model
 			T1=TONTEM(IC)                    ! day before air temperature
 			T2=TA(IC)                        ! air temperature
-			RIAFX=RIAF(IU,IMES,REGCLI(IC))   ! leaf-area index
-			ALBX=ALB(IU,IMES,REGCLI(IC))     ! albedo
-			ZX=Z(IU,IMES,REGCLI(IC))		 ! vegetation height
-			RSX=RS(IU,IMES,REGCLI(IC))		 ! surface resistnace
+			RIAFX=RIAF(IU,imonth,REGCLI(IC))   ! leaf-area index
+			ALBX=ALB(IU,imonth,REGCLI(IC))     ! albedo
+			ZX=Z(IU,imonth,REGCLI(IC))		 ! vegetation height
+			RSX=RS(IU,imonth,REGCLI(IC))		 ! surface resistnace
 			BX=B(IB,IU)	                     ! b parameter from ARNO model
 			KIX=KINS(IB,IU)                  ! Subsurface water flow
 			KBX=KBAS(IB,IU)                  ! Groundwater flow

@@ -80,7 +80,7 @@
 	allocate(WB_stateVec(nStatVar))
     
     !Set the current datestring to read file (skipping minute)
-    hotFilename = date_string(IANO,IMES,IDIA,IHORA) 
+    hotFilename = date_string(iyear,imonth,iday,ihour) 
     
     !Check if the hotstart exists
      INQUIRE(FILE=INPUT_DIRECTORY_HOTSTART // 'statevars_wb_'// trim(hotFilename) // '.hot', EXIST=file_exists)

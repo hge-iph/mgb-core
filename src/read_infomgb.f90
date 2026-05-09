@@ -134,11 +134,11 @@
     SUBfim          = SUBASIN_END 
     
      ! Parse start and end simulation dates from strings
-    CALL date_parser(SIM_START_DATE,IANO,IMES,IDIA,IHORA,IMINUTO)
+    CALL date_parser(SIM_START_DATE,iyear,imonth,iday,ihour,iminute)
     CALL date_parser(SIM_END_DATE,i_yr_end,i_mo_end,i_day_end,i_hr_end,i_min_end)
         
     ! Compute number of time steps using start/end julian day and hour
-    jday     = julday_rl(IANO,IMES,IDIA,IHORA,IMINUTO)
+    jday     = julday_rl(iyear,imonth,iday,ihour,iminute)
     jday_end = julday_rl(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end) 
     NT =       time_diff(jday_end, jday, real(DTP,8)) + 1
         

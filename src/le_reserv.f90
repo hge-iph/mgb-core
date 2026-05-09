@@ -121,7 +121,7 @@ if (Substitui_res>0)then
     close(159)
 
     ! nt2 corresponde ao dia inicial da simulacao menos o dia que comecam as observacoes
-    nT2 = julday_int(IANO,IMES,IDIA) - julday_int(aa,mm,dd)
+    nT2 = julday_int(iyear,imonth,iday) - julday_int(aa,mm,dd)
     
     iTini=1
     if (nT2<0) then ! se a simulacao ocorre antes

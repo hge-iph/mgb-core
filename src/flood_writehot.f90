@@ -82,14 +82,14 @@
     if (flag_WriteHot == 1) then
     
         ! compute calendar date
-        call caldat_rl(jday,IANO,IMES,IDIA,IHORA,IMINUTO)  
+        call caldat_rl(jday,iyear,imonth,iday,ihour,iminute)  
               
     !For option 2, check if the current IT is flagged to save MGB initial conditions for the beggining of each time step. 
     !For option 3, model state variables will be saved for the beggining of each time step, and also for the end of simulation. flag_WriteHot will be automatically set to 1 at the end of simulation            
     endif             
     
     !Set the current datestring to save file (skipping minute)
-    hotFilename = date_string(IANO,IMES,IDIA,IHORA)  
+    hotFilename = date_string(iyear,imonth,iday,ihour)  
     
     open(FILHOTSTART_WB,FILE=INPUT_DIRECTORY_HOTSTART // 'statevars_wb_'// trim(hotFilename) // '.hot',STATUS='unknown',RECL=nStatVar,FORM='UNFORMATTED',ACCESS='DIRECT')
         
