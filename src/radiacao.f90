@@ -104,7 +104,7 @@
 	!REAL SOLX,T1,T2 		! insolation (number of hours), and air temperature (celsius)
 	!REAL ALBX 				! albedo
 	!REAL RLX 				! net radiation (MJ/m2/dia)
-	!INTEGER JDIA 			! julian day - integer
+	!INTEGER doy 			! julian day - integer
 	!REAL RDIA 				! julian day - float
 	!REAL URX
 	!REAL,PARAMETER:: MESP=1000.0 ! water specific weigth (kg/m3)
@@ -133,7 +133,7 @@
 	
 	! - ch4. - Handbook of Hydrology
 	! Solar Declination (rad)
-	RDIA=JDIA
+    RDIA=doy
 	SDECL=0.4093*SIN((2*PI/365.0)*RDIA-1.405)
 	
 	! Sunset hour angle (rad)

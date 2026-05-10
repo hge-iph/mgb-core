@@ -179,8 +179,11 @@
 	REAL,ALLOCATABLE:: DSUM(:,:),DINM(:,:),DBAM(:,:)
 	REAL,ALLOCATABLE:: SIM(:,:),EM(:,:),WBM(:,:),PM2(:,:)
 	
-	INTEGER IDIA,IMES,IANO,IDINI,IHORA !Date and day of the Julian 
-	REAL,ALLOCATABLE:: QESP(:)!Especific baseflow (M3/S/KM2)
+	INTEGER iday,imonth,iyear,ihour,iminute !Date and day of the Julian 
+    integer doy !Day of the year
+    real(8) jday !Julian date (real)
+    
+    REAL,ALLOCATABLE:: QESP(:)!Especific baseflow (M3/S/KM2)
 	
 	!Albedo, Leaf Area Index, average height, and surface resistance
 	REAL,ALLOCATABLE:: ALB(:,:,:),RIAF(:,:,:),Z(:,:,:),RS(:,:,:)
@@ -243,8 +246,6 @@
 	REAL(4),ALLOCATABLE:: P(:) !Rainfall at the interval in the cell         !! Sly + Viniciu    
 	REAL(4),ALLOCATABLE:: TA(:),UR(:),VV(:),SOL(:),PA(:)	!Temperature, humidity, wind, insolation, pressure    
     
-	INTEGER HORAINI !Time that the simulation starts
-	INTEGER JDIA !Julian day
 	REAL DTP !Time interval of main calculation (in seconds given in the input file)
 	!Variables related to radiation
 	REAL GLAT !Latitude in decimal degrees (- south)

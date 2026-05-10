@@ -66,23 +66,22 @@
     !DECLARAÇÃO DE VARIÁVEIS
 	USE VARS_MAIN
 	USE VARS_INERC
+    use utils_date, only: date_string
 
 	!DEFINE QUE NÃO PODEMOS TER VARIÁVEIS IMPLÍCITAS
 	IMPLICIT NONE
-    integer:: i,nStatVar,j,i_julian
+    integer:: i,nStatVar,j
     real(4),allocatable:: WB_stateVec(:)
     real*8,allocatable:: h_stateVec(:)
-    character(len=8) :: hotFilename
+    character(len=10) :: hotFilename
     LOGICAL :: file_exists
 
 	nStatVar=(nC*nU)+(6*nC)+(nC*nU)+(sum(NSUBT)+nC)+nC !
 	allocate(WB_stateVec(nStatVar))
-
-    !Get Julian day and corresponding calendar year, month and day.
-    i_julian=IDINI+INT((IT+HORAINI)/(86400./DTP))
-    !Get the current date
-    call DateString(i_julian,IANO,IMES,IDIA,hotFilename)
-
+    
+    !Set the current datestring to read file (skipping minute)
+    hotFilename = date_string(iyear,imonth,iday,ihour) 
+    
     !Check if the hotstart exists
      INQUIRE(FILE=INPUT_DIRECTORY_HOTSTART // 'statevars_wb_'// trim(hotFilename) // '.hot', EXIST=file_exists)
         IF(.NOT. file_exists) then

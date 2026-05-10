@@ -12,6 +12,7 @@ subroutine LE_RESERV
 ! Declaracao de Variaveis
 use VARS_MAIN
 use VARS_INERC
+use utils_time, only: julday_int 
 
 implicit none
 
@@ -19,7 +20,7 @@ integer :: nlagos, nlagos_tudo      ! numero de minibacias do lago
 integer :: lixo1, i, j, k, iTini    ! variavel auxiliar para leitura
 integer :: flag_Simu, flag_lago     ! flags se ocorre simulação e se o lago é desconsiderado no flood_tab
 integer :: Substitui_res            ! flag geral que indica se vai ou não ter substituição
-integer :: mm,dd,aa, nT2, julday    ! variaveis de tempo
+integer :: mm,dd,aa, nT2           ! variaveis de tempo
 integer, dimension(nC) :: lagos_minibacia ! minibacias que fazem parte dos lagos dos reservatorios
 real    :: VOLINCR                  ! volume incremental
 character(len=15)   :: lixo_char    ! leitura do nome dos reservatorios
@@ -120,8 +121,8 @@ if (Substitui_res>0)then
     close(159)
 
     ! nt2 corresponde ao dia inicial da simulacao menos o dia que comecam as observacoes
-    nT2=IDINI-julday(mm,dd,aa)
-
+    nT2 = julday_int(iyear,imonth,iday) - julday_int(aa,mm,dd)
+    
     iTini=1
     if (nT2<0) then ! se a simulacao ocorre antes
         iTini=1-nT2

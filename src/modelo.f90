@@ -109,10 +109,12 @@
 	SUBROUTINE MODELO
 
 	USE VARS_MAIN
-	USE VARS_INERC	
+	USE VARS_INERC
+    use utils_time, only: julday_rl, caldat_rl
+    
 	IMPLICIT NONE
     
-    real time_increment 
+    integer, parameter :: wp=8
     real stats_max_q, stats_perc_comp ! Current statistics
     
     ! Write header for simulation statistics
@@ -131,26 +133,18 @@
            call flood_WRITEHOT              
         end if
         
-        ! Check the time increment (in days) from simulation start                  
-        time_increment = (IT-1)*(DTP/86400.) + HORAINI*(3600./86400.)
+        ! compute calendar date
+        call caldat_rl(jday,iyear,imonth,iday,ihour,iminute)
         
-        ! Get current calendar dates
-		JDIA = FLOOR(IDINI + time_increment)
-        
-        CALL CALDAT(JDIA,IMES,IDIA,IANO)
-                         
-        ! Get current hour of the day        
-        IHORA = INT(REAL(MOD(time_increment, 1.0) * 24., 4))
-       
         ! Write simulation details on screen
         ! Get simulation statistics
         stats_max_q = maxval(QJ2)  ! Maximum flow for the entire model domain 
         stats_perc_comp = (100. * real(it)/real(NT)) !% of simulation completion
-        WRITE(*,71) IT,IANO,IMES,IDIA,IHORA,0,stats_max_q,stats_perc_comp
+        WRITE(*,71) IT,iyear,imonth,iday,ihour,iminute,stats_max_q,stats_perc_comp
                  	    	
 		! Reads climate data
 		TONTEM=TA
-        CALL READ_MET(IMES,IT) ! Read rainfall and other met variables 
+        CALL READ_MET(imonth,IT) ! Read rainfall and other met variables 
 	    
         ! Perform vertical water balance
 		CALL CELULA		
@@ -185,11 +179,13 @@
         ! Calls routine to write results on disk
         CALL WRITE_OUTPUT
    
-        !=====================================================================                
+        ! Advance Julian date for next time step
+        jday = julday_rl(iyear,imonth,iday,ihour,iminute) &
+                      + (real(DTP,wp) / 86400.0_wp)  
     
     ENDDO !End time loop
 	    
-71  FORMAT(I5,"    ",I4,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2,"  ",f10.1,"      ",f5.1," %")
+71  FORMAT(I5,"    ",I4,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2,"  ",f10.1,"      ",f6.2," %")
 75	FORMAT(I6,13F10.4)
 66	FORMAT(<nC>F10.4)
 
