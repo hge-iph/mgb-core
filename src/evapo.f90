@@ -167,7 +167,7 @@
 	! Maximum Interception
 	!SIL=0.2*RIAFX*(DTP/86400.)	!SIL=0.2*RIAFX !According to Wigmosta et al. 1994, also used by Bremicker
     ! Maximum Interception ! Modified by Fernando & Paulo (25/01/2013) to land-use in Parana Basin
-	SIL=0.4*RIAFX !*(DTP/86400.)	!SIL=0.2*RIAFX !According to Wigmosta et al. 1994, also used by Bremicker
+	SIL=0.4*RIAFX*(DTP/86400.)	!SIL=0.2*RIAFX !According to Wigmosta et al. 1994, also used by Bremicker
 
 	! Adds Rainfall to water that can be evaporated.
 	SF=MIN(SIX+PX,SIL)
