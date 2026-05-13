@@ -175,10 +175,6 @@
 	REAL,ALLOCATABLE:: QLIDO(:,:) !Streamflow at some point to replace the calculated values
 	INTEGER,ALLOCATABLE:: KCB(:)!Nnumber of cells in each sub-basin
 	
-	!Mean vales at each Sub-basin
-	REAL,ALLOCATABLE:: DSUM(:,:),DINM(:,:),DBAM(:,:)
-	REAL,ALLOCATABLE:: SIM(:,:),EM(:,:),WBM(:,:),PM2(:,:)
-	
 	INTEGER iday,imonth,iyear,ihour,iminute !Date and day of the Julian 
     integer doy !Day of the year
     real(8) jday !Julian date (real)
@@ -205,7 +201,6 @@
 	INTEGER,ALLOCATABLE:: IEXUT(:)!Indicates the outlet minibasins
 	REAL,ALLOCATABLE:: BRIO(:)!River width
 	REAL BRX !River width (auxiliary variable)
-	REAL,ALLOCATABLE:: PM(:) !Average rainfall
 	INTEGER,ALLOCATABLE:: IBAC(:),CELJUS(:)!Watershed, downstream minibasin
 	REAL,ALLOCATABLE::  HCEL(:),LCEL(:) ! Declividade e comprimento do rio mais longo
 	REAL,ALLOCATABLE:: X(:),Y(:)!Coordinates of the minibasin center
@@ -275,7 +270,7 @@
 	!Variables from Subroutine CELULA
 	!Auxiliaries
 	REAL WX,WMX,PAX,TAX,VVX,BX,KIX,KBX,RIAFX,ZX,EX,PX,SIX,VVX2,KINFX
-	REAL XL,T2,RSX,CAPX,ETX,WCX,VBX,VIX,VSX,PPU,WXB,SIB,ETB,DCAP
+	REAL XL,T2,RSX,CAPX,ETX,WCX,VBX,VIX,VSX,PPU,WXB,DCAP
 
 	!Variables from Subroutine EVAPO
 	REAL D !Vapor pressure deficit
