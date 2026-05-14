@@ -81,18 +81,6 @@
 	integer JUS,i,TK
 	!-------------------------------------------------------------------------------------
 
-	
-	!Initializing variables
-	PM=0.0
-	PM2=0.0
-	SIM=0.0  !Intercepted water
-	EM=0.0   !Evapotranspiration water
-	WBM=0.0  !mean stored water
-	DSUM=0.0 !Runoff in the basin
-	DINM=0.0 !Subsurface flow in the basin
-	DBAM=0.0 !underground flow in the basin
-			
-	!---------------------------------------------------------------------------------------------
 	!Initial conditions
 	
 	! Intercepted volume:

@@ -114,7 +114,6 @@
 	
 	REAL DSUP,DINT,DBAS             ! Drainage water depths from vertical balance (i.e. surface, subsurf,gw)
     REAL DSUPaccum, DINTaccum, DBASaccum    !Accumulated runoffs for HRUs
-	REAL DSB,DIB,DBB				! Catchment contribution to sub-basin water by source (i.e. surface, subsurf, gw)
 	
 	! Gets day of the year (DOY) for computing radiation
     doy = julday_int(iyear,imonth,iday) - julday_int(iyear,1,1) + 1
@@ -227,8 +226,6 @@
 
 			PPU=PUSO(IC,IU)/100. 	!HRU area  fraction
 			WXB=WXB+WX*PPU 			!Average Water Soil-Storage in catchment
-			SIB=SIB+(P(IC)-PX)*PPU  !Average Interceptation in catchment
-			ETB=ETB+ETX*PPU 		!Average Evapotranspiration in catchment
             WMMINI=WMMINI+WMX*PPU   !Average Wm in the catchment
             
             !Flow to linear reservoirs
@@ -329,29 +326,8 @@
 			VBAS(IC)=VBX
         ENDIF
 		!Ends drying linear reservoirs verification
-		        
-		!IB is the sub-basin number where catchment IC is located
-		
-        PM2(IB,IT)=PM2(IB,IT)+P(IC)/KCB(IB) 	 !update sub-basin average precipitation
-		
-		DSB=(QSUP(IC)*3600.*24.)/(1000.*ACEL(IC))
-		DIB=(QINT(IC)*3600.*24.)/(1000.*ACEL(IC))
-		DBB=(QBAS(IC)*3600.*24.)/(1000.*ACEL(IC))
-		
-		SIM(IB,IT) =SIM(IB,IT)+SIB/KCB(IB)  	!update sub-basin average interception
-		EM(IB,IT)  =EM(IB,IT)+ETB/KCB(IB)  		!update sub-basin average evapotranspiration
-		WBM(IB,IT) =WBM(IB,IT)+WXB/KCB(IB)  	!update sub-basin average in-soil water
-		DSUM(IB,IT)=DSUM(IB,IT)+DSB/KCB(IB) 	!update sub-basin average surface flow
-		DINM(IB,IT)=DINM(IB,IT)+DIB/KCB(IB) 	!update sub-basin average subsurface flow
-		DBAM(IB,IT)=DBAM(IB,IT)+DBB/KCB(IB) 	!update sub-basin average gw flow
 		
 		!clear temporary variables
-		SIB=0.0
-		ETB=0.0
-		WXB=0.0
-		DSB=0.0
-		DIB=0.0
-		DBB=0.0
         WXB=0.0
         WMMINI=0.0
 	

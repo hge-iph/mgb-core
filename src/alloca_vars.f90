@@ -109,7 +109,6 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		ALLOCATE (X(NC),Y(NC))!Coordinates of the cell center
         ALLOCATE (REGCLI(NC)) !Climate regions
 		ALLOCATE (IBAC(NC),HCEL(NC),LCEL(NC),CELJUS(NC),CELJUS2(NC))!SubBasin,HMAX,HMIN,Downstream minibasin ! SIN_RESERV celjus2
-	 	ALLOCATE (PM(NC)) !Average rainfall and rainfall at the timestep in the minibasin
 		ALLOCATE (BRIO(NC))!River width
 		ALLOCATE (IEXUT(NB)) !Indicate the outlets of the basin
 		ALLOCATE (CI(NB),CB(NB),CS(NB)) !Pparameters of propagation in cell
@@ -121,8 +120,6 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		ALLOCATE (CEL(NC),TIND(NC))
 		ALLOCATE (ALB(NU,12,NREG),RIAF(NU,12,NREG),Z(NU,12,NREG),RS(NU,12,NREG)) !Allocation for specific climate regions
 		ALLOCATE (QESP(NB))	 !Specific baseflow (M3/S/KM2)
-		ALLOCATE (DSUM(NB,NT),DINM(NB,NT),DBAM(NB,NT))!Averages over the SubBasins
-		ALLOCATE (SIM(NB,NT),EM(NB,NT),WBM(NB,NT),PM2(NB,NT))!Averages over the SubBasins
 		ALLOCATE (KCB(NB)) !Number of minibasins inside each subbasin
 		ALLOCATE (QLIDO(NUMSUBST,NT)) !Flow that is read to replace calculated
 		
@@ -200,7 +197,6 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		DEALLOCATE (X,Y)!Coordinates of the cell center
         DEALLOCATE (REGCLI) !Climate regions
 		DEALLOCATE (IBAC,HCEL,LCEL,CELJUS)!SubBasin,HMAX,HMIN,Downstream minibasin
-	 	DEALLOCATE (PM) !Average rainfall and rainfall at the timestep in the minibasin
 		DEALLOCATE (BRIO)!River width
 		DEALLOCATE (IEXUT) !Indicate the outlets of the basin
 		DEALLOCATE (CI,CB,CS) !Parameters of propagation in cell
@@ -210,8 +206,6 @@ SUBROUTINE ALLOCA_VARS(IOP)
 		DEALLOCATE (CEL,TIND)
 		DEALLOCATE (ALB,RIAF,Z,RS)
 		DEALLOCATE (QESP)	 !Specific baseflow (M3/S/KM2)
-		DEALLOCATE (DSUM,DINM,DBAM)!Averages over the SubBasins
-		DEALLOCATE (SIM,EM,WBM,PM2)!Averages over the SubBasins
 		DEALLOCATE (KCB) !Number of minibasins inside each subbasin
 		DEALLOCATE (SI)
 		DEALLOCATE (QM1,QJ1,QM2,QJ2) !Streamflows upstream and downstream in i
