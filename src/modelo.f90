@@ -174,6 +174,7 @@
             ALAGTUDO(IC)=Area2(IC)
             QCELTUDO(IC)=QCEL2(IC) 
             HANDTUDO(IC) = Yfl(IC) - REAL(ZTAB(1,IC)) - REAL(HRIO(IC))
+            POTETWAT(IC) = E0agua(IC)
         ENDDO  
         
         ! Calls routine to write results on disk
