@@ -65,6 +65,7 @@
     OUT_ETSOILVEG  = 0 						!Evapotranspiration from soil + vegetation (mm)
     OUT_ETOPENWAT  = 0 						!Evaporation from dynamic open waters (mm)
     OUT_ETURHWAT   = 0 						!Evaporation from HRU Water (mm)
+	OUT_POTETWAT   = 0 						!Potential evaporation from water surfaces (mm)
     OUT_VBAS       = 0 						!Groundwater reservoir volume (mm)
     OUT_VINT       = 0 						!Subsurface reservoir volume (mm)
     OUT_VSUP       = 0 						!Surface reservoir volume (mm) 
