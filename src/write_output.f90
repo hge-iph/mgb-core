@@ -76,6 +76,7 @@
 	if (flag_OUT_ETSOILVEG==1)  WRITE(FIL_ETSOILVEG,REC=IT)(ETSOILPLANT(IC),IC=1,NC)
 	if (flag_OUT_ETOPENWAT==1)  WRITE(FIL_ETOPENW,REC=IT)(ETOPENWAT(IC),IC=1,NC)
 	if (flag_OUT_ETURHWAT==1)   WRITE(FIL_ETURHWAT,REC=IT)(EVAPURHAGUA(IC),IC=1,NC)
+    if (flag_OUT_POTETWAT==1)   WRITE(FIL_POTETWAT,REC=IT)(POTETWAT(IC),IC=1,NC)
 	if (flag_OUT_SURFWAT==1)    WRITE(FIL_SURFWAT,REC=IT)(SURFWAT(IC),IC=1,NC)
 	if (flag_OUT_VBAS==1)       WRITE(FIL_VBAS,REC=IT)(VBASMMDIA(IC),IC=1,NC)
 	if (flag_OUT_VINT==1)       WRITE(FIL_VINT,REC=IT)(VINTMMDIA(IC),IC=1,NC)
@@ -144,6 +145,9 @@
                                         STATUS='REPLACE',RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')  
           
         if (flag_OUT_ETURHWAT==1)   OPEN(FIL_ETURHWAT,FILE=OUTPUT_DIRECTORY // 'evapurhagua.mgb',&
+                                        STATUS='REPLACE', RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')
+        
+        if (flag_OUT_POTETWAT==1)   OPEN(FIL_POTETWAT,FILE=OUTPUT_DIRECTORY // 'evappotagua.mgb',&
                                         STATUS='REPLACE', RECL=NC,FORM='UNFORMATTED',ACCESS='DIRECT')   
         
         if (flag_OUT_SURFWAT==1)    OPEN(FIL_SURFWAT,FILE=OUTPUT_DIRECTORY // 'surfwater.mgb', &
@@ -187,6 +191,7 @@
         close(FIL_ETSOILVEG)
         close(FIL_ETOPENW)
         close(FIL_ETURHWAT)
+        close(FIL_POTETWAT)
         close(FIL_SURFWAT)
         close(FIL_VBAS)
         close(FIL_VINT)

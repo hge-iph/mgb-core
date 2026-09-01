@@ -95,6 +95,7 @@
     INTEGER OUT_ET, OUT_ETINT, OUT_ETSOILVEG, OUT_ETOPENWAT, OUT_ETURHWAT, OUT_SSAT
     INTEGER OUT_VBAS, OUT_VINT, OUT_VSUP, OUT_VINTERC, OUT_FLAREA
     INTEGER OUT_DBAS, OUT_DINT, OUT_DSUP
+    integer OUT_POTETWAT
     
     !*************************************************************************************************     
    
@@ -203,6 +204,7 @@
         & OUT_ETSOILVEG,   &
         & OUT_ETOPENWAT,   &
         & OUT_ETURHWAT,    &
+        & OUT_POTETWAT,    &
         & OUT_VBAS,        &
         & OUT_VINT,        &
         & OUT_VSUP,        &
@@ -228,6 +230,7 @@
     flag_OUT_ETSOILVEG  = OUT_ETSOILVEG
     flag_OUT_ETOPENWAT  = OUT_ETOPENWAT
     flag_OUT_ETURHWAT   = OUT_ETURHWAT
+    flag_OUT_POTETWAT   = OUT_POTETWAT
     flag_OUT_VBAS       = OUT_VBAS
     flag_OUT_VINT       = OUT_VINT
     flag_OUT_VSUP       = OUT_VSUP

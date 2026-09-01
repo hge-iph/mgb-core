@@ -158,6 +158,7 @@
     INTEGER,PARAMETER:: FIL_SURFWAT=1991   !File containing SURFACE WATER STORAGE
     INTEGER,PARAMETER:: FIL_RUNOFF=1992    !File containing RUNOFF
     INTEGER,PARAMETER:: FIL_ETURHWAT=1993  !File containing ET FROM URH WATER
+    INTEGER,PARAMETER:: FIL_POTETWAT=1994  !File containing POTENTIAL ET FROM WATER SURFACES
     
     !Flags for input met forcing (monthly averages / time series)
     integer flag_IN_TEMP, flag_IN_RAD, flag_IN_RH, flag_IN_WIND, flag_IN_PRES
@@ -167,6 +168,7 @@
     INTEGER flag_OUT_SSATD, flag_OUT_ET, flag_OUT_ETINT, flag_OUT_ETSOILVEG, flag_OUT_ETOPENWAT, flag_OUT_ETURHWAT
     INTEGER flag_OUT_VBAS, flag_OUT_VINT, flag_OUT_VSUP, flag_OUT_VINTERC, flag_OUT_FLAREA
     INTEGER flag_OUT_DBAS, flag_OUT_DINT, flag_OUT_DSUP
+    integer flag_OUT_POTETWAT
     
 	!Variables with dimensions used
     REAL(4),ALLOCATABLE:: QTUDO(:),YTUDO(:) !Minibasins streamflow at all locations in all time steps #Results are written for each timestep    
@@ -310,6 +312,7 @@
     REAL(4),ALLOCATABLE:: QBASTUDO(:) !catchment baseflow only everywhere #Vinicius Siqueira
 	REAL(4),ALLOCATABLE:: WSATDEGREE(:) !soil moisture volume only everywhere #Vinicius Siqueira    
     REAL(4),ALLOCATABLE:: ETINTERC(:),ETSOILPLANT(:),ETOPENWAT(:),EVAPURHAGUA(:) !CEAA
+    REAL(4),ALLOCATABLE:: POTETWAT(:) !CEAA
     REAL(4),ALLOCATABLE:: SOILWATER(:),CAPWATER(:),VINTERC(:) !CEAA
     REAL(4),ALLOCATABLE:: VSUPMMDIA(:),VINTMMDIA(:),VBASMMDIA(:) !CEAA
     REAL(4),ALLOCATABLE:: DSUPMMDIA(:),DINTMMDIA(:),DBASMMDIA(:) !CEAA
