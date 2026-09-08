@@ -2,13 +2,30 @@
 
 Legacy Fortran hydrology and hydrodynamics model under bootstrap for collaborative development.
 
-## Bootstrap Docs
+## Documentation
+
+The documentation is available from the [MkDocs home page](docs/index.md).
+Install and preview it locally with:
+
+```bash
+python -m pip install -r requirements-docs.txt
+python -m mkdocs serve
+```
+
+Build the same strict site checked for pull requests with:
+
+```bash
+python -m mkdocs build --strict
+```
+
+Useful starting points:
 
 - [Build](docs/build.md)
 - [Testing](docs/testing.md)
-- [Architecture Bootstrap](docs/architecture-bootstrap.md)
-- [Cleanup Roadmap](docs/cleanup-roadmap.md)
+- [Architecture](docs/architecture-bootstrap.md)
+- [Cleanup roadmap](docs/cleanup-roadmap.md)
 - [Portability](docs/portability.md)
+- [Language and naming](docs/language-and-naming.md)
 
 ## Windows
 

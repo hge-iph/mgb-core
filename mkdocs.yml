@@ -1,0 +1,30 @@
+site_name: MGB Model
+site_description: Documentation for the MGB large-scale hydrological model
+site_url: https://hge-iph.github.io/MGB-model/
+repo_url: https://github.com/HGE-IPH/MGB-model
+repo_name: HGE-IPH/MGB-model
+edit_uri: edit/main/docs/
+
+theme:
+  name: mkdocs
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Build: build.md
+      - Testing: testing.md
+  - Model:
+      - Architecture: architecture-bootstrap.md
+      - Portability: portability.md
+  - Development:
+      - Cleanup roadmap: cleanup-roadmap.md
+      - Language and naming: language-and-naming.md
+      - Glossary: glossary.md
+  - Project:
+      - History and contributors: project-history.md
+      - References: references.md
+      - Changes:
+          - Cleanup and documentation language: changes/cleanup-docs-language.md

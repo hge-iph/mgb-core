@@ -11,7 +11,7 @@ Focus first on infrastructure that makes later refactors safer:
 - Preserve and improve the CMake-based build.
 - Expand regression coverage before risky restructuring.
 - Maintain validated Windows and Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
-- Add Sphinx user documentation and in-repo developer documentation.
+- Maintain MkDocs user documentation and in-repo developer documentation.
 - Clean unused variables, stale comments, and confusing code incrementally.
 
 Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
@@ -29,6 +29,8 @@ Do not claim support for platforms or compilers that have not been validated. Th
 - Prefer modules with clear responsibility and explicit interfaces.
 - Reduce global-state coupling gradually; avoid broad rewrites just to make code look modern.
 - Keep comments useful: explain intent, assumptions, units, file formats, and non-obvious hydrological behavior. Remove comments that merely repeat the code.
+- Write new source identifiers, comments, and documentation in English using
+  the conventions in `docs/language-and-naming.md`.
 - Follow existing naming and layout conventions unless a PR is explicitly improving them in a narrow area.
 
 ## Git Contribution Flow
@@ -45,6 +47,16 @@ Do not claim support for platforms or compilers that have not been validated. Th
 - For portability work, document the exact OS, compiler, CMake command, and any known failing assumptions.
 - For refactors, provide regression evidence showing unchanged outputs or explicitly document output changes.
 - For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/build.md`, `docs/testing.md`, and `docs/portability.md`.
+
+## Documentation
+
+Install, preview, and validate the English MkDocs site from the repository root:
+
+```bash
+python -m pip install -r requirements-docs.txt
+python -m mkdocs serve
+python -m mkdocs build --strict
+```
 
 # Build
 
@@ -93,4 +105,3 @@ ctest --test-dir build/linux --output-on-failure -R regression_magdalena
 - Canonical build definition: `CMakeLists.txt`
 - Intel Fortran flags: `cmake/bootstrap_intel_fortran.cmake`
 - Validated compiler: Intel `ifx`
-
