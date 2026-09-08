@@ -1,11 +1,9 @@
 1 // Forest + Shallow Soil
 2 // Forest + Deep Soil
-3 // Inner Delta
-4 // Savannah + Shallow Soil
-5 // Savannah + Deep Soil
-6 // Agriculture + Shallow Soil
-7 // Agriculture + Deep Soil
-8 // Bare Soil + Shallow Soil
-9 // Bare Soil + Deep Soil
-10 // Wetland
-11 // Water
+3 // Agriculture + Shallow Soil
+4 // Agriculture + Deep Soil
+5 // Grassland + Shallow Soil
+6 // Grassland + Deep Soil
+7 // Wetland
+8 // Semi-Permeable
+9 // Water
