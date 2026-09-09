@@ -42,9 +42,11 @@ python -m mkdocs serve
 python -m mkdocs build --strict
 ```
 
-### Temporary PR files
+## Development notes and plans
 
-Use `.dev/pr/` for temporary files related to the current PR, such as implementation notes, decisions, checklists, and draft PR descriptions. These files may be committed during development but must be deleted before the branch is squash-merged.
+Use `.dev/pr/` for temporary files specific to the current PR, such as implementation notes, checklists, and draft PR descriptions. These files must be deleted before squash-merge.
+
+Use `.dev/plans/` for implementation plans, design notes, and tracked changes that may span multiple PRs. Keep them while the planned work is active and remove them once the work is completed.
 
 # Build
 
