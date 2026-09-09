@@ -37,7 +37,7 @@ unchanged filename records a symbol-only rename.
 | `modelo.f90` | `MODELO` | `run_model.f90` | `run_model` |
 | `rede.f90` | `REDE` | `route_muskingum_cunge_network.f90` | `route_muskingum_cunge_network` |
 | `musk.f90` | `MUSK` | `route_muskingum_cunge.f90` | `route_muskingum_cunge` |
-| `parcel.f90` | `PARCEL` | `calculate_catchment_parameters.f90` | `calculate_catchment_parameters` |
+| `parcel.f90` | `PARCEL` | `calculate_catchment_time_of_concentration.f90` | `calculate_catchment_time_of_concentration` |
 | `parcunge.f90` | `PARCUNGE` | `calculate_muskingum_cunge_parameters.f90` | `calculate_muskingum_cunge_parameters` |
 | `lecell.f90` | `LECELL` | `read_catchment_data.f90` | `read_catchment_data` |
 | `leuso.f90` | `LEUSO` | `read_calibrated_parameters.f90` | `read_calibrated_parameters` |

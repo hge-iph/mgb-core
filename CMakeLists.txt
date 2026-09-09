@@ -12,6 +12,7 @@ if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "IntelLLVM|Intel")
     message(FATAL_ERROR "The bootstrap build currently supports Intel Fortran only. Current compiler: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
 
+
 set(CMAKE_Fortran_FLAGS_RELEASE "" CACHE STRING "Bootstrap release flags" FORCE)
 
 set(MGB_MODEL_SOURCES
@@ -49,7 +50,7 @@ set(MGB_MODEL_SOURCES
     src/update_inertial_continuity.f90
     src/write_hotstart.f90
     src/initialize_inertial_routing.f90
-    src/calculate_catchment_parameters.f90
+    src/calculate_catchment_time_of_concentration.f90
     src/read_catchment_data.f90
     src/update_catchment_water_balance.f90
     src/read_fixed_parameters.f90
@@ -79,4 +80,3 @@ if(BUILD_TESTING)
                 --exe $<TARGET_FILE:mgb_model>
     )
 endif()
-

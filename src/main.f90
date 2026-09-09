@@ -96,7 +96,7 @@ program mgb_model
 
     write (*, *) 'Calculating river geometry information...'
     write (log_unit, *) 'Calculating river geometry information...'
-    call calculate_catchment_parameters
+    call calculate_catchment_time_of_concentration
     write (*, *) 'Catchment parameters calculated'
     write (log_unit, *) 'Catchment parameters calculated'
     call calculate_muskingum_cunge_parameters

@@ -3,7 +3,7 @@
 
 ! Calculate catchment concentration-time parameters.
 
-        subroutine calculate_catchment_parameters
+        subroutine calculate_catchment_time_of_concentration
 
             use model_state
             use inertial_state

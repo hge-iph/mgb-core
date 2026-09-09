@@ -29,7 +29,7 @@ non-authoritative.
 | modelo.f90 | run_model.f90 | Timestep execution order moved to model-processes.md; old call inventory and repeated loop comments rejected. |
 | rede.f90 | route_muskingum_cunge_network.f90 | Network ordering and boundary assumptions moved to model-processes.md; duplicate topology prose rejected. |
 | musk.f90 | route_muskingum_cunge.f90 | Reach subdivision and routing assumptions moved to model-processes.md; stale Portuguese warnings rejected. |
-| parcel.f90 | calculate_catchment_parameters.f90 | Derived geometry and unit assumptions moved to io-reference.md; comments that restated assignments rejected. |
+| parcel.f90 | calculate_catchment_time_of_concentration.f90 | Derived geometry and unit assumptions moved to io-reference.md; comments that restated assignments rejected. |
 | parcunge.f90 | calculate_muskingum_cunge_parameters.f90 | Celerity and reach-parameter purpose moved to model-processes.md; duplicate formula comments rejected. |
 | lecell.f90 | read_catchment_data.f90 | Catchment text layout and HRU ordering moved to io-reference.md; old filename notes migrated to migration.md. |
 | leuso.f90 | read_calibrated_parameters.f90 | Calibration row layout and HRU naming moved to io-reference.md; stale calibration-tool references rejected. |
