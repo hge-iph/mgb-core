@@ -16,14 +16,6 @@ Focus first on infrastructure that makes later refactors safer:
 
 Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
 
-## Change Boundaries
-
-- Keep PRs focused and reviewable. Avoid large mixed changes.
-- Do not combine algorithm changes with formatting, cleanup, or module restructuring.
-- Preserve input/output file formats and model outputs unless the PR explicitly documents and tests the change.
-- Separate IO restructuring from hydrology and routing logic changes.
-- Prefer small behavior-preserving steps that can be checked by regression tests.
-
 ## Fortran Modernization
 
 - Prefer modules with clear responsibility and explicit interfaces.
@@ -32,14 +24,6 @@ Do not claim support for platforms or compilers that have not been validated. Th
 - Write new source identifiers, comments, and documentation in English using
   the conventions in `docs/language-and-naming.md`.
 - Follow existing naming and layout conventions unless a PR is explicitly improving them in a narrow area.
-
-## Git Contribution Flow
-
-- `main` is the stable branch.
-- Use feature branches for development work.
-- Pull requests are preferred for all changes, especially source, build, tests, docs structure, and regression data.
-- Small documentation or metadata fixes may be committed directly by maintainers.
-- PR descriptions should explain behavior impact and list build/test evidence.
 
 ## Validation
 
