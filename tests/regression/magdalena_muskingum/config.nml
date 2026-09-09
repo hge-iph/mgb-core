@@ -1,0 +1,78 @@
+!**************************************************************************************
+!                           Global configuration parameters
+!**************************************************************************************
+&model
+
+    simulation_start                         = "1979-01-01 00:00"    ! Simulation start date (YYYY-MM-DD HH:mm).
+    simulation_end                           = "1982-08-06 00:00"    ! Simulation end date (YYYY-MM-DD HH:mm).
+    timestep                                 = 86400.0               ! Meteorological forcing timestep in seconds.
+    hotstart_read_mode                       = 0                     ! Hotstart read: (0) disabled, (1) read initial conditions from water_balance_state_<date>.bin and inertial_state_<date>.bin.
+    hotstart_write_mode                      = 0                     ! Hotstart write: (0) disabled, (1) write at the end, (2) write at hotstart_schedule.txt times.
+
+    first_subbasin                           = 1                     ! Initial sub-basin for simulation.
+    last_subbasin                            = 296                   ! Final sub-basin for simulation.
+
+    catchment_count                          = 458                   ! Total number of unit catchments.
+    hru_count                                = 9                     ! Total number of hydrological response units.
+    subbasin_count                           = 296                   ! Total number of sub-basins.
+    climate_region_count                     = 7                     ! Number of climate regions.
+
+    reservoir_substitution_enabled           = 0                     ! Enable reservoir setup in reservoir_config.txt: (0) disabled, (1) enabled.
+    reservoir_count                          = 0                     ! Number of reservoirs in reservoir_config.txt and reservoir_outflow.txt; requires reservoir_substitution_enabled = 1.
+
+&end
+!**************************************************************************************
+!                           Input forcing parameters
+!**************************************************************************************
+&forcing
+
+    use_temperature_timeseries               = 0                     ! Use temperature time series: (1) enabled, (0) use monthly means; temperature in degrees Celsius.
+    use_radiation_timeseries                 = 0                     ! Use radiation time series: (1) enabled, (0) use monthly means; radiation in MJ/m2 per timestep.
+    use_humidity_timeseries                  = 0                     ! Use relative-humidity time series: (1) enabled, (0) use monthly means; relative humidity in percent.
+    use_wind_timeseries                      = 0                     ! Use wind time series: (1) enabled, (0) use monthly means; wind speed at 10 m in m/s.
+    use_pressure_timeseries                  = 0                     ! Use pressure time series: (1) enabled, (0) use monthly means; pressure in kPa.
+    monthly_radiation_option                 = 1                     ! Monthly radiation: (0) sunshine hours, (1) sunshine percent, (2) radiation.
+
+&end
+!**************************************************************************************
+!                           River routing parameters
+!**************************************************************************************
+&routing
+
+    routing_mode                             = 0                     ! Routing mode: (0) Muskingum-Cunge, (1) local inertial hydrodynamic routing.
+    thread_count                             = 1                     ! Number of OpenMP threads for inertial routing.
+
+    downstream_boundary_slope                = 0.0                   ! Downstream boundary slope in metres per kilometre.
+    courant_alpha                            = 0.3                   ! Courant-Friedrichs-Lewy stability factor.
+
+&end
+!**************************************************************************************
+!                           Output variables
+!**************************************************************************************
+! Set each output flag to (1) to write the output or (0) to disable it.
+&output
+
+    write_discharge                          = 0                     ! River discharge (m3/s).
+    write_water_surface_elevation            = 0                     ! Water-surface elevation (m).
+    write_flooded_level                      = 0                     ! HAND-relative water level (m).
+    write_total_water_storage                = 1                     ! Terrestrial water storage (mm).
+    write_soil_water                         = 0                     ! Soil water content (mm).
+    write_soil_saturation                    = 0                     ! Soil saturation degree (0-1).
+    write_runoff                             = 1                     ! Total runoff (mm).
+    write_surface_water                      = 0                     ! Surface-water volume (mm).
+    write_evapotranspiration                 = 0                     ! Total evapotranspiration (mm).
+    write_interception_evaporation           = 0                     ! Evaporation of intercepted water (mm).
+    write_soil_vegetation_evapotranspiration = 0                     ! Evapotranspiration from soil and vegetation (mm).
+    write_open_water_evaporation             = 0                     ! Evaporation from dynamic open waters (mm).
+    write_water_hru_evaporation              = 0                     ! Evaporation from water HRUs (mm).
+    write_potential_open_water_evaporation   = 0                     ! Potential evaporation from water surfaces (mm).
+    write_groundwater_storage                = 0                     ! Groundwater reservoir volume (mm).
+    write_subsurface_storage                 = 0                     ! Subsurface reservoir volume (mm).
+    write_surface_storage                    = 0                     ! Surface reservoir volume (mm).
+    write_interception_storage               = 0                     ! Volume of intercepted water in the canopy (mm).
+    write_groundwater_flux                   = 0                     ! Groundwater flux from soil (mm).
+    write_subsurface_flux                    = 0                     ! Subsurface flux from soil (mm).
+    write_surface_flux                       = 0                     ! Surface flux from soil (mm).
+    write_flooded_area                       = 0                     ! Flooded area (km2).
+
+&end

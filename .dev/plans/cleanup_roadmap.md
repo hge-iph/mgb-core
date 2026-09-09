@@ -106,6 +106,10 @@ The cleanup effort as a whole is successful when:
 
 3. `cleanup/structure-and-interfaces`
 
+   Status: incorporated into the implementation scope. The domain source tree,
+   explicit module interfaces, lifecycle APIs, and automated architecture gate
+   are implemented together with regression coverage for both routing modes.
+
    Task:
 
    - Introduce explicit interfaces for utility routines and other low-risk

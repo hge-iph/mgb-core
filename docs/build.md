@@ -20,7 +20,7 @@ Run from the repository root:
 ```cmd
 cmake -S . -B build/windows
 cmake --build build/windows --config Release
-ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
+ctest --test-dir build/windows -C Release --output-on-failure
 ```
 
 ## Linux
@@ -37,7 +37,7 @@ Run from the repository root:
 source /opt/intel/oneapi/setvars.sh
 FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
 cmake --build build/linux
-ctest --test-dir build/linux --output-on-failure -R regression_magdalena
+ctest --test-dir build/linux --output-on-failure
 ```
 
 ## Optional Diagnostics Build
@@ -66,3 +66,6 @@ cmake --build build/windows-diagnostics --config Release
 - Canonical build definition: `CMakeLists.txt`
 - Intel Fortran flags: `cmake/bootstrap_intel_fortran.cmake`
 - Validated compiler: Intel `ifx`
+
+With `BUILD_TESTING` enabled, CTest registers the architecture check and the
+inertial and Muskingum-Cunge Magdalena regression cases.

@@ -21,6 +21,7 @@ nav:
       - I/O reference: io-reference.md
       - Portability: portability.md
   - Development:
+      - Architecture: architecture.md
       - Language and naming: language-and-naming.md
       - Fortran style: fortran-style.md
   - Project:

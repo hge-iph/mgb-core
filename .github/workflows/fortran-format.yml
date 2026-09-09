@@ -27,3 +27,9 @@ jobs:
 
       - name: Check Fortran formatting
         run: python scripts/check_fortran_format.py
+
+      - name: Check Fortran architecture
+        run: python scripts/check_fortran_architecture.py
+
+      - name: Test architecture checker
+        run: python -m unittest discover -s tests/architecture

@@ -5,6 +5,12 @@ by the executable. The model uses Intel Fortran direct-access unformatted
 records for the binary files. Record lengths are intentionally unchanged by
 the naming migration.
 
+Runtime file ownership is centralized: `configuration_io` owns `config.nml`,
+`static_input_io` owns static parameter, catchment, climatology, substitution,
+reservoir, and floodplain inputs, `meteorological_io` owns forcing streams,
+`hotstart_io` owns hotstart files and schedules, and `output_io` owns the log
+and model output streams. Scientific modules do not open or close model files.
+
 ## Configuration
 
 The only configuration file is config.nml. It contains four namelist

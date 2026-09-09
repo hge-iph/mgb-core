@@ -16,6 +16,8 @@ requirements-dev.txt.
   additive operators.
 - Keep multiplication, division, and exponentiation compact.
 - Use explicit double-colon declarations.
+- Give project modules default `private` visibility and list their public API.
+- Use `only` lists for every project-module import.
 - Indent continuations and align blocks consistently.
 - Do not change kinds, interfaces, relational syntax, calculations, or
   declaration semantics merely to satisfy formatting.
@@ -48,6 +50,7 @@ python -m pip install -r requirements-dev.txt
 fprettify --recursive --config-file .fprettify.rc src
 fprettify --recursive --config-file .fprettify.rc src
 python scripts/check_fortran_format.py
+python scripts/check_fortran_architecture.py
 git diff --check
 ~~~
 

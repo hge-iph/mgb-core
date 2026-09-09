@@ -1,10 +1,12 @@
 # Testing
 
-This branch introduces the first regression case: `magdalena`.
+The regression suite covers both routing branches with the Magdalena fixture.
 
 ## Layout
 
 - Fixture and manifest: `tests/regression/magdalena/`
+- Muskingum-Cunge manifest and configuration override:
+  `tests/regression/magdalena_muskingum/`
 - Regression runner: `tests/regression/run_regression.py`
 - Regression comparator: `tests/regression/compare_regression.py`
 
@@ -33,7 +35,8 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena 
 For each run, the regression harness:
 
 1. creates a runtime directory
-2. copies `tests/regression/magdalena/input` to `<runtime>/input`
+2. copies the manifest's input directory to `<runtime>/input` and applies any
+   case-specific input overrides
 3. creates `<runtime>/output`
 4. runs the model with `cwd=<runtime>` and `MGB_NONINTERACTIVE=1`
 5. compares selected outputs against `tests/regression/magdalena/expected`
@@ -59,6 +62,19 @@ Current manifest tolerances:
 - `atol = 1.0`
 - `rtol = 1e2`
 
+The `magdalena_muskingum` case selects routing mode 0 and compares runoff and
+total-water-storage records. It exists to execute the Muskingum-Cunge network
+path as part of every supported regression run.
+
+## Architecture gate
+
+Run the dependency and explicit-interface policy check without a compiler:
+
+```bash
+python scripts/check_fortran_architecture.py
+python -m unittest discover -s tests/architecture
+```
+
 ## Formatting and documentation gates
 
 The development dependency pins `fprettify==0.3.7`. Run the formatter
@@ -69,6 +85,7 @@ python -m pip install -r requirements-dev.txt
 fprettify --recursive --config-file .fprettify.rc src
 fprettify --recursive --config-file .fprettify.rc src
 python scripts/check_fortran_format.py
+python scripts/check_fortran_architecture.py
 git diff --check
 python -m mkdocs build --strict
 ~~~
