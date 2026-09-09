@@ -4,14 +4,18 @@ project(MGBModel LANGUAGES Fortran)
 
 include(CTest)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(bootstrap_intel_fortran)
+include(configure_fortran)
 
-option(ENABLE_FORTRAN_DIAGNOSTICS "Enable opt-in Intel Fortran diagnostics" OFF)
+option(ENABLE_FORTRAN_DIAGNOSTICS "Enable opt-in Fortran compiler diagnostics" OFF)
 
-if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "IntelLLVM|Intel")
-    message(FATAL_ERROR "The bootstrap build currently supports Intel Fortran only. Current compiler: ${CMAKE_Fortran_COMPILER_ID}")
+if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU|IntelLLVM|Intel")
+    message(FATAL_ERROR
+        "Supported Fortran compilers are GNU Fortran and Intel Fortran. "
+        "Current compiler: ${CMAKE_Fortran_COMPILER_ID}"
+    )
 endif()
 
+find_package(OpenMP REQUIRED COMPONENTS Fortran)
 
 set(CMAKE_Fortran_FLAGS_RELEASE "" CACHE STRING "Bootstrap release flags" FORCE)
 
@@ -72,7 +76,7 @@ set_target_properties(mgb_model PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/modules"
 )
 
-mgb_configure_bootstrap_target(mgb_model)
+mgb_configure_fortran_target(mgb_model)
 
 if(BUILD_TESTING)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)

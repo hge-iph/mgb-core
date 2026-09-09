@@ -41,7 +41,9 @@ ctest --test-dir build/windows -C Release --output-on-failure
 
 ## Linux
 
-Run from the repository root:
+Run from the repository root with either validated compiler.
+
+Intel `ifx`:
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
@@ -49,3 +51,14 @@ FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
 cmake --build build/linux
 ctest --test-dir build/linux --output-on-failure
 ```
+
+GNU Fortran:
+
+```bash
+FC=gfortran cmake -S . -B build/linux-gfortran -DCMAKE_BUILD_TYPE=Release
+cmake --build build/linux-gfortran
+ctest --test-dir build/linux-gfortran --output-on-failure
+```
+
+OpenMP is required for every supported build. See the [build guide](docs/getting-started/build.md)
+for compiler prerequisites and the experimental Windows GNU Fortran setup.

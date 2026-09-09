@@ -324,11 +324,13 @@ contains
         use io_state, only: climatology_unit, input_directory
 
         implicit none
-        integer :: climate_cell_index, month_index, record_index
+        integer :: climate_cell_index, month_index, record_index, record_length
 
         !input binary file with interpolated rainfall data
+        inquire (iolength=record_length) (monthly_air_temperature(climate_cell_index, 1), &
+                                          climate_cell_index=1, catchment_count)
       open (climatology_unit, file=input_directory//'monthly_climatology.bin', status='old', recl= &
-              catchment_count, form='UNFORMATTED', access='DIRECT')
+              record_length, form='UNFORMATTED', access='DIRECT')
 
         !Binary file of CRU climatology. Order of values:
         !1 - Surface Temperature        [months: 1 ... 12]
@@ -417,6 +419,7 @@ contains
 
         implicit none
         integer data_index, direct_access_record, io_status
+        integer :: flood_area_record_length, flood_stage_record_length
         integer, parameter :: floodplain_elevation_increment = 1
         !Increment in floodplain is assumed to be 1m
         integer, parameter :: standard_floodplain_point_count = 100
@@ -426,8 +429,9 @@ contains
         !Setting the number of floodplain elevations
 
         !Opening the level catchment_x flooded area files
+        inquire (iolength=flood_stage_record_length) floodplain_bottom_elevation
         open (flood_stage_unit, file=input_directory//'flood_stage.bin', status='old', recl= &
-              catchment_count, form='UNFORMATTED', access='DIRECT')
+              flood_stage_record_length, form='UNFORMATTED', access='DIRECT')
         !input binary file with interpolated rainfall data
 
         !The Structure of interpolate_stage_area.bin file is as follows:
@@ -452,9 +456,10 @@ contains
         !Close water level binary file
 
         !Reads the Floodplain Areas
-        !Values are in real*8. RECL must be multiplied by 2
-        open (flood_area_unit, file=input_directory//'flood_area.bin', status='old', recl=(2* &
-                                     standard_floodplain_point_count), form='UNFORMATTED', access= &
+        ! Values are double precision; derive the compiler's direct-access record units.
+        inquire (iolength=flood_area_record_length) floodplain_area(:, 1)
+        open (flood_area_unit, file=input_directory//'flood_area.bin', status='old', recl= &
+              flood_area_record_length, form='UNFORMATTED', access= &
               'DIRECT')
         !input binary file with Floodplain area
 

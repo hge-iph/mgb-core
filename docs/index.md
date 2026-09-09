@@ -8,7 +8,7 @@ filenames remain established MGB names.
 
 ## Start here
 
-- [Build the model](getting-started/build.md) on a validated Intel `ifx` environment.
+- [Build the model](getting-started/build.md) with validated Intel `ifx` or Linux GNU Fortran.
 - [Run the Magdalena regression case](getting-started/testing.md).
 - Review the [source architecture and dependency rules](development/architecture.md).
 - Review the [portability constraints](model/portability.md) before changing source

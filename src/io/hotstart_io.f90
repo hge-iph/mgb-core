@@ -38,7 +38,7 @@ contains
                             water_balance_hotstart_unit
 
         implicit none
-        integer :: state_index, state_variable_count, reach_index
+        integer :: record_length, state_index, state_variable_count, reach_index
         real(4), allocatable :: hotstart_water_balance_vector(:)
         real*8, allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
@@ -49,6 +49,7 @@ contains
                                catchment_count
         !
         allocate (hotstart_water_balance_vector(state_variable_count))
+        inquire (iolength=record_length) hotstart_water_balance_vector
 
         !Set the current datestring to read file (skipping minute)
         hotstart_filename = format_date_string(year, month, day, hour)
@@ -66,7 +67,7 @@ contains
         write (*, *) 'Reading Water Balance State Variables for: ', hotstart_filename
 
         open (water_balance_hotstart_unit, file=hotstart_input_directory//'water_balance_state_'// &
-     trim(hotstart_filename)//'.bin', status='old', recl=state_variable_count, form='UNFORMATTED', &
+            trim(hotstart_filename)//'.bin', status='old', recl=record_length, form='UNFORMATTED', &
               access='DIRECT')
 
         read (water_balance_hotstart_unit, rec=1) &
@@ -138,12 +139,13 @@ contains
         state_variable_count = (9*catchment_count)
         ! Variables from inertial routing
         allocate (inertial_state_vector(state_variable_count))
+        inquire (iolength=record_length) inertial_state_vector
 
         write (*, *) 'Reading Hydraulic State Variables for: ', hotstart_filename
         write (*, *)
 
         open (inertial_hotstart_unit, file=hotstart_input_directory//'inertial_state_'// &
-              trim(hotstart_filename)//'.bin', status='old', recl=(state_variable_count*2), form= &
+              trim(hotstart_filename)//'.bin', status='old', recl=record_length, form= &
               'UNFORMATTED', access='DIRECT')
         read (inertial_hotstart_unit, rec=1) (inertial_state_vector(state_index), state_index=1, &
                                               state_variable_count)
@@ -227,7 +229,7 @@ contains
         use output_state, only: write_hotstart_mode
 
         implicit none
-        integer state_index, state_variable_count, reach_index
+        integer :: record_length, state_index, state_variable_count, reach_index
         real(4), allocatable :: hotstart_water_balance_vector(:)
         real*8, allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
@@ -256,13 +258,15 @@ contains
         !Set the current datestring to save file (skipping minute)
         hotstart_filename = format_date_string(year, month, day, hour)
 
+        allocate (hotstart_water_balance_vector(state_variable_count))
+        inquire (iolength=record_length) hotstart_water_balance_vector
+
         open (water_balance_hotstart_unit, file=hotstart_input_directory//'water_balance_state_'// &
-              trim(hotstart_filename)//'.bin', status='unknown', recl=state_variable_count, form= &
+              trim(hotstart_filename)//'.bin', status='unknown', recl=record_length, form= &
               'UNFORMATTED', access='DIRECT')
 
         write (*, *) 'Writing Water Balance State Variables for: ', hotstart_filename
 
-        allocate (hotstart_water_balance_vector(state_variable_count))
         ! Writing state variables:
         state_index = 0
         do catchment_index = 1, catchment_count
@@ -334,11 +338,12 @@ contains
         write (*, *) 'Writing Hydraulic State Variables for: ', hotstart_filename
         !All variables below are in double precision (Real*8)
 
-        open (inertial_hotstart_unit, file=hotstart_input_directory//'inertial_state_'// &
-           trim(hotstart_filename)//'.bin', status='unknown', recl=(state_variable_count*2), form= &
-              'UNFORMATTED', access='DIRECT')
-
         allocate (inertial_state_vector(state_variable_count))
+        inquire (iolength=record_length) inertial_state_vector
+
+        open (inertial_hotstart_unit, file=hotstart_input_directory//'inertial_state_'// &
+              trim(hotstart_filename)//'.bin', status='unknown', recl=record_length, form= &
+              'UNFORMATTED', access='DIRECT')
 
         state_index = 0
         do catchment_index = 1, catchment_count

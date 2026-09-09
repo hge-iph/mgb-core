@@ -29,36 +29,38 @@ contains
 
         implicit none
         integer, intent(in) :: file_action
+        integer :: record_length
 
         !input met files
         ! Open forcing streams before the timestep loop.
         if (file_action == 1) then
+            inquire (iolength=record_length) precipitation(1:catchment_count)
 
             !input binary file with interpolated rainfall data
             open (precipitation_unit, file=input_directory//'precipitation.bin', status='old', &
-                  recl=catchment_count, form='UNFORMATTED', access='DIRECT')
+                  recl=record_length, form='UNFORMATTED', access='DIRECT')
 
             if (use_temperature_timeseries == 1) open (temperature_unit, file=input_directory// &
                                                        'air_temperature.bin', &
-                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                     status='old', recl=record_length, form='UNFORMATTED', access= &
                                                        'DIRECT')
 
             if (use_radiation_timeseries == 1) open (radiation_unit, file=input_directory// &
                                                      'solar_radiation.bin', &
-                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                     status='old', recl=record_length, form='UNFORMATTED', access= &
                                                      'DIRECT')
 
             if (use_humidity_timeseries == 1) open (relative_humidity_unit, file= &
                                                     input_directory//'relative_humidity.bin', &
-                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                     status='old', recl=record_length, form='UNFORMATTED', access= &
                                                     'DIRECT')
 
             if (use_wind_timeseries == 1) open (wind_unit, file=input_directory//'wind_speed.bin', &
-                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                     status='old', recl=record_length, form='UNFORMATTED', access= &
                                                 'DIRECT')
 
   if (use_pressure_timeseries == 1) open (pressure_unit, file=input_directory//'air_pressure.bin', &
-                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                     status='old', recl=record_length, form='UNFORMATTED', access= &
                                                     'DIRECT')
 
         else

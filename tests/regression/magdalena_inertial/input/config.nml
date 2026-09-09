@@ -40,7 +40,7 @@
 &routing
 
     routing_mode                             = 1                     ! Routing mode: (0) Muskingum-Cunge, (1) local inertial hydrodynamic routing.
-    thread_count                             = 1                     ! Number of OpenMP threads for inertial routing.
+    thread_count                             = 2                     ! Number of OpenMP threads for inertial routing.
 
     downstream_boundary_slope                = 0.0                   ! Downstream boundary slope in metres per kilometre.
     courant_alpha                            = 0.3                   ! Courant-Friedrichs-Lewy stability factor.

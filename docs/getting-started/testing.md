@@ -22,8 +22,16 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena_
 
 ## Linux
 
+Intel build:
+
 ```bash
 ctest --test-dir build/linux --output-on-failure -R regression_magdalena_
+```
+
+GNU Fortran build:
+
+```bash
+ctest --test-dir build/linux-gfortran --output-on-failure -R regression_magdalena_
 ```
 
 ```bash
@@ -61,6 +69,9 @@ Current manifest tolerances:
 
 - `atol = 1.0`
 - `rtol = 1e2`
+
+The inertial fixture requests two OpenMP threads so regression builds execute the
+existing parallel routing regions rather than only verifying that OpenMP links.
 
 The `magdalena_muskingum` case selects routing mode 0 and compares discharge,
 runoff, and total-water-storage records. It exists to execute the

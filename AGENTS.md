@@ -10,11 +10,11 @@ Focus first on infrastructure that makes later refactors safer:
 
 - Preserve and improve the CMake-based build.
 - Expand regression coverage before risky restructuring.
-- Maintain validated Windows and Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
+- Maintain validated Windows and Linux builds with Intel `ifx` and the validated Linux GNU Fortran build.
 - Maintain MkDocs user documentation and in-repo developer documentation.
 - Clean unused variables, stale comments, and confusing code incrementally.
 
-Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/getting-started/build.md` and `docs/model/portability.md`.
+Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`, plus Linux x64 with GNU Fortran 13.3; see `docs/getting-started/build.md` and `docs/model/portability.md`.
 
 ## Fortran Modernization
 
@@ -50,11 +50,12 @@ Use `.dev/plans/` for implementation plans, design notes, and tracked changes th
 
 # Build
 
-This project uses CMake with Intel `ifx`. Validated build directories are kept
-under `build/` by operating system:
+This project uses CMake with OpenMP. Validated build directories are kept under
+`build/` by operating system and compiler:
 
-- Windows: `build/windows`
-- Linux: `build/linux`
+- Windows Intel: `build/windows`
+- Linux Intel: `build/linux`
+- Linux GNU: `build/linux-gfortran`
 
 ## Windows
 
@@ -90,8 +91,16 @@ cmake --build build/linux
 ctest --test-dir build/linux --output-on-failure -R regression_magdalena_
 ```
 
+For GNU Fortran 13.3 on Linux:
+
+```bash
+FC=gfortran cmake -S . -B build/linux-gfortran -DCMAKE_BUILD_TYPE=Release
+cmake --build build/linux-gfortran
+ctest --test-dir build/linux-gfortran --output-on-failure -R regression_magdalena_
+```
+
 ## Build Definition
 
 - Canonical build definition: `CMakeLists.txt`
-- Intel Fortran flags: `cmake/bootstrap_intel_fortran.cmake`
-- Validated compiler: Intel `ifx`
+- Compiler-specific flags: `cmake/configure_fortran.cmake`
+- Validated compilers: Intel `ifx`, and GNU Fortran 13.3 on Linux

@@ -1,9 +1,9 @@
 # I/O reference
 
 All paths below are relative to the runtime input or output directory selected
-by the executable. The model uses Intel Fortran direct-access unformatted
-records for the binary files. Record lengths are intentionally unchanged by
-the naming migration.
+by the executable. The model uses direct-access unformatted records for the
+binary files. Record lengths are derived with `INQUIRE(IOLENGTH=...)` so Intel
+and GNU compilers retain the established physical record layouts.
 
 Runtime file ownership is centralized: `configuration_io` owns `config.nml`,
 `static_input_io` owns static parameter, catchment, climatology, substitution,
@@ -120,9 +120,9 @@ values per catchment in the existing order: inertial discharge, water depth,
 water-surface elevation, previous volume, current volume, flooded area, stage
 table index, face discharge, and neighbor discharge.
 
-hotstart_schedule.txt selects write times; the modes and record vectors are
-not compatible with a different compiler record convention unless that
-compiler is validated against the supported Intel ifx builds.
+hotstart_schedule.txt selects write times. Record lengths are calculated from
+the actual single- or double-precision vectors, preserving compatibility between
+the validated Intel and Linux GNU builds.
 
 ## Output files
 
@@ -162,7 +162,6 @@ names and do not change the underlying text fields.
 ## Precision and compatibility
 
 The .bin extension describes a binary payload, not a newly defined encoding.
-The source open statements define the record lengths, precision, access mode,
-and ordering. The migration changes names and namelist keys only; it does not
-convert payloads, rescale numerical fields, add headers, or provide legacy
-aliases.
+The source open statements and `INQUIRE(IOLENGTH=...)` results define the record
+lengths, precision, access mode, and ordering. Compiler portability does not
+convert payloads, rescale numerical fields, add headers, or provide legacy aliases.
