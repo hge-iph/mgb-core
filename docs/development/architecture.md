@@ -1,53 +1,140 @@
 # Architecture
 
-The source tree separates application orchestration, runtime I/O, scientific
-behavior, and domain-owned module state. This structure gives every project
-procedure an explicit interface while preserving the model's module-global
-storage and numerical execution order.
+MGB is organized as a single Fortran executable composed from domain modules.
+The source tree separates application composition, simulation orchestration,
+scientific behavior, domain-owned state, and runtime I/O. This gives every
+project procedure an explicit interface while preserving the model's numerical
+execution order and module-global storage.
+
+This page describes the implemented architecture. It is both a guide to finding
+code and a set of dependency and lifecycle constraints for future changes. The
+[model processes](../model/model-processes.md) page describes the hydrological
+and routing behavior in more detail.
+
+## Source tree
 
 ```text
 src/
-├── application/main.f90
-├── common/{date_time,interpolation,runtime_support}.f90
-├── simulation/{simulation_state,simulation_runner}.f90
-├── catchment/{catchment_state,meteorological_state,water_balance_state,
-│             catchment_hydrology}.f90
-├── reservoirs/reservoir_state.f90
-├── routing/muskingum/{muskingum_state,muskingum_routing}.f90
-├── routing/inertial/{inertial_state,inertial_routing}.f90
-└── io/{io_state,output_state,configuration_io,static_input_io,
-       meteorological_io,hotstart_io,output_io}.f90
+├── application/
+│   └── main.f90
+├── common/
+│   ├── date_time.f90
+│   ├── interpolation.f90
+│   └── runtime_support.f90
+├── simulation/
+│   ├── simulation_state.f90
+│   └── simulation_runner.f90
+├── catchment/
+│   ├── catchment_state.f90
+│   ├── meteorological_state.f90
+│   ├── water_balance_state.f90
+│   └── catchment_hydrology.f90
+├── reservoirs/
+│   └── reservoir_state.f90
+├── routing/
+│   ├── muskingum/
+│   │   ├── muskingum_state.f90
+│   │   └── muskingum_routing.f90
+│   └── inertial/
+│       ├── inertial_state.f90
+│       └── inertial_routing.f90
+└── io/
+    ├── io_state.f90
+    ├── output_state.f90
+    ├── configuration_io.f90
+    ├── static_input_io.f90
+    ├── meteorological_io.f90
+    ├── hotstart_io.f90
+    └── output_io.f90
 ```
 
-## Responsibilities and public APIs
+Folders communicate ownership, but dependency classification is per module.
+For example, `simulation_state` is a low-level state contract while
+`simulation_runner` is a high-level orchestration module even though both are
+under `src/simulation/`.
 
-| Module | Responsibility | Public behavior/lifecycle API |
+## Architectural vocabulary
+
+The architecture uses the following roles:
+
+- **Application composition** is the `mgb_model` program in `main.f90`. It
+  visibly sequences configuration, allocation, static input, preparation,
+  simulation, and shutdown.
+- **Simulation orchestration** is `simulation_runner`. It coordinates domain
+  initialization, the timestep loop, hotstarts, and model-output lifecycle.
+- **Scientific facades** are `catchment_hydrology`, `muskingum_routing`, and
+  `inertial_routing`. Each exposes a small domain API and keeps its numerical
+  helpers private.
+- **Domain state** is held by the `*_state` modules. State remains beside its
+  owning domain instead of being collected in a general state module.
+- **Centralized I/O** modules own runtime model files. Scientific modules
+  calculate state but do not open, read, write, or close model data files.
+- **Common utilities** provide model-independent date, interpolation, and
+  runtime helpers.
+
+The model uses cohesive domain modules. This keeps related calculations behind a meaningful public boundary and avoids recreating the former flat call graph inside many nominal modules.
+
+## Module responsibilities and APIs
+
+Every project module has `implicit none`, default `private` visibility, and an
+explicit `public` list. Every import of another project module uses an `only`
+list. State declarations are public only where existing algorithms exchange
+them.
+
+### Common and simulation modules
+
+| Module | Responsibility | Public behavior or lifecycle API |
 | --- | --- | --- |
-| `date_time` | Calendar conversion and timestep counting | Date parse/format, Julian conversion, `calculate_timestep_count` |
+| `date_time` | Parse and format dates, convert Julian dates, and count timesteps | `format_date_string`, `parse_date_string`, `calculate_integer_julian_day`, `calculate_julian_day`, `convert_julian_day_to_calendar`, `calculate_timestep_count` |
 | `interpolation` | Generic linear interpolation | `linear_interpolate` |
-| `runtime_support` | Legacy runtime helpers | `initialize_random_seed`, `update_legacy_timer` |
-| `simulation_state` | Calendar, timestep, and run-range state | State declarations |
-| `simulation_runner` | Simulation initialization and timestep loop | `run_simulation` |
-| `catchment_state` | Catchment geometry, topology, HRU identity, and counts | State declarations, allocate/deallocate APIs |
-| `meteorological_state` | Forcing options, climatology, and current forcing | State declarations, allocate/deallocate APIs |
-| `water_balance_state` | Parameters, stores, fluxes, ET, and lateral flow | State declarations, allocate/deallocate APIs |
-| `catchment_hydrology` | Parameter preparation and vertical water balance | `calculate_catchment_time_of_concentration`, `initialize_catchment_hydrology`, `update_catchment_hydrology` |
-| `reservoir_state` | Prescribed flows and reservoir substitution | State declarations, allocate/initialize/deallocate APIs |
-| `muskingum_state` | Muskingum-Cunge parameters and route state | State declarations, allocate/deallocate APIs |
-| `muskingum_routing` | Muskingum-Cunge preparation and routing | Calculate, initialize, and network-route APIs |
-| `inertial_state` | Inertial configuration, topology, tables, and hydraulic state | State declarations, allocate/deallocate APIs |
-| `inertial_routing` | Inertial preparation and routing | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
-| `io_state` | Runtime directories, units, and format work fields | State declarations |
-| `output_state` | Output flags, buffers, and hotstart controls | State declarations, allocate/deallocate APIs |
-| `configuration_io` | Configuration namelist ownership | `read_model_configuration` |
-| `static_input_io` | Static parameter, catchment, floodplain, and reservoir files | Grouped catchment, floodplain, and reservoir read APIs |
-| `meteorological_io` | Forcing-file lifecycle and timestep reads | Open, read, and close APIs |
-| `hotstart_io` | Hotstart vectors, schedule, and files | Read, schedule-read, and write APIs |
-| `output_io` | Log and model-output lifecycle | Log/output open, write, and close APIs |
+| `runtime_support` | Retained random-seed and legacy timer helpers | `initialize_random_seed`, `update_legacy_timer` |
+| `simulation_state` | Calendar, timestep, run range, and simulation index | Public state declarations; no behavioral API |
+| `simulation_runner` | Simulation initialization/finalization and the timestep loop | `run_simulation` |
 
-State declarations are public only where existing algorithms exchange them.
-Every module otherwise uses default `private`, and every project-module import
-has an `only` list.
+### Catchment and reservoir modules
+
+| Module | Responsibility | Public behavior or lifecycle API |
+| --- | --- | --- |
+| `catchment_state` | Catchment geometry, topology, subbasin and HRU identity, and entity counts | `allocate_catchment_state`, `deallocate_catchment_state` |
+| `meteorological_state` | Forcing options, climatology, current forcing, and previous temperature | `allocate_meteorological_state`, `deallocate_meteorological_state` |
+| `water_balance_state` | Soil and vegetation parameters, dynamic stores, fluxes, ET, radiation work state, and lateral flow | `allocate_water_balance_state`, `deallocate_water_balance_state` |
+| `catchment_hydrology` | Parameter preparation and vertical catchment water balance | `calculate_catchment_time_of_concentration`, `initialize_catchment_hydrology`, `update_catchment_hydrology` |
+| `reservoir_state` | Prescribed gauge flows, reservoir substitution, routing overrides, and associated state | `allocate_reservoir_state`, `initialize_reservoir_state`, `deallocate_reservoir_state` |
+
+### Routing modules
+
+| Module | Responsibility | Public behavior or lifecycle API |
+| --- | --- | --- |
+| `muskingum_state` | Muskingum-Cunge parameters, boundary arrays, component fractions, and river-route state | `allocate_muskingum_state`, `deallocate_muskingum_state` |
+| `muskingum_routing` | Parameter preparation, initial river state, and network routing | `calculate_muskingum_cunge_parameters`, `initialize_muskingum_cunge_routing`, `route_muskingum_cunge_network` |
+| `inertial_state` | Routing configuration, floodplain topology and tables, hydraulic state, and OpenMP work state | `allocate_inertial_state`, `deallocate_inertial_state` |
+| `inertial_routing` | Inertial topology/table preparation, initialization, and routing | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
+
+### I/O modules
+
+| Module | Responsibility | Public behavior or lifecycle API |
+| --- | --- | --- |
+| `io_state` | Runtime directories, file-unit constants, and retained format work fields | Public state declarations; no behavioral API |
+| `output_state` | Output flags and buffers plus hotstart controls and schedule | `allocate_output_state`, `deallocate_output_state` |
+| `configuration_io` | Read `config.nml` and populate owning state modules | `read_model_configuration` |
+| `static_input_io` | Read static catchment, parameter, climatology, substitution, reservoir, and floodplain inputs | `read_catchment_inputs`, `read_floodplain_inputs`, `read_reservoir_inputs` |
+| `meteorological_io` | Own forcing-file lifecycle and timestep reads | `open_meteorological_inputs`, `read_meteorological_forcing`, `close_meteorological_inputs` |
+| `hotstart_io` | Own hotstart vectors, schedules, and files | `read_hotstart`, `read_hotstart_schedule`, `write_hotstart` |
+| `output_io` | Own the log and model-output file lifecycles and writes | `open_model_log`, `open_model_outputs`, `write_model_outputs`, `close_model_outputs`, `close_model_log` |
+
+## State ownership
+
+| Owner | State groups |
+| --- | --- |
+| `simulation_state` | Timestep count/index and duration; calendar fields and Julian day; first and last simulated subbasins |
+| `catchment_state` | Capacity limits and entity counts; catchment/subbasin indices and relationships; drainage topology; areas, coordinates, and reach geometry; HRU identity and percentages; climate-region assignment and catchment ordering |
+| `meteorological_state` | Forcing-selection flags; monthly-radiation option and climatology; station coordinates; current forcing arrays and previous temperature |
+| `water_balance_state` | Soil/vegetation parameters; routing coefficients; soil, interception, surface, subsurface, and groundwater stores and fluxes; ET/radiation/capillary state; open-water evaporation; terrestrial storage; floodplain exchange and catchment-generated flow |
+| `reservoir_state` | Prescribed-flow series and locations; reservoir configuration, catchment maps, start timesteps, outflows, and downstream overrides |
+| `muskingum_state` | Routing inputs and reach counts; celerity and concentration time; boundary and reach flows; component fractions, routing volumes, and velocity |
+| `inertial_state` | Routing selection and configuration; upstream and lateral-face topology; source and derived floodplain tables; discharge, stage, depth, volume, and area; interpolation and OpenMP work state |
+| `io_state` | Input, output, and hotstart directories; configuration, input, output, log, and hotstart units; retained fixed-format header fields |
+| `output_state` | Output-selection flags; single-precision output and diagnostic buffers; hotstart modes and write schedule |
 
 ## Dependency direction
 
@@ -60,40 +147,88 @@ simulation_runner -----> centralized I/O
         +--------------> scientific facades
                                |
                                v
-                       state + common utilities
+                       domain state + common utilities
 ```
 
-Common modules do not depend on model state. State modules do not depend on
-behavioral modules. Scientific facades may use state and common modules but not
-another scientific facade or an I/O behavior module. I/O behavior modules may
-use state and common modules but not scientific behavior. The runner and
-application are the composition layers. The architecture checker enforces
-these edges; the two narrow `catchment_state` imports used for fixed legacy
-array bounds are explicit exceptions.
+The allowed project-module dependencies are:
 
-Water balance reads inertial routing selection and flooded area, while inertial
-continuity consumes precipitation and water-balance fluxes. Both routing
-implementations consume catchment-generated flow, Muskingum-Cunge consumes
-open-water evaporation, and routing consumes reservoir substitution state.
-These exchanges are visible in `use, only` lists rather than hidden in an
-aggregating state module.
+| Consumer | May use |
+| --- | --- |
+| Common utility | Another explicitly required common utility; never model state |
+| State module | Common utilities only, apart from the two fixed-bound exceptions below |
+| Scientific facade | State modules and common utilities |
+| I/O behavior module | State modules and common utilities |
+| `simulation_runner` | I/O APIs, scientific facades, state modules, and common utilities |
+| `application/main.f90` | Public orchestration, I/O, lifecycle, and state APIs needed to show the complete application sequence |
 
-## Lifecycle
+The two permitted state-to-state edges are
+`reservoir_state -> catchment_state` and `io_state -> catchment_state`. Both
+import fixed legacy capacity bounds from `catchment_state`; they are explicit,
+narrow exceptions.
+When an allocation needs dimensions owned elsewhere, its lifecycle procedure
+normally receives scalar dimensions as arguments.
 
-`main` owns startup and shutdown. It reads configuration, allocates state by
-domain, reads static inputs, prepares routing, opens forcing inputs, and then
-calls `run_simulation`. The runner opens outputs; initializes reservoir,
-water-balance, Muskingum-Cunge, and inertial state in the legacy order; applies
-hotstarts; runs the timestep loop; writes a final hotstart when configured; and
-closes outputs. `main` then closes forcing inputs and deallocates domains in
-reverse allocation order.
+Forbidden dependencies include:
 
-The timestep loop preserves the established sequence: advance the index,
-handle scheduled hotstarts, update the calendar, read forcing, update catchment
-hydrology, route Muskingum-Cunge when selected, assemble lateral flow, route
-inertial flow, assemble output buffers, write records, and advance Julian time.
+- one scientific facade calling another scientific facade;
+- a state module using a behavioral module;
+- a scientific facade using an I/O behavior module;
+- an I/O module using a scientific facade;
+- a common utility depending on model state; and
+- a general state aggregator that re-exports all domain state.
 
-State remains module-global in this phase to avoid coupling architectural work
-to scientific changes. Derived state types, state-object argument passing,
-further reduction of global scratch state, and per-domain CMake targets are
-deferred.
+The composition layers call the facades in the required order. Facades may
+exchange explicitly exported state, but they may not hide orchestration by
+calling one another.
+
+## Cross-domain scientific exchanges
+
+The numerical algorithms still require deliberate exchanges across ownership
+boundaries. They are exposed by `use, only` lists:
+
+- meteorological I/O updates the forcing arrays consumed by catchment
+  hydrology, including precipitation used by inertial continuity;
+- catchment hydrology reads routing selection and flooded area so inundated
+  area can affect the terrestrial water balance;
+- catchment hydrology produces surface, subsurface, and groundwater flow,
+  floodplain infiltration, open-water evaporation, and potential ET;
+- both routing implementations consume catchment-generated flow;
+- Muskingum-Cunge routing consumes open-water evaporation and prescribed-flow
+  substitution state;
+- inertial routing consumes precipitation, water-balance fluxes, Muskingum
+  river state needed by the mixed legacy representation, and reservoir outflow
+  substitution state; and
+- the runner assembles state from the producing domains into `output_state`,
+  after which `output_io` writes the enabled records.
+
+Output and hotstart I/O may read all producing state modules. This broad read
+access is intentional serialization behavior.
+
+## Architecture enforcement
+
+Run the repository policy checker from the project root:
+
+```bash
+python scripts/check_fortran_architecture.py
+```
+
+The checker is deliberately scoped to the free-form Fortran syntax used under
+`src/`. It discovers project modules before
+classifying imports, so compiler modules such as `omp_lib` are not mistaken for
+project dependencies.
+
+It enforces:
+
+- approved paths and classifications for every project module;
+- exactly one program, located at `src/application/main.f90`;
+- no external project subroutines or functions;
+- `implicit none` in every module and the program;
+- default `private` and an explicit public API in every module;
+- `only` lists on every project-module import;
+- the dependency rules and explicit exceptions documented above; and
+- rejection of unclassified modules so new code cannot bypass the policy.
+
+When CMake is configured with `BUILD_TESTING`, the same command is registered
+with CTest as the `architecture` test. Focused checker tests are in
+`tests/architecture/`; see the [testing guide](../getting-started/testing.md)
+for the full validation commands.
