@@ -3,6 +3,9 @@ name: Regression GNU Fortran
 on:
   pull_request:
   workflow_dispatch:
+  push:
+    branches:
+      - refactor/structure-and-interfaces
 
 permissions:
   contents: read
