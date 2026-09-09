@@ -262,11 +262,11 @@ module model_state
     real(4), allocatable :: air_temperature(:), relative_humidity(:), wind_speed(:)
     real(4), allocatable :: solar_input(:), air_pressure(:)
 
-    real model_timestep_seconds
-    !Time interval of main calculation (in seconds given in the input file)
+    real model_timestep
+    ! Main calculation timestep in seconds.
     !Variables related to radiation
-    real latitude_degrees
-    !Latitude in decimal degrees (- south)
+    real latitude
+    ! Latitude in decimal degrees (negative south).
     real current_solar_input, previous_temperature
     ! Sunshine duration (hours) and temperature (degrees C)
     real current_albedo
@@ -286,8 +286,8 @@ module model_state
     real latent_heat_vaporization
     !latent heat of vaporization
     real solar_declination, sunset_hour_angle
-    real max_sunshine_hours
-    !maximum duration of sunshine (hours)
+    real max_sunshine_duration
+    ! Maximum sunshine duration in hours.
     real earth_sun_distance_factor
     ! Relative distance Earth - Sun
     real ground_heat_flux, top_atmosphere_radiation
@@ -312,7 +312,8 @@ module model_state
     real current_air_temperature, current_wind_speed, current_arno_b
     real current_subsurface_conductivity, current_groundwater_conductivity
     real current_leaf_area_index, current_vegetation_height, soil_vegetation_et
-    real current_precipitation, current_interception_storage, wind_speed_2m
+    real current_precipitation, current_interception_storage, wind_speed_reference
+    ! Wind speed reference value at 2 m, in m/s.
     real current_floodplain_infiltration_rate, current_brooks_corey_lambda
     real current_temperature, current_surface_resistance, current_capillary_flux, current_total_et
     real current_capillary_threshold_fraction, remaining_groundwater_storage

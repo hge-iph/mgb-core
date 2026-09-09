@@ -1,12 +1,12 @@
 ! SPDX-License-Identifier: GPL-3.0-or-later
 ! Copyright (C) 2019 Hidrologia de Grande Escala (HGE)
 
-! Read model_config.nml and populate internal model configuration.
+! Read config.nml and populate internal model configuration.
 
     subroutine read_model_configuration
 
         use model_state, only: config_unit, input_directory, &
-                               model_timestep_seconds_state => model_timestep_seconds, &
+                               model_timestep_state => model_timestep, &
                                catchment_count_state => catchment_count, &
                                climate_cell_count_state => climate_cell_count, &
                              hru_count_state => hru_count, subbasin_count_state => subbasin_count, &
@@ -49,7 +49,8 @@
         integer :: subbasin_count, climate_region_count
         integer :: hotstart_read_mode, hotstart_write_mode
         integer :: first_subbasin, last_subbasin
-        real(4) :: timestep_seconds
+        real(4) :: timestep
+        ! Meteorological forcing timestep in seconds.
         integer :: reservoir_substitution_enabled, reservoir_count
         character(len=40) :: simulation_start, simulation_end
 
@@ -64,7 +65,8 @@
         integer :: monthly_radiation_option
 
         integer :: routing_mode, thread_count
-        real :: downstream_boundary_slope_m_per_km, courant_alpha
+        real :: downstream_boundary_slope, courant_alpha
+        ! Downstream boundary slope in metres per kilometre.
 
         integer :: write_discharge, write_soil_water, write_water_surface_elevation
         integer :: write_flooded_level, write_total_water_storage, write_runoff
@@ -78,15 +80,15 @@
         integer :: write_groundwater_flux, write_subsurface_flux, write_surface_flux
         integer :: write_flooded_area
 
-        namelist /model/ simulation_start, simulation_end, timestep_seconds, &
+        namelist /model/ simulation_start, simulation_end, timestep, &
             hotstart_read_mode, hotstart_write_mode, first_subbasin, &
             last_subbasin, catchment_count, hru_count, subbasin_count, &
             climate_region_count, reservoir_substitution_enabled, reservoir_count
 
-        open (config_unit, file=input_directory//'model_config.nml', status='old', action='read')
+        open (config_unit, file=input_directory//'config.nml', status='old', action='read')
         read (config_unit, nml=model)
 
-        model_timestep_seconds_state = timestep_seconds
+        model_timestep_state = timestep
         catchment_count_state = catchment_count
         climate_cell_count_state = catchment_count
         hru_count_state = hru_count
@@ -107,7 +109,7 @@
         julian_day = calculate_julian_day(year, month, day, hour, minute)
         jday_end = calculate_julian_day(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end)
         timestep_count = calculate_timestep_count(jday_end, julian_day, &
-                                                  real(model_timestep_seconds_state, 8)) + 1
+                                                  real(model_timestep_state, 8)) + 1
 
         namelist /forcing/ use_temperature_timeseries, use_radiation_timeseries, &
             use_humidity_timeseries, use_wind_timeseries, use_pressure_timeseries, &
@@ -123,7 +125,7 @@
         monthly_radiation_option_state = monthly_radiation_option
 
         namelist /routing/ routing_mode, thread_count, &
-            downstream_boundary_slope_m_per_km, courant_alpha
+            downstream_boundary_slope, courant_alpha
 
         ! Pseudo-2D routing remains disabled by the current runtime interface.
         pseudo_two_d_enabled = 0
@@ -135,7 +137,7 @@
         courant_alpha_state = courant_alpha
         inertial_routing_enabled = routing_mode
         thread_count_state = thread_count
-        downstream_water_surface_slope = downstream_boundary_slope_m_per_km
+        downstream_water_surface_slope = downstream_boundary_slope
         downstream_water_surface_slope = downstream_water_surface_slope*0.001
 
         namelist /output/ write_discharge, write_water_surface_elevation, &

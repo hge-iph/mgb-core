@@ -38,7 +38,7 @@
                                       inertial_q(catchment_index) + neighbor_q(catchment_index)) - &
             (potential_open_water_et(catchment_index) + floodplain_infiltration(catchment_index) - &
                                                 precipitation(catchment_index))*inertial_timestep* &
-                          current_flooded_area(catchment_index)*1000000.0/(model_timestep_seconds* &
+                                  current_flooded_area(catchment_index)*1000000.0/(model_timestep* &
                                                                                               1000.)
                 current_water_volume(catchment_index) = max(current_water_volume(catchment_index), &
                                                             0.0)
@@ -55,12 +55,12 @@
             !!Added to include evaporation of open waters from floodplain dynamics
                 et_output(catchment_index) = et_output(catchment_index) + &
                                      ((potential_open_water_et(catchment_index)*inertial_timestep* &
-                  current_flooded_area(catchment_index)*1000000.0/(model_timestep_seconds*1000.))/ &
+                          current_flooded_area(catchment_index)*1000000.0/(model_timestep*1000.))/ &
                                               (catchment_area(catchment_index)*1000))
                 ! mm per model timestep
                 open_water_et_output(catchment_index) = open_water_et_output(catchment_index) + &
                                      ((potential_open_water_et(catchment_index)*inertial_timestep* &
-                  current_flooded_area(catchment_index)*1000000.0/(model_timestep_seconds*1000.))/ &
+                          current_flooded_area(catchment_index)*1000000.0/(model_timestep*1000.))/ &
                                                          (catchment_area(catchment_index)*1000))
                 ! mm per model timestep
 

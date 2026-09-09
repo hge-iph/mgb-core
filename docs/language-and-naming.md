@@ -14,8 +14,8 @@ or changing runtime interfaces.
 - Add `_unit` to Fortran file-unit constants.
 - Conventional scientific terms such as `q`, `v`, `et`, `dt`, `hru`, `x`, and
   `y` may remain as components of a descriptive name.
-- Include units in the name only when otherwise ambiguous; always document the
-  units at the declaration or interface.
+- Do not encode physical units in names; document units in declaration or
+  interface comments instead. Keep `_unit` for Fortran file-unit constants.
 
 ## Comments
 
@@ -26,15 +26,15 @@ prints. Use version control for edit history instead of dated modification
 banners and author initials.
 
 Published titles and proper names remain in their original language. When a
-Portuguese domain term has no unambiguous direct translation, retain it and add
-it to the [glossary](glossary.md).
+Portuguese domain term has no unambiguous direct translation, retain it and
+explain it in the surrounding documentation.
 
 ## Runtime interface
 
-The current runtime interface is the descriptive English interface documented
-in the [I/O reference](io-reference.md). The migration is deliberately
-breaking: old names are not accepted as aliases. Binary layouts, numerical
-values, units, and execution order remain stable.
+The current runtime interface uses the namelist groups and keys documented in
+the [I/O reference](io-reference.md), together with the established input
+filenames listed there. Old names are not accepted as aliases. Binary layouts,
+numerical values, units, and execution order remain stable.
 
 The source formatting rules are maintained separately in the
 [Fortran style guide](fortran-style.md).

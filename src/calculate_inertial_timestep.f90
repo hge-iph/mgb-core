@@ -11,7 +11,7 @@
             real*8 minimum_catchment_timestep
             real*8 candidate_timestep
 
-            candidate_timestep = dble(model_timestep_seconds)
+            candidate_timestep = dble(model_timestep)
 
             do catchment_index = 1, catchment_count
                 !Catchment loop
@@ -31,7 +31,7 @@
             end do
 
             ! Do not exceed the main model timestep.
-            max_inertial_timestep = dble(model_timestep_seconds)
+            max_inertial_timestep = dble(model_timestep)
             minimum_catchment_timestep = candidate_timestep
             inertial_timestep = min(max_inertial_timestep, minimum_catchment_timestep)
 

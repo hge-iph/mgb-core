@@ -32,7 +32,7 @@
 
             if (muskingum_timestep(catchment_count) < &
                 0.00001) stop 'Something wrong in time-step on rede.f90'
-            muskingum_interval_count = model_timestep_seconds/muskingum_timestep(catchment_count)
+            muskingum_interval_count = model_timestep/muskingum_timestep(catchment_count)
 
             !Initial conditions: initialize_model_state.f90
 
@@ -156,21 +156,21 @@
                     groundwater_routing_volume(catchment_index) = &
                         groundwater_routing_volume(catchment_index) + &
                         incoming_groundwater_fraction_current(catchment_index)* &
-                        incoming_q_current(catchment_index)*model_timestep_seconds
+                        incoming_q_current(catchment_index)*model_timestep
                     ! groundwater_routing_volume(catchment_index)=groundwater_routing_volume(cat
                     ! chment_index)+incoming_groundwater_fraction_current(catchment_index)*incom
                     ! ing_q_current(catchment_index)*3600.*24.
                     subsurface_routing_volume(catchment_index) = &
                         subsurface_routing_volume(catchment_index) + &
                         incoming_subsurface_fraction_current(catchment_index)* &
-                        incoming_q_current(catchment_index)*model_timestep_seconds
+                        incoming_q_current(catchment_index)*model_timestep
                     ! subsurface_routing_volume(catchment_index)=subsurface_routing_volume(catch
                     ! ment_index)+incoming_subsurface_fraction_current(catchment_index)*incoming
                     ! _q_current(catchment_index)*3600.*24.
                     surface_routing_volume(catchment_index) = &
                         surface_routing_volume(catchment_index) + &
                         incoming_surface_fraction_current(catchment_index)* &
-                        incoming_q_current(catchment_index)*model_timestep_seconds
+                        incoming_q_current(catchment_index)*model_timestep
                     ! surface_routing_volume(catchment_index)=surface_routing_volume(catchment_i
                     ! ndex)+incoming_surface_fraction_current(catchment_index)*incoming_q_curren
                     ! t(catchment_index)*3600.*24.
@@ -179,7 +179,7 @@
                     incoming_q_value_current = incoming_q_current(catchment_index)
                     outgoing_q_value_previous = outgoing_q_previous(catchment_index)
                     reach_count = muskingum_reach_count(catchment_index)
-                    interval_count = model_timestep_seconds/muskingum_timestep(catchment_index)
+                    interval_count = model_timestep/muskingum_timestep(catchment_index)
                     !interval_count=3600.*24./muskingum_timestep(catchment_index)
 
                    call route_muskingum_cunge(outgoing_q_value_previous, outgoing_q_value_current, &
@@ -201,7 +201,7 @@
                                                      groundwater_routing_volume(catchment_index) - &
                                            outgoing_groundwater_fraction_current(catchment_index)* &
                                                               outgoing_q_current(catchment_index)* &
-                                                                      model_timestep_seconds)
+                                                                      model_timestep)
                     ! groundwater_routing_volume(catchment_index)=MAX(0.0,groundwater_routing_vo
                     ! lume(catchment_index)-
                     ! outgoing_groundwater_fraction_current(catchment_index)*outgoing_q_current(
@@ -210,7 +210,7 @@
                                                       subsurface_routing_volume(catchment_index) - &
                                             outgoing_subsurface_fraction_current(catchment_index)* &
                                                               outgoing_q_current(catchment_index)* &
-                                                                     model_timestep_seconds)
+                                                                     model_timestep)
                     ! subsurface_routing_volume(catchment_index)=MAX(0.0,subsurface_routing_volu
                     ! me(catchment_index)-
                     ! outgoing_subsurface_fraction_current(catchment_index)*outgoing_q_current(c
@@ -219,7 +219,7 @@
                                                          surface_routing_volume(catchment_index) - &
                                                outgoing_surface_fraction_current(catchment_index)* &
                                                               outgoing_q_current(catchment_index)* &
-                                                                  model_timestep_seconds)
+                                                                  model_timestep)
                     ! surface_routing_volume(catchment_index)=MAX(0.0,surface_routing_volume(cat
                     ! chment_index)-
                     ! outgoing_surface_fraction_current(catchment_index)*outgoing_q_current(catc

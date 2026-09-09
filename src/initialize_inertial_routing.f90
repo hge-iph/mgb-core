@@ -10,7 +10,7 @@ subroutine initialize_inertial_routing
     implicit none
 
     real*8 linear_interpolate, rating_curve_scale, rating_curve_exponent
-    remaining_model_timestep = dble(model_timestep_seconds)
+    remaining_model_timestep = dble(model_timestep)
     neighbor_q = 0.0
     grace_total_water_storage = 0.0
 

@@ -10,7 +10,8 @@
 
             implicit none
 
-            integer downstream_index, substitution_index, routing_delay_seconds
+            integer downstream_index, substitution_index, routing_delay
+            ! Routing delay in seconds.
 
             !Initial conditions
 
@@ -41,18 +42,18 @@
                 subbasin_index = catchment_subbasin(catchment_index)
 
                 ! Underground flow:
-                routing_delay_seconds = groundwater_routing_coefficient(subbasin_index)*3600.
+                routing_delay = groundwater_routing_coefficient(subbasin_index)*3600.
                 groundwater_q(catchment_index) = groundwater_storage(catchment_index)/ &
-                                                 routing_delay_seconds
+                                                 routing_delay
                 ! Subsurface flow:
-                routing_delay_seconds = subsurface_routing_coefficient(subbasin_index)* &
-                                        concentration_time(catchment_index)
+                routing_delay = subsurface_routing_coefficient(subbasin_index)* &
+                                concentration_time(catchment_index)
                 subsurface_q(catchment_index) = subsurface_storage(catchment_index)/ &
-                                                routing_delay_seconds
+                                                routing_delay
                 ! Runoff:
-                routing_delay_seconds = surface_routing_coefficient(subbasin_index)* &
-                                        concentration_time(catchment_index)
-                surface_q(catchment_index) = surface_storage(catchment_index)/routing_delay_seconds
+                routing_delay = surface_routing_coefficient(subbasin_index)* &
+                                concentration_time(catchment_index)
+                surface_q(catchment_index) = surface_storage(catchment_index)/routing_delay
             end do
 
             !Temperature in the last day:

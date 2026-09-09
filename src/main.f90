@@ -12,8 +12,8 @@ program mgb_model
 
     implicit none
     !States that non declared variables cannot be used
-    real(8) elapsed_seconds
-    !Variable to calculate the processing time
+    real(8) elapsed_time
+    ! Processing time in seconds.
     integer clock_start
     integer clock_end
     integer clock_rate
@@ -40,8 +40,8 @@ program mgb_model
     write (*, *) 'Modelo Hidrologico de Grandes Bacias: MGB v2'
     write (log_unit, *) 'Modelo Hidrologico de Grandes Bacias: MGB v2'
 
-    write (*, *) 'Reading model_config.nml file...'
-    write (log_unit, *) 'Reading model_config.nml file...'
+    write (*, *) 'Reading config.nml file...'
+    write (log_unit, *) 'Reading config.nml file...'
 
     !Suboutine that reads the model main input files with the running main information
     call read_model_configuration
@@ -57,8 +57,8 @@ program mgb_model
     write (*, *) 'Reading soil parameters...'
     write (log_unit, *) 'Reading soil parameters...'
     call read_calibrated_parameters
-    write (*, *) 'Reading catchment_data.txt file...'
-    write (log_unit, *) 'Reading catchment_data.txt file...'
+    write (*, *) 'Reading mini.gtp file...'
+    write (log_unit, *) 'Reading mini.gtp file...'
     call read_catchment_data
 
     write (*, *) 'Reading observed discharge, substitution flows, and climate data...'
@@ -133,7 +133,7 @@ program mgb_model
     write (log_unit, '(A30,I8)') 'Number of HRUs:', hru_count
  write (log_unit, '(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)') 'Start date:', year, month, day, &
         hour, minute
-    write (log_unit, '(A30,F16.2)') 'Time step (s):', model_timestep_seconds
+    write (log_unit, '(A30,F16.2)') 'Time step (s):', model_timestep
     write (log_unit, '(A30,I8)') 'Number of time steps:', timestep_count
     write (log_unit, '(A30,I8)') 'Number of substitution gauges:', substitution_count
     write (log_unit, '(A30,I8)') 'Number of climate gauges:', climate_cell_count
@@ -163,7 +163,7 @@ program mgb_model
     write (*, '(A30,I8)') 'Number of subbasins:', subbasin_count
     write (*, '(A30,I8)') 'Number of HRUs:', hru_count
     write(*,'(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)')'Start date:',year,month,day,hour,minute
-    write (*, '(A30,F16.2)') 'Time step (s):', model_timestep_seconds
+    write (*, '(A30,F16.2)') 'Time step (s):', model_timestep
     write (*, '(A30,I8)') 'Number of time steps:', timestep_count
     write (*, '(A30,I8)') 'Number of substitution gauges:', substitution_count
     write (*, '(A30,I8)') 'Number of climate gauges:', climate_cell_count
@@ -217,9 +217,9 @@ program mgb_model
     else
         clock_ticks = (clock_max - clock_start + 1) + clock_end
     end if
-    elapsed_seconds = dble(clock_ticks)/dble(clock_rate)
-    write (*, *) 'TOTAL TIME:', elapsed_seconds/60., 'MINUTES'
-    write (log_unit, *) 'TOTAL TIME:', elapsed_seconds/60., 'MINUTES'
+    elapsed_time = dble(clock_ticks)/dble(clock_rate)
+    write (*, *) 'TOTAL TIME:', elapsed_time/60., 'MINUTES'
+    write (log_unit, *) 'TOTAL TIME:', elapsed_time/60., 'MINUTES'
 
     if (noninteractive) then
         write (*, *) 'NON-INTERACTIVE MODE ENABLED. EXIT PROMPT SKIPPED.'

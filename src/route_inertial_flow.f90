@@ -20,7 +20,7 @@
             call calculate_inertial_timestep
 
             ! Needed to adjust routing time step at last loop interval (i.e. in order to not exceed
-            ! water balance [model_timestep_seconds] time step)
+            ! Water balance timestep in seconds.
             inertial_timestep = min(inertial_timestep, remaining_model_timestep - &
                                     inertial_elapsed_time)
 
@@ -34,4 +34,3 @@
 
         return
     end subroutine
-

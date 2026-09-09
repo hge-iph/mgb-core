@@ -86,7 +86,7 @@
 
                 ! Advance Julian date for next time step
                 julian_day = calculate_julian_day(year, month, day, hour, minute) &
-                             + (real(model_timestep_seconds, real_kind)/86400.0_real_kind)
+                             + (real(model_timestep, real_kind)/86400.0_real_kind)
 
             end do
             !End time loop

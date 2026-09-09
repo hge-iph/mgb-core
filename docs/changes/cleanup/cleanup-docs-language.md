@@ -2,12 +2,11 @@
 
 ## Overview
 
-This migration introduces MkDocs documentation, descriptive English runtime
-names, and a behavior-preserving Fortran style pass. The compatibility break is
-limited to configuration groups and keys, input/output filenames, fixture
-labels, and user-facing names. Hydrological equations, operation order,
-constants, precision, binary record layouts, and the executable name remain
-unchanged.
+This migration introduces MkDocs documentation, descriptive English source
+names, and a behavior-preserving Fortran style pass. Runtime configuration
+groups and keys remain descriptive, while the established input filenames are
+retained. Hydrological equations, operation order, constants, precision,
+binary record layouts, and the executable name remain unchanged.
 
 ## Documentation changes
 
@@ -119,14 +118,14 @@ as well. Conventional scientific components such as `q`, `v`, `et`, `dt`,
 | `PMB1`, `PMI1`, `PMS1`, `PJB1`, `PJI1`, `PJS1` | previous incoming/outgoing groundwater, subsurface, and surface flow fractions |
 | `VRB`, `VRI`, `VRS` | `groundwater_routing_volume`, `subsurface_routing_volume`, `surface_routing_volume` |
 | `ET`, `CAF`, `W`, `QBAS`, `QINT`, `QSUP`, `VBAS`, `VINT`, `VSUP` | `evapotranspiration`, `capillary_flux`, `soil_water_storage`, `groundwater_q`, `subsurface_q`, `surface_q`, `groundwater_storage`, `subsurface_storage`, `surface_storage` |
-| `TONTEM`, `P`, `TA`, `UR`, `VV`, `SOL`, `PA`, `DTP` | `previous_air_temperature`, `precipitation`, `air_temperature`, `relative_humidity`, `wind_speed`, `solar_input`, `air_pressure`, `model_timestep_seconds` |
-| `GLAT`, `SOLX`, `T1`, `ALBX`, `RLX`, `RDIA`, `URX` | `latitude_degrees`, `current_solar_input`, `previous_temperature`, `current_albedo`, `net_radiation`, `day_of_year_real`, `current_relative_humidity` |
-| `MESP`, `STEBOL`, `CLATE`, `SDECL`, `SANG`, `HIM`, `DR` | `water_density`, `stefan_boltzmann_constant`, `latent_heat_vaporization`, `solar_declination`, `sunset_hour_angle`, `max_sunshine_hours`, `earth_sun_distance_factor` |
+| `TONTEM`, `P`, `TA`, `UR`, `VV`, `SOL`, `PA`, `DTP` | `previous_air_temperature`, `precipitation`, `air_temperature`, `relative_humidity`, `wind_speed`, `solar_input`, `air_pressure`, `model_timestep` |
+| `GLAT`, `SOLX`, `T1`, `ALBX`, `RLX`, `RDIA`, `URX` | `latitude`, `current_solar_input`, `previous_temperature`, `current_albedo`, `net_radiation`, `day_of_year_real`, `current_relative_humidity` |
+| `MESP`, `STEBOL`, `CLATE`, `SDECL`, `SANG`, `HIM`, `DR` | `water_density`, `stefan_boltzmann_constant`, `latent_heat_vaporization`, `solar_declination`, `sunset_hour_angle`, `max_sunshine_duration`, `earth_sun_distance_factor` |
 | `GS`, `STO`, `SSUP`, `SN`, `ED`, `ES`, `SLONG` | `ground_heat_flux`, `top_atmosphere_radiation`, `incoming_shortwave_radiation`, `net_shortwave_radiation`, `actual_vapor_pressure`, `saturation_vapor_pressure`, `longwave_radiation` |
 | `CLI_INDEX`, `flag_RES_SUB`, `flag_opt_rout`, `flag_pseudo_two_d` | `monthly_radiation_option`, `reservoir_substitution_enabled`, `inertial_routing_enabled`, `pseudo_two_d_enabled` |
 | `WX`, `WMX`, `PAX`, `TAX`, `VVX` | `current_soil_water_storage`, `current_max_soil_water_storage`, `current_air_pressure`, `current_air_temperature`, `current_wind_speed` |
 | `BX`, `KIX`, `KBX`, `RIAFX`, `ZX` | `current_arno_b`, `current_subsurface_conductivity`, `current_groundwater_conductivity`, `current_leaf_area_index`, `current_vegetation_height` |
-| `EX`, `PX`, `SIX`, `VVX2`, `KINFX` | `soil_vegetation_et`, `current_precipitation`, `current_interception_storage`, `wind_speed_2m`, `current_floodplain_infiltration_rate` |
+| `EX`, `PX`, `SIX`, `VVX2`, `KINFX` | `soil_vegetation_et`, `current_precipitation`, `current_interception_storage`, `wind_speed_reference`, `current_floodplain_infiltration_rate` |
 | `XL`, `T2`, `RSX`, `CAPX`, `ETX`, `WCX` | `current_brooks_corey_lambda`, `current_temperature`, `current_surface_resistance`, `current_capillary_flux`, `current_total_et`, `current_capillary_threshold_fraction` |
 | `VBX`, `VIX`, `VSX`, `PPU`, `WXB`, `DCAP` | `remaining_groundwater_storage`, `remaining_subsurface_storage`, `remaining_surface_storage`, `hru_area_fraction`, `catchment_soil_water_sum`, `catchment_capillary_q` |
 | `D`, `DEL`, `GAMA`, `MSPA`, `RUG` | `vapor_pressure_deficit`, `saturation_vapor_pressure_slope`, `psychrometric_constant`, `air_density`, `surface_roughness` |
@@ -158,15 +157,15 @@ Routine arguments and locals use the same convention; they are not linkable
 interfaces in this executable-only repository. Examples include `DSUP` to
 `surface_runoff_depth`, `DINT` to `subsurface_runoff_depth`, `DBAS` to
 `groundwater_runoff_depth`, `JUS` to `downstream_index`, and `TK` to
-`routing_delay_seconds`.
+`routing_delay`.
 
 ## Compatibility
 
-The executable remains mgb_model. The runtime migration is deliberately
-breaking: model_config.nml, its four namelist groups, canonical filenames, and
-descriptive output names replace the historical interface without aliases.
-Record lengths, formats, binary layouts, numerical values, and output ordering
-remain unchanged. The complete mapping is in migration.md.
+The executable remains mgb_model. The runtime interface uses config.nml, its
+four namelist groups, the established input filenames, and descriptive output
+names without aliases. Record lengths, formats, binary layouts, numerical
+values, and output ordering remain unchanged. The complete mapping is in
+migration.md.
 
 ## Validation
 

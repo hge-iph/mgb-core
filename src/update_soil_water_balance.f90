@@ -8,7 +8,7 @@
                                 current_subsurface_conductivity, current_groundwater_conductivity, &
                        current_brooks_corey_lambda, surface_runoff_depth, subsurface_runoff_depth, &
                                              groundwater_runoff_depth, current_capillary_flux, &
-                    current_capillary_threshold_fraction, model_timestep_seconds, catchment_index, &
+                            current_capillary_threshold_fraction, model_timestep, catchment_index, &
                                              current_catchment_area, &
                                              current_floodplain_infiltration_rate)
             use inertial_state
@@ -34,7 +34,7 @@
             ! surface, subsurface and groundwater drainage
             real infiltration_shape_term
             real previous_soil_storage
-            real model_timestep_seconds
+            real model_timestep
             ! time step in seconds
             real effective_precipitation
             ! Correction of precipitation in soil balance due to flooded areas
@@ -161,10 +161,10 @@
 
             ! Convert to time-step when necessary (smaller than daily)
             surface_runoff_depth = surface_runoff_depth
-            current_capillary_flux = current_capillary_flux*model_timestep_seconds/86400.
-            subsurface_runoff_depth = subsurface_runoff_depth*model_timestep_seconds/86400.
-            groundwater_runoff_depth = groundwater_runoff_depth*model_timestep_seconds/86400.
-         current_floodplain_infiltration = current_floodplain_infiltration*model_timestep_seconds/ &
+            current_capillary_flux = current_capillary_flux*model_timestep/86400.
+            subsurface_runoff_depth = subsurface_runoff_depth*model_timestep/86400.
+            groundwater_runoff_depth = groundwater_runoff_depth*model_timestep/86400.
+            current_floodplain_infiltration = current_floodplain_infiltration*model_timestep/ &
                                               86400.
 
             ! Starts vertical balance loop

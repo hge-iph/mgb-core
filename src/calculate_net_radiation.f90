@@ -27,11 +27,11 @@
             solar_declination = 0.4093*sin((2*pi/365.0)*day_of_year_real - 1.405)
 
             ! Sunset hour angle (rad)
-            sunset_hour_angle = acos(-tand(latitude_degrees)*tan(solar_declination))
+            sunset_hour_angle = acos(-tand(latitude)*tan(solar_declination))
             !intrinsic function TAND is for degree arguments
 
             ! maximum insolation (hours)
-            max_sunshine_hours = 24*sunset_hour_angle/pi
+            max_sunshine_duration = 24*sunset_hour_angle/pi
             ! - ch4. - !
 
             ! Distance Earth-Sun
@@ -39,7 +39,7 @@
 
             ! Top-of-atmosphere Radiation (mm/day)
             top_atmosphere_radiation = 15.392*earth_sun_distance_factor*(sunset_hour_angle* &
-                           sind(latitude_degrees)*sin(solar_declination) + cosd(latitude_degrees)* &
+                                           sind(latitude)*sin(solar_declination) + cosd(latitude)* &
                                                                          cos(solar_declination)* &
                                                                          sin(sunset_hour_angle))
 
@@ -57,7 +57,7 @@
                 if (monthly_radiation_option == 0) then
                     !INMET
           incoming_shortwave_radiation = top_atmosphere_radiation*(0.25 + 0.5*current_solar_input/ &
-                                                                             max_sunshine_hours)
+                                                                             max_sunshine_duration)
                     !from insolation (eq. 4.2.6 from Handbook Hydrology)
 
                 elseif (monthly_radiation_option == 1) then

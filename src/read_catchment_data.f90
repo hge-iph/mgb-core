@@ -1,7 +1,7 @@
 ! SPDX-License-Identifier: GPL-3.0-or-later
 ! Copyright (C) 2019 Hidrologia de Grande Escala (HGE)
 
-! Read catchment topology, geometry, and HRU fractions from catchment_data.txt.
+! Read catchment topology, geometry, and HRU fractions from mini.gtp.
 
         subroutine read_catchment_data
             use model_state
@@ -15,7 +15,7 @@
 
             max_enabled_drainage_area = 0.0
 
-            open (catchment_data_unit, file=input_directory//'catchment_data.txt', status='OLD')
+            open (catchment_data_unit, file=input_directory//'mini.gtp', status='OLD')
             read (catchment_data_unit, 77)
             subbasin_outlet_catchment = -999999
             do catchment_record_index = 1, catchment_count

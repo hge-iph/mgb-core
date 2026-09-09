@@ -5,7 +5,7 @@ goal is to make future development safer and easier to review without changing
 scientific behavior, binary/text record layouts, or validated runtime results.
 The documentation and I/O naming migration is the deliberate exception for
 runtime filenames and configuration keys; its breaking mappings are recorded in
-`docs/migration.md`.
+`docs/changes/cleanup/migration.md`.
 
 ## Working Rules
 
@@ -25,7 +25,8 @@ Default cleanup rules:
 - Keep Portuguese hydrological terms when translation could obscure domain
   meaning.
 - Write new comments and documentation in English.
-- Add glossary entries for mixed-language domain terms before broad renaming.
+- Explain mixed-language domain terms in surrounding documentation before broad
+  renaming.
 - Update documentation in the same branch when cleanup changes developer
   workflow, ownership boundaries, or validation expectations.
 

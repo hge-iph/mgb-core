@@ -121,7 +121,7 @@
                         100.01) stop 'ERROR UMIDITY SUB CELULA'
 
                     ! Calculates Net Radiation
-                    latitude_degrees = catchment_y(catchment_index)
+                    latitude = catchment_y(catchment_index)
                     !Loads catchment latitude
                     call calculate_net_radiation
                     !Returns net_radiation - Net radiation
@@ -138,7 +138,7 @@
                                 current_subsurface_conductivity, current_groundwater_conductivity, &
                        current_brooks_corey_lambda, surface_runoff_depth, subsurface_runoff_depth, &
                                                  groundwater_runoff_depth, current_capillary_flux, &
-                    current_capillary_threshold_fraction, model_timestep_seconds, catchment_index, &
+                            current_capillary_threshold_fraction, model_timestep, catchment_index, &
                                                        current_catchment_area, &
                                                        current_floodplain_infiltration_rate)
                         current_total_et = soil_vegetation_et + actual_interception_et
@@ -154,7 +154,7 @@
                                 (potential_open_water_et_current*1000.* &
                                  catchment_area(catchment_index)* &
                                  (hru_percentage(catchment_index, hru_index)/100.))/ &
-                                model_timestep_seconds
+                                model_timestep
                             !Direct evaporation from open waters in m3/s
                         else
                             ! Considers evaporation in floodplain water
@@ -186,15 +186,15 @@
                     !Flow to linear reservoirs
              surface_runoff_depth = ((surface_runoff_depth*1000.)*catchment_area(catchment_index)* &
                                             (hru_percentage(catchment_index, hru_index)/100.))/ &
-                                           (model_timestep_seconds)
+                                           (model_timestep)
                     subsurface_runoff_depth = ((subsurface_runoff_depth*1000.)* &
                       catchment_area(catchment_index)*(hru_percentage(catchment_index, hru_index)/ &
                                                                                 100.))/ &
-                                              (model_timestep_seconds)
+                                              (model_timestep)
                     groundwater_runoff_depth = ((groundwater_runoff_depth*1000.)* &
                       catchment_area(catchment_index)*(hru_percentage(catchment_index, hru_index)/ &
                                                                                  100.))/ &
-                                               (model_timestep_seconds)
+                                               (model_timestep)
                     !Accumulate generated Runoff (m³/s)
                     accumulated_surface_q = accumulated_surface_q + surface_runoff_depth
                     accumulated_subsurface_q = accumulated_subsurface_q + subsurface_runoff_depth
@@ -221,24 +221,24 @@
                         !CEAA infilt
                     end if
 
-                    !Capillary flux - converts from mm/model_timestep_seconds to m3/s
+                    ! Capillary flux converts from mm per model timestep to m3/s.
       catchment_capillary_q = catchment_capillary_q + (hru_percentage(catchment_index, hru_index)/ &
                              100.)*(current_capillary_flux*1000.*catchment_area(catchment_index))/ &
-                                            (model_timestep_seconds)
+                                            (model_timestep)
 
                     !Updates linear reservoir volumes(m3)
                     groundwater_storage(catchment_index) = groundwater_storage(catchment_index) + &
                                                            groundwater_runoff_depth* &
-                                                           model_timestep_seconds
+                                                           model_timestep
                     ! groundwater_storage(catchment_index)=groundwater_storage(catchment_index)+
                     ! groundwater_runoff_depth*3600.*24.
                     subsurface_storage(catchment_index) = subsurface_storage(catchment_index) + &
                                                           subsurface_runoff_depth* &
-                                                          model_timestep_seconds
+                                                          model_timestep
                     ! subsurface_storage(catchment_index)=subsurface_storage(catchment_index)+su
                     ! bsurface_runoff_depth*3600.*24.
                     surface_storage(catchment_index) = surface_storage(catchment_index) + &
-                                                       surface_runoff_depth*model_timestep_seconds
+                                                       surface_runoff_depth*model_timestep
                     ! surface_storage(catchment_index)=surface_storage(catchment_index)+surface_
                     ! runoff_depth*3600.*24.
 
@@ -264,12 +264,12 @@
 
                 ! Takes water from groundwater reservoir by Capillary flux
                 !Check Negative volumes after retrieving water from groundwater reservoir
-         if (groundwater_storage(catchment_index) - catchment_capillary_q*model_timestep_seconds < &
+                if (groundwater_storage(catchment_index) - catchment_capillary_q*model_timestep < &
                     0.0) then
                     write (*, *) 'Capillarity very high! Vbas went dry. Please check CAP and WC.'
                 end if
                 groundwater_storage(catchment_index) = max(groundwater_storage(catchment_index) - &
-                                                     catchment_capillary_q*model_timestep_seconds, &
+                                                           catchment_capillary_q*model_timestep, &
                                                            0.0)
                 ! Update volumes. Fernando & Paulo fixed in 25/01/2013 - limit negative volume in
                 ! linear reservoir. FMF
@@ -301,11 +301,11 @@
                 ! Updates Volumes (m3)
                 remaining_groundwater_storage = groundwater_storage(catchment_index) - &
                                                 groundwater_q(catchment_index)* &
-                                                model_timestep_seconds
+                                                model_timestep
                 remaining_subsurface_storage = subsurface_storage(catchment_index) - &
-                                               subsurface_q(catchment_index)*model_timestep_seconds
+                                               subsurface_q(catchment_index)*model_timestep
                 remaining_surface_storage = surface_storage(catchment_index) - &
-                                            surface_q(catchment_index)*model_timestep_seconds
+                                            surface_q(catchment_index)*model_timestep
 
                 ! Assume that surface reservoir can have negative volumes to address floodplain
                 ! evaporation
@@ -313,7 +313,7 @@
                     if (remaining_surface_storage .lt. 0.0) then
                         !surface
                         surface_q(catchment_index) = surface_storage(catchment_index)/ &
-                                                     (model_timestep_seconds)
+                                                     (model_timestep)
                         surface_storage(catchment_index) = 0.0
                     else
                         surface_storage(catchment_index) = remaining_surface_storage
@@ -325,11 +325,11 @@
                         ! phase
                         ! shift
                         surface_q(catchment_index) = surface_storage(catchment_index)/ &
-                                                     (model_timestep_seconds)
+                                                     (model_timestep)
                         surface_storage(catchment_index) = 0.0
                     elseif (remaining_surface_storage < 0.0) then
                         surface_q(catchment_index) = surface_storage(catchment_index)/ &
-                                                     (model_timestep_seconds)
+                                                     (model_timestep)
                         surface_storage(catchment_index) = 0.0
                     else
                         surface_storage(catchment_index) = remaining_surface_storage
@@ -340,7 +340,7 @@
                 if (remaining_subsurface_storage .lt. 0.0) then
                     !sub-surface
                     subsurface_q(catchment_index) = subsurface_storage(catchment_index)/ &
-                                                    (model_timestep_seconds)
+                                                    (model_timestep)
                     subsurface_storage(catchment_index) = 0.0
                 else
                     subsurface_storage(catchment_index) = remaining_subsurface_storage
@@ -348,7 +348,7 @@
                 if (remaining_groundwater_storage .lt. 0.0) then
                     !groundwater
                     groundwater_q(catchment_index) = groundwater_storage(catchment_index)/ &
-                                                     (model_timestep_seconds)
+                                                     (model_timestep)
                     groundwater_storage(catchment_index) = 0.0
                 else
                     groundwater_storage(catchment_index) = remaining_groundwater_storage
@@ -362,7 +362,7 @@
                 ! Calculates evapotranspiration indicators
                 ! Evaporation from open water
                 potential_open_water_et(catchment_index) = potential_open_water_et_current
-                !mm/model_timestep_seconds
+                ! mm per model timestep.
                 ! Potential ET using all energy at the top of the atmosphere.
                 potential_top_radiation_et(catchment_index) = 1000.*top_atmosphere_radiation/ &
                                                               (water_density* &
@@ -395,13 +395,13 @@
                 !Changed to runoff aggregated
                 groundwater_runoff_depth_output(catchment_index) = (accumulated_groundwater_q/ &
                                                         (catchment_area(catchment_index)*1000.0))* &
-                                                                   model_timestep_seconds
+                                                                   model_timestep
                 subsurface_runoff_depth_output(catchment_index) = (accumulated_subsurface_q/ &
                                                         (catchment_area(catchment_index)*1000.0))* &
-                                                                  model_timestep_seconds
+                                                                  model_timestep
                 surface_runoff_depth_output(catchment_index) = (accumulated_surface_q/ &
                                                         (catchment_area(catchment_index)*1000.0))* &
-                                                               model_timestep_seconds
+                                                               model_timestep
 
             end do
             !End catchment loop

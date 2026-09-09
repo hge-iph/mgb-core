@@ -28,7 +28,7 @@
             ! Considering current_wind_speed input as wind at 10m
             current_wind_speed = current_wind_speed + 0.1
             !        Avoid zero value issues
-            wind_speed_2m = current_wind_speed/((log(10.0/surface_roughness))/log(2.0/ &
+            wind_speed_reference = current_wind_speed/((log(10.0/surface_roughness))/log(2.0/ &
                                                                                  surface_roughness))
 !wind speed at 2m for calculation of aerodynamic_resistance and potential evapotranspiration
 
@@ -40,7 +40,7 @@
                                                  (current_vegetation_height*0.0123))))/(0.41*0.41* &
                                                                                  current_wind_speed)
             open_water_aerodynamic_resistance = (4.72*(log(2./0.00137))**2.)/(1.+0.536* &
-                                                                              wind_speed_2m)
+                                                                              wind_speed_reference)
 !aerodynamic_resistance for open water evaporation ! (EQ.4.2.29) from Shuttleworth
 
             ! Calculate Surface Resistance (current_surface_resistance) for soil moisture
@@ -76,7 +76,7 @@
             ! Calculates evaporation from intercepted water
             ! Maximum Interception
             ! Maximum interception storage varies with leaf area and timestep length.
-            max_interception_storage = 0.4*current_leaf_area_index*(model_timestep_seconds/86400.)
+            max_interception_storage = 0.4*current_leaf_area_index*(model_timestep/86400.)
 ! max_interception_storage=0.2*current_leaf_area_index !According to Wigmosta evapotranspiration
 ! al.
 ! 1994, also used by Bremicker
@@ -92,16 +92,16 @@
         potential_interception_et = ((saturation_vapor_pressure_slope*net_radiation + air_density* &
                              wet_air_specific_heat*vapor_pressure_deficit/aerodynamic_resistance)/ &
    (saturation_vapor_pressure_slope + psychrometric_constant*(1.0 + 0.0/aerodynamic_resistance)))* &
-                                       ((1000.0*model_timestep_seconds)/(latent_heat_vaporization* &
-                                                                          water_density))
-            !mm/model_timestep_seconds
+                                        ((1000.0*model_timestep)/(latent_heat_vaporization* &
+                                                                  water_density))
+            ! mm per model timestep.
             potential_open_water_et_current = ((saturation_vapor_pressure_slope*net_radiation + &
                                          air_density*wet_air_specific_heat*vapor_pressure_deficit/ &
      open_water_aerodynamic_resistance)/(saturation_vapor_pressure_slope + psychrometric_constant* &
-                 (1.0 + 0.0/open_water_aerodynamic_resistance)))*((1000.0*model_timestep_seconds)/ &
+                         (1.0 + 0.0/open_water_aerodynamic_resistance)))*((1000.0*model_timestep)/ &
                                                                         (latent_heat_vaporization* &
                                                                                      water_density))
-            !mm/model_timestep_seconds !open water (Shuttleworth)
+            ! mm per model timestep for open water (Shuttleworth).
 
             actual_interception_et = min(potential_interception_et, available_interception_storage)
             ! evaporation of intercepted water
@@ -112,13 +112,13 @@
             remaining_et_demand_fraction = (potential_interception_et - actual_interception_et)/ &
                                            potential_interception_et
 
-            ! Calculates Penman in mm/model_timestep_seconds
+            ! Calculates Penman in mm per model timestep.
             soil_vegetation_et = ((saturation_vapor_pressure_slope*net_radiation + air_density* &
                              wet_air_specific_heat*vapor_pressure_deficit/aerodynamic_resistance)/ &
       (saturation_vapor_pressure_slope + psychrometric_constant*(1.0 + current_surface_resistance/ &
-             aerodynamic_resistance)))*((1000.0*model_timestep_seconds)/(latent_heat_vaporization* &
+                     aerodynamic_resistance)))*((1000.0*model_timestep)/(latent_heat_vaporization* &
                                                                                      water_density))
-            !mm/model_timestep_seconds
+            ! mm per model timestep.
             soil_vegetation_et = remaining_et_demand_fraction*soil_vegetation_et
             ! evaporation through soil+plant
             current_total_et = soil_vegetation_et + actual_interception_et

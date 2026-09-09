@@ -18,7 +18,7 @@ non-authoritative.
 | 1main.f90 | main.f90 | License, contributors, historical purpose, process notes, and citations moved to the project pages; obsolete version banner and duplicated call narrative rejected. |
 | vars_main.f90 | model_state.f90 | State-variable meanings and units moved to the I/O/process pages; global declaration boilerplate retained only where local code needs it. |
 | vars_inerc.f90 | inertial_state.f90 | Flood-routing state meanings and units moved to model-processes.md; repeated declaration descriptions rejected. |
-| alloca_vars.f90 | allocate_model_state.f90 | Allocation purpose moved to the architecture/process pages; stale private-list and dated edit notes rejected. |
+| alloca_vars.f90 | allocate_model_state.f90 | Allocation purpose moved to model-process documentation; stale private-list and dated edit notes rejected. |
 | alloca_varsinerc.f90 | allocate_inertial_state.f90 | Inertial table dimensions and ownership moved to model-processes.md; duplicate allocation comments rejected. |
 | celula.f90 | update_catchment_water_balance.f90 | Vertical balance sequence, reservoirs, capillary flow, and units moved to model-processes.md; dated correction banners retained only as history in version control. |
 | solo.f90 | update_soil_water_balance.f90 | ARNO infiltration and soil-balance assumptions moved to model-processes.md; comments that repeated formulas rejected. |

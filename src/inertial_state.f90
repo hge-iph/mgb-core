@@ -8,7 +8,7 @@ module inertial_state
     save
 
     real*8 courant_alpha
-    ! Courant coefficient from model_config.nml.
+    ! Courant coefficient from config.nml.
     real*8, parameter :: gravity = 9.81
     real*8, allocatable :: inertial_manning_n(:)
 

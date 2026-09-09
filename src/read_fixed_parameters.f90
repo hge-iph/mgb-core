@@ -11,7 +11,7 @@
             integer :: ignored_catchment_id
             character(20) :: header_text
             character(5) :: month_labels(12)
-            open (fixed_parameter_unit, file=input_directory//'vegetation_parameters.txt', status= &
+            open (fixed_parameter_unit, file=input_directory//'vegetation.par', status= &
                   'OLD')
 
             do climate_region_index_loop = 1, climate_region_count
@@ -60,7 +60,7 @@
             close (fixed_parameter_unit)
 
             !Open Climate Region file
-            open (climate_region_unit, file=input_directory//'climate_regions.txt', status='OLD')
+            open (climate_region_unit, file=input_directory//'climate.reg', status='OLD')
             read (climate_region_unit, 71) header_text
             do catchment_record_index = 1, catchment_count
                 read (climate_region_unit, 74) ignored_catchment_id, &

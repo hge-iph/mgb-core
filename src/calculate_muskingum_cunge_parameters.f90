@@ -20,7 +20,7 @@
                     wave_celerity(catchment_index) = celerity_coefficient* &
                                                      (reference_q(catchment_index)/ &
                                                       river_width(catchment_index))**0.4
-                    model_step = model_timestep_seconds
+                    model_step = model_timestep
                     routing_timestep = model_step
                     routing_timestep = model_step/24.
                     interval_count = 24

@@ -81,15 +81,16 @@ contains
 
     end subroutine convert_julian_day_to_calendar
 
-    ! Function to compute the number of time steps between to julian dates
-    integer function calculate_timestep_count(julian_end, julian_start, model_timestep_seconds)
+    ! Function to compute the number of time steps between two Julian dates.
+    integer function calculate_timestep_count(julian_end, julian_start, model_timestep)
         implicit none
 
-        real(real_kind), intent(in) :: julian_end, julian_start, model_timestep_seconds
+        real(real_kind), intent(in) :: julian_end, julian_start, model_timestep
+        ! model_timestep is expressed in seconds.
 
         ! Avoiding rounding errors
         calculate_timestep_count = int(real(((julian_end - julian_start)*86400.0_real_kind/ &
-                                             model_timestep_seconds), 4))
+                                             model_timestep), 4))
 
     end function calculate_timestep_count
 

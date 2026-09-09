@@ -7,7 +7,7 @@ the naming migration.
 
 ## Configuration
 
-The only configuration file is model_config.nml. It contains four namelist
+The only configuration file is config.nml. It contains four namelist
 groups.
 
 ### model
@@ -15,7 +15,7 @@ groups.
 | Key | Meaning and units |
 | --- | --- |
 | simulation_start, simulation_end | Calendar strings: YYYY-MM-DD HH:mm |
-| timestep_seconds | Meteorological timestep in seconds |
+| timestep | Meteorological timestep in seconds |
 | hotstart_read_mode, hotstart_write_mode | Hotstart mode flags |
 | first_subbasin, last_subbasin | Inclusive simulated subbasin bounds |
 | catchment_count, hru_count, subbasin_count | Entity counts |
@@ -40,7 +40,7 @@ groups.
 | --- | --- |
 | routing_mode | 0 Muskingum-Cunge, 1 local inertial |
 | thread_count | OpenMP thread count |
-| downstream_boundary_slope_m_per_km | Downstream slope in m/km |
+| downstream_boundary_slope | Downstream slope in m/km |
 | courant_alpha | CFL stability factor |
 
 ### output
@@ -63,15 +63,15 @@ write_flooded_area are the complete output key set.
 
 | File | Format and ordering |
 | --- | --- |
-| vegetation_parameters.txt | Four parameter blocks. Each HRU row has a 10-character identifier, 12 monthly values with F5.2 precision, 12 monthly names/labels, and four fixed fields. |
-| hru_definitions.txt | The authoritative HRU dictionary. The current fixture has nine rows in order: blc_01 through blc_09. Comment lines begin with two slashes. |
-| climate_regions.txt | Header followed by one two-integer climate-region record per catchment. |
-| catchment_data.txt | Header followed by catchment records in input order. The fixed legacy fields are catchment sequence/id, area and drainage geometry, network/subbasin fields, routing parameters, and six geometry/parameter values, followed by the HRU percentages. |
-| soil_parameters.txt | HRU calibration rows use A10 identifiers and the existing fixed F8.3, F8.1, and F8.6 numeric fields, followed by subbasin routing parameter rows. |
+| vegetation.par | Four parameter blocks. Each HRU row has a 10-character identifier, 12 monthly values with F5.2 precision, 12 monthly names/labels, and four fixed fields. |
+| hru.def | The authoritative HRU dictionary. The current fixture has nine rows in order: blc_01 through blc_09. Comment lines begin with two slashes. |
+| climate.reg | Header followed by one two-integer climate-region record per catchment. |
+| mini.gtp | Header followed by catchment records in input order. The fixed legacy fields are catchment sequence/id, area and drainage geometry, network/subbasin fields, routing parameters, and six geometry/parameter values, followed by the HRU percentages. |
+| soil.par | HRU calibration rows use A10 identifiers and the existing fixed F8.3, F8.1, and F8.6 numeric fields, followed by subbasin routing parameter rows. |
 | floodplain_stage_area.txt | Text stage-area records: catchment index, bottom/elevation value, stage/elevation, and area. |
 | floodplain_connections.txt | Face connection records used by the pseudo-2D path. The current text reader retains the historical connection layout and the active binary floodplain path remains unchanged. |
 | substitution_flows.txt | Header fields followed by date/time and reservoir substitution flow records. |
-| observed_discharge.txt | Observed discharge fixture used by regression and performance tooling. |
+| observed_discharge.dat | Observed discharge fixture used by regression and performance tooling. |
 | hotstart_schedule.txt | Hotstart timestep schedule read as integer records. |
 | reservoir_config.txt | Reservoir-to-catchment and lake configuration records when reservoir substitution is enabled. |
 | reservoir_outflow.txt | Time-indexed reservoir outflow records when reservoir substitution is enabled. |

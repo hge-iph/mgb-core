@@ -1,7 +1,7 @@
 ! SPDX-License-Identifier: GPL-3.0-or-later
 ! Copyright (C) 2019 Hidrologia de Grande Escala (HGE)
 
-! Read calibrated HRU and routing parameters from soil_parameters.txt.
+! Read calibrated HRU and routing parameters from soil.par.
 
         subroutine read_calibrated_parameters
             ! Reads soil and routing calibration parameters.
@@ -21,7 +21,7 @@
             unused_routing_parameter = 0.0
             groundwater_routing_coefficient = 0.0
             subsurface_routing_coefficient = 0.0
-            open (calibrated_parameter_unit, file=input_directory//'soil_parameters.txt', status= &
+            open (calibrated_parameter_unit, file=input_directory//'soil.par', status= &
                   'OLD')
             do current_subbasin = 1, subbasin_count
                 read (calibrated_parameter_unit, 72) header_fields(1)
