@@ -23,9 +23,12 @@ Useful starting points:
 - [Build](docs/build.md)
 - [Testing](docs/testing.md)
 - [Architecture](docs/architecture-bootstrap.md)
-- [Cleanup roadmap](docs/cleanup-roadmap.md)
+- [Cleanup roadmap](docs/changes/cleanup/roadmap.md)
+- [Processes and I/O](docs/model-processes.md)
+- [Runtime migration](docs/migration.md)
 - [Portability](docs/portability.md)
 - [Language and naming](docs/language-and-naming.md)
+- [Fortran style](docs/fortran-style.md)
 
 ## Windows
 

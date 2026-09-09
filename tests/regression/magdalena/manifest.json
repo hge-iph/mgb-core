@@ -4,29 +4,29 @@
   "input_dir": "input",
   "expected_dir": "expected",
   "required_outputs": [
-    "log_mgb.txt"
+    "model.log"
   ],
   "comparisons": [
     {
-      "path": "qtudo.mgb",
+      "path": "discharge.bin",
       "dtype": "float32",
       "atol": 1.0,
       "rtol": 1e2
     },
     {
-      "path": "ytudo.mgb",
+      "path": "level.bin",
       "dtype": "float32",
       "atol": 1.0,
       "rtol": 1e2
     },
     {
-      "path": "twstudo.mgb",
+      "path": "total_water_storage.bin",
       "dtype": "float32",
       "atol": 1.0,
       "rtol": 1e2
     },
     {
-      "path": "floodtudo.mgb",
+      "path": "flooded_area.bin",
       "dtype": "float32",
       "atol": 1.0,
       "rtol": 1e2

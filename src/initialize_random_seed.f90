@@ -3,12 +3,12 @@
 
 ! Initialize a random seed from the system clock.
 
-	SUBROUTINE initialize_random_seed(seed_value)
+        subroutine initialize_random_seed(seed_value)
 
-    IMPLICIT NONE
-    INTEGER, INTENT(OUT) :: seed_value
-    INTEGER :: clock_value
-    CALL SYSTEM_CLOCK(COUNT=clock_value)
-    seed_value=clock_value
-    RETURN
-    END SUBROUTINE initialize_random_seed
+            implicit none
+            integer, intent(out) :: seed_value
+            integer :: clock_value
+            call system_clock(count=clock_value)
+            seed_value = clock_value
+            return
+        end subroutine initialize_random_seed

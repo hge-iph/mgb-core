@@ -1,186 +1,179 @@
 ! SPDX-License-Identifier: GPL-3.0-or-later
 ! Copyright (C) 2019 Hidrologia de Grande Escala (HGE)
 
-! Read infomgb.sim and populate internal model configuration.
+! Read model_config.nml and populate internal model configuration.
 
-    SUBROUTINE read_model_configuration
+    subroutine read_model_configuration
 
-    USE model_state
-    USE inertial_state
-    use utils_time, only: calculate_julian_day, convert_julian_day_to_calendar, calculate_timestep_count
-    use utils_date, only: parse_date_string
+        use model_state, only: config_unit, input_directory, &
+                               model_timestep_seconds_state => model_timestep_seconds, &
+                               catchment_count_state => catchment_count, &
+                               climate_cell_count_state => climate_cell_count, &
+                             hru_count_state => hru_count, subbasin_count_state => subbasin_count, &
+                               climate_region_count_state => climate_region_count, &
+                           reservoir_substitution_enabled_state => reservoir_substitution_enabled, &
+                               reservoir_count_state => reservoir_count, &
+                     first_subbasin_state => first_subbasin, last_subbasin_state => last_subbasin, &
+                               year, month, day, hour, minute, julian_day, timestep_count, &
+                               monthly_radiation_option_state => monthly_radiation_option, &
+                               pseudo_two_d_enabled, inertial_routing_enabled, &
+                               use_temperature_timeseries_state => use_temperature_timeseries, &
+                               use_radiation_timeseries_state => use_radiation_timeseries, &
+                               use_humidity_timeseries_state => use_humidity_timeseries, &
+                               use_wind_timeseries_state => use_wind_timeseries, &
+                               use_pressure_timeseries_state => use_pressure_timeseries, &
+                               write_discharge_output, write_soil_moisture_output, &
+                               write_water_surface_elevation_output, write_hand_output, &
+                               write_total_water_storage_output, write_runoff_output, &
+                               write_surface_water_output, write_soil_saturation_output, &
+                               write_et_output, write_interception_et_output, &
+                               write_soil_vegetation_et_output, write_open_water_et_output, &
+                               write_water_hru_et_output, write_groundwater_storage_output, &
+                               write_subsurface_storage_output, write_surface_storage_output, &
+                               write_interception_storage_output, write_flooded_area_output, &
+                               write_groundwater_flux_output, write_subsurface_flux_output, &
+                               write_surface_flux_output, write_potential_open_water_et_output
+        use inertial_state, only: overland_flow_width, overland_manning_n, &
+                                  hotstart_read_mode_state => read_hotstart_mode, &
+                                  hotstart_write_mode_state => write_hotstart_mode, &
+                                  courant_alpha_state => courant_alpha, &
+                                  thread_count_state => thread_count, &
+                                  downstream_water_surface_slope
+        use utils_time, only: calculate_julian_day, convert_julian_day_to_calendar, &
+                              calculate_timestep_count
+        use utils_date, only: parse_date_string
 
-	IMPLICIT NONE
+        implicit none
 
-    !Variables for mgb_config_global
+        integer :: catchment_count, hru_count
+        integer :: subbasin_count, climate_region_count
+        integer :: hotstart_read_mode, hotstart_write_mode
+        integer :: first_subbasin, last_subbasin
+        real(4) :: timestep_seconds
+        integer :: reservoir_substitution_enabled, reservoir_count
+        character(len=40) :: simulation_start, simulation_end
 
-    INTEGER N_UNIT_CATCHM, N_HRUS
-    INTEGER N_SUBASINS, N_CLI_REGIONS
-    INTEGER HOTSTART_READ, HOTSTART_WRITE, SUBASIN_START, SUBASIN_END
-    REAL(4) SIM_TIMESTEP
-    INTEGER OPT_RES_SUB, N_RES_SUB
-    character(len=40) :: SIM_START_DATE, SIM_END_DATE
+        integer i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end
+        real(8) jday_end
 
-    integer i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end
-    real(8) jday_end
+        integer :: use_temperature_timeseries
+        integer :: use_radiation_timeseries
+        integer :: use_humidity_timeseries
+        integer :: use_wind_timeseries
+        integer :: use_pressure_timeseries
+        integer :: monthly_radiation_option
 
-    !Variables for mgb_forcing
-    INTEGER TS_TEMP, TS_RAD, TS_RH, TS_WIND, TS_PRES
-    INTEGER OPT_MONTH_RAD
+        integer :: routing_mode, thread_count
+        real :: downstream_boundary_slope_m_per_km, courant_alpha
 
-    !Variables for mgb_routing
-    INTEGER OPT_ROUTING, N_THREADS
-    REAL IN_COURANT_ALPHA, IN_DOWN_SLOPE
+        integer :: write_discharge, write_soil_water, write_water_surface_elevation
+        integer :: write_flooded_level, write_total_water_storage, write_runoff
+        integer :: write_surface_water, write_soil_saturation
+        integer :: write_evapotranspiration, write_interception_evaporation
+        integer :: write_soil_vegetation_evapotranspiration
+        integer :: write_open_water_evaporation, write_water_hru_evaporation
+        integer :: write_potential_open_water_evaporation
+        integer :: write_groundwater_storage, write_subsurface_storage
+        integer :: write_surface_storage, write_interception_storage
+        integer :: write_groundwater_flux, write_subsurface_flux, write_surface_flux
+        integer :: write_flooded_area
 
-    !Variables for writing output files
-    INTEGER OUT_FLOW, OUT_SM, OUT_WSE, OUT_HAND, OUT_TWS, OUT_RUNOFF, OUT_SURFWAT
-    INTEGER OUT_ET, OUT_ETINT, OUT_ETSOILVEG, OUT_ETOPENWAT, OUT_ETURHWAT, OUT_SSAT
-    INTEGER OUT_VBAS, OUT_VINT, OUT_VSUP, OUT_VINTERC, OUT_FLAREA
-    INTEGER OUT_DBAS, OUT_DINT, OUT_DSUP
-    integer OUT_POTETWAT
+        namelist /model/ simulation_start, simulation_end, timestep_seconds, &
+            hotstart_read_mode, hotstart_write_mode, first_subbasin, &
+            last_subbasin, catchment_count, hru_count, subbasin_count, &
+            climate_region_count, reservoir_substitution_enabled, reservoir_count
 
+        open (config_unit, file=input_directory//'model_config.nml', status='old', action='read')
+        read (config_unit, nml=model)
 
-    !Namelist definition - (MGB GENERAL CONFIG)
-    namelist /mgb_config_global/     &
+        model_timestep_seconds_state = timestep_seconds
+        catchment_count_state = catchment_count
+        climate_cell_count_state = catchment_count
+        hru_count_state = hru_count
+        subbasin_count_state = subbasin_count
+        climate_region_count_state = climate_region_count
+        reservoir_substitution_enabled_state = reservoir_substitution_enabled
+        hotstart_read_mode_state = hotstart_read_mode
+        hotstart_write_mode_state = hotstart_write_mode
+        reservoir_count_state = reservoir_count
+        first_subbasin_state = first_subbasin
+        last_subbasin_state = last_subbasin
 
-        & SIM_START_DATE,     &
-        & SIM_END_DATE,       &
-        & SIM_TIMESTEP,       &
-        & HOTSTART_READ,      &
-        & HOTSTART_WRITE,     &
-        & SUBASIN_START,      &
-        & SUBASIN_END,        &
-        & N_UNIT_CATCHM,      &
-        & N_HRUS,             &
-        & N_SUBASINS,         &
-        & N_CLI_REGIONS,      &
-        & OPT_RES_SUB,        &
-        & N_RES_SUB
+        ! Parse start and end simulation dates from strings
+        call parse_date_string(simulation_start, year, month, day, hour, minute)
+        call parse_date_string(simulation_end, i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end)
 
+        ! Compute number of time steps using start/end julian day and hour
+        julian_day = calculate_julian_day(year, month, day, hour, minute)
+        jday_end = calculate_julian_day(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end)
+        timestep_count = calculate_timestep_count(jday_end, julian_day, &
+                                                  real(model_timestep_seconds_state, 8)) + 1
 
-    ! Opens input file contaning simulation setup parameters
-	OPEN(config_unit,FILE=input_directory // 'infomgb.sim',STATUS='OLD',ACTION='READ')
-    READ(config_unit, nml = mgb_config_global)
+        namelist /forcing/ use_temperature_timeseries, use_radiation_timeseries, &
+            use_humidity_timeseries, use_wind_timeseries, use_pressure_timeseries, &
+            monthly_radiation_option
 
-    model_timestep_seconds             = SIM_TIMESTEP
-    catchment_count              = N_UNIT_CATCHM
-    climate_cell_count            = catchment_count ! Temporary, all climate_cell_count must be changed to catchment_count
-    hru_count              = N_HRUS
-    subbasin_count              = N_SUBASINS
-    climate_region_count            = N_CLI_REGIONS
-    reservoir_substitution_enabled    = OPT_RES_SUB
-    read_hotstart_mode    = HOTSTART_READ
-    write_hotstart_mode   = HOTSTART_WRITE
-    reservoir_count            = N_RES_SUB
-    first_subbasin          = SUBASIN_START
-    last_subbasin          = SUBASIN_END
+        read (config_unit, nml=forcing)
 
-     ! Parse start and end simulation dates from strings
-    CALL parse_date_string(SIM_START_DATE,year,month,day,hour,minute)
-    CALL parse_date_string(SIM_END_DATE,i_yr_end,i_mo_end,i_day_end,i_hr_end,i_min_end)
+        use_temperature_timeseries_state = use_temperature_timeseries
+        use_radiation_timeseries_state = use_radiation_timeseries
+        use_humidity_timeseries_state = use_humidity_timeseries
+        use_wind_timeseries_state = use_wind_timeseries
+        use_pressure_timeseries_state = use_pressure_timeseries
+        monthly_radiation_option_state = monthly_radiation_option
 
-    ! Compute number of time steps using start/end julian day and hour
-    julian_day     = calculate_julian_day(year,month,day,hour,minute)
-    jday_end = calculate_julian_day(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end)
-    timestep_count =       calculate_timestep_count(jday_end, julian_day, real(model_timestep_seconds,8)) + 1
+        namelist /routing/ routing_mode, thread_count, &
+            downstream_boundary_slope_m_per_km, courant_alpha
 
-    !Namelist definition - (MGB met CONFIG)
-    namelist /mgb_config_forcing/     &
+        ! Pseudo-2D routing remains disabled by the current runtime interface.
+        pseudo_two_d_enabled = 0
+        overland_flow_width = 10.0
+        overland_manning_n = 0.1
 
-        & TS_TEMP,          &
-        & TS_RAD,           &
-        & TS_RH,            &
-        & TS_WIND,          &
-        & TS_PRES,          &
-        & OPT_MONTH_RAD
+        read (config_unit, nml=routing)
 
-    ! Reads input file contaning simulation setup parameters
-    READ(config_unit, nml = mgb_config_forcing)
+        courant_alpha_state = courant_alpha
+        inertial_routing_enabled = routing_mode
+        thread_count_state = thread_count
+        downstream_water_surface_slope = downstream_boundary_slope_m_per_km
+        downstream_water_surface_slope = downstream_water_surface_slope*0.001
 
-    use_temperature_timeseries    = TS_TEMP
-    use_radiation_timeseries     = TS_RAD
-    use_humidity_timeseries      = TS_RH
-    use_wind_timeseries    = TS_WIND
-    use_pressure_timeseries    = TS_PRES
-    monthly_radiation_option       = OPT_MONTH_RAD
+        namelist /output/ write_discharge, write_water_surface_elevation, &
+            write_flooded_level, write_runoff, write_soil_water, &
+            write_soil_saturation, write_total_water_storage, write_surface_water, &
+            write_evapotranspiration, write_interception_evaporation, &
+            write_soil_vegetation_evapotranspiration, write_open_water_evaporation, &
+            write_water_hru_evaporation, write_potential_open_water_evaporation, &
+            write_groundwater_storage, write_subsurface_storage, write_surface_storage, &
+            write_interception_storage, write_groundwater_flux, write_subsurface_flux, &
+            write_surface_flux, write_flooded_area
 
-    !Namelist definition - (ROUTING)
-    namelist /mgb_config_routing/   &
+        read (config_unit, nml=output)
 
-        & OPT_ROUTING,           &
-        & IN_DOWN_SLOPE,         &
-        & IN_COURANT_ALPHA,      &
-        & N_THREADS
+        write_discharge_output = write_discharge
+        write_water_surface_elevation_output = write_water_surface_elevation
+        write_hand_output = write_flooded_level
+        write_runoff_output = write_runoff
+        write_soil_moisture_output = write_soil_water
+        write_soil_saturation_output = write_soil_saturation
+        write_total_water_storage_output = write_total_water_storage
+        write_surface_water_output = write_surface_water
+        write_et_output = write_evapotranspiration
+        write_interception_et_output = write_interception_evaporation
+        write_soil_vegetation_et_output = write_soil_vegetation_evapotranspiration
+        write_open_water_et_output = write_open_water_evaporation
+        write_water_hru_et_output = write_water_hru_evaporation
+        write_potential_open_water_et_output = write_potential_open_water_evaporation
+        write_groundwater_storage_output = write_groundwater_storage
+        write_subsurface_storage_output = write_subsurface_storage
+        write_surface_storage_output = write_surface_storage
+        write_interception_storage_output = write_interception_storage
+        write_groundwater_flux_output = write_groundwater_flux
+        write_subsurface_flux_output = write_subsurface_flux
+        write_surface_flux_output = write_surface_flux
+        write_flooded_area_output = write_flooded_area
 
-    !Manual setup for disabled options (Pseudo2D configuration)
-    pseudo_two_d_enabled = 0
-    overland_flow_width    = 10.0
-    overland_manning_n     = 0.1
+        close (config_unit)
 
-    ! Reads input file contaning simulation setup parameters
-    READ(config_unit, nml = mgb_config_routing)
-
-    !Reads routing parameters
-    courant_alpha           = IN_COURANT_ALPHA
-    inertial_routing_enabled   = OPT_ROUTING
-    thread_count    = N_THREADS
-    downstream_water_surface_slope         = IN_DOWN_SLOPE
-    downstream_water_surface_slope         = downstream_water_surface_slope*0.001 !converting from m/km to m/m
-
-
-    !Namelist definition - (output variables)
-    namelist /mgb_config_output/     &
-
-        & OUT_FLOW,        &
-        & OUT_WSE,         &
-        & OUT_HAND,        &
-        & OUT_RUNOFF,      &
-        & OUT_SM,          &
-        & OUT_SSAT,        &
-        & OUT_TWS,         &
-        & OUT_SURFWAT,     &
-        & OUT_ET,          &
-        & OUT_ETINT,       &
-        & OUT_ETSOILVEG,   &
-        & OUT_ETOPENWAT,   &
-        & OUT_ETURHWAT,    &
-        & OUT_POTETWAT,    &
-        & OUT_VBAS,        &
-        & OUT_VINT,        &
-        & OUT_VSUP,        &
-        & OUT_DBAS,        &
-        & OUT_DINT,        &
-        & OUT_DSUP,        &
-        & OUT_VINTERC,     &
-        & OUT_FLAREA
-
-    ! Reads input file contaning output variables parameters
-    READ(config_unit, nml = mgb_config_output)
-
-    write_discharge_output       = OUT_FLOW
-    write_water_surface_elevation_output        = OUT_WSE
-    write_hand_output       = OUT_HAND
-    write_runoff_output     = OUT_RUNOFF
-    write_soil_moisture_output         = OUT_SM
-    write_soil_saturation_output      = OUT_SSAT
-    write_total_water_storage_output        = OUT_TWS
-    write_surface_water_output    = OUT_SURFWAT
-    write_et_output         = OUT_ET
-    write_interception_et_output      = OUT_ETINT
-    write_soil_vegetation_et_output  = OUT_ETSOILVEG
-    write_open_water_et_output  = OUT_ETOPENWAT
-    write_water_hru_et_output   = OUT_ETURHWAT
-    write_potential_open_water_et_output   = OUT_POTETWAT
-    write_groundwater_storage_output       = OUT_VBAS
-    write_subsurface_storage_output       = OUT_VINT
-    write_surface_storage_output       = OUT_VSUP
-    write_interception_storage_output    = OUT_VINTERC
-    write_groundwater_flux_output       = OUT_DBAS
-    write_subsurface_flux_output       = OUT_DINT
-    write_surface_flux_output       = OUT_DSUP
-    write_flooded_area_output     = OUT_FLAREA
-
-	CLOSE (config_unit)
-
-	RETURN
-	END
+        return
+    end

@@ -26,8 +26,8 @@ catchment receives routed flow; an upstream catchment contributes flow.
 A per-catchment lookup table relating water-surface elevation (*cota*), flooded
 area, and stored volume. These tables support inertial flood routing.
 
-## Retained runtime names
+## Canonical runtime names
 
-Historical filenames such as `infomgb.sim`, `mini.gtp`, `paruso.cal`,
-`albiaf.fix`, `chuvabin.pbi`, `medias_cru.bin`, `cota_area.flp`, and
-`nosolo.txt` remain unchanged because they are part of the runtime interface.
+The runtime interface uses descriptive English filenames and keys. Historical
+names are listed only in the [breaking-change migration table](migration.md);
+they are not accepted as aliases.

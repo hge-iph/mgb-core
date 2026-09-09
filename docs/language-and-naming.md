@@ -29,9 +29,12 @@ Published titles and proper names remain in their original language. When a
 Portuguese domain term has no unambiguous direct translation, retain it and add
 it to the [glossary](glossary.md).
 
-## Compatibility boundaries
+## Runtime interface
 
-Identifiers used as Fortran namelist keys are runtime interfaces. They must not
-be renamed without a separately documented input-format migration. Literal
-input and output filenames, record layouts, output labels, and numerical data
-are subject to the same rule.
+The current runtime interface is the descriptive English interface documented
+in the [I/O reference](io-reference.md). The migration is deliberately
+breaking: old names are not accepted as aliases. Binary layouts, numerical
+values, units, and execution order remain stable.
+
+The source formatting rules are maintained separately in the
+[Fortran style guide](fortran-style.md).

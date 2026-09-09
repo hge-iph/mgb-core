@@ -2,11 +2,12 @@
 
 ## Overview
 
-The `cleanup/docs-language` branch introduces MkDocs documentation and applies
-a behavior-preserving English naming pass to the legacy Fortran source. The
-change is intentionally limited to documentation, comments, encoding, source
-filenames, and identifiers. Hydrological equations, operation order, constants,
-input/output formats, and runtime messages are unchanged.
+This migration introduces MkDocs documentation, descriptive English runtime
+names, and a behavior-preserving Fortran style pass. The compatibility break is
+limited to configuration groups and keys, input/output filenames, fixture
+labels, and user-facing names. Hydrological equations, operation order,
+constants, precision, binary record layouts, and the executable name remain
+unchanged.
 
 ## Documentation changes
 
@@ -161,24 +162,20 @@ interfaces in this executable-only repository. Examples include `DSUP` to
 
 ## Compatibility
 
-The executable remains `mgb_model`. Namelist keys in `infomgb.sim`, literal
-runtime filenames, directory names, record lengths, formats, binary layouts,
-and output/log text are unchanged. External source code that imported the old
-modules or called the old routine symbols must use the mapping above.
+The executable remains mgb_model. The runtime migration is deliberately
+breaking: model_config.nml, its four namelist groups, canonical filenames, and
+descriptive output names replace the historical interface without aliases.
+Record lengths, formats, binary layouts, numerical values, and output ordering
+remain unchanged. The complete mapping is in migration.md.
 
 ## Validation
 
-Validation completed on Linux x64:
+Validation is being recorded incrementally for this migration:
 
-- Documentation: Python 3.13, MkDocs 1.6.1; dependency installation and
-  `python -m mkdocs build --strict` passed. Pull requests run the same build
-  under Python 3.12.
-- Model: Intel `ifx` 2025.3.3 and CMake 4.4.3; the temporary-directory CMake
-  build completed successfully after loading the Intel compiler and MKL 2025.3
-  environments.
-- Regression: `regression_magdalena` passed against the committed fixtures.
-- Baseline: `qtudo.mgb`, `ytudo.mgb`, `twstudo.mgb`, and `floodtudo.mgb` are
-  byte-identical to outputs generated from clean `main` at `41146b1`.
-- Hygiene: every `.f90` source decodes as UTF-8, the retired program-unit names
-  have no code references, `git diff --check` passes, and no regression fixture
-  or runtime input-format file changed.
+- The Linux x64 Intel ifx 2025.3.3 CMake build completes after the installed
+  MKL library directory is supplied to the linker.
+- The formatter dependency and strict documentation build are checked by the
+  repository scripts and CI workflow.
+- The renamed regression manifest and fixture paths are ready for
+  regression_magdalena; final numerical comparison evidence belongs to the
+  validation run for this change.

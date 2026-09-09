@@ -17,14 +17,13 @@ nav:
       - Build: build.md
       - Testing: testing.md
   - Model:
-      - Architecture: architecture-bootstrap.md
+      - Processes and numerical assumptions: model-processes.md
+      - I/O reference: io-reference.md
       - Portability: portability.md
   - Development:
-      - Cleanup roadmap: cleanup-roadmap.md
       - Language and naming: language-and-naming.md
+      - Fortran style: fortran-style.md
       - Glossary: glossary.md
   - Project:
       - History and contributors: project-history.md
       - References: references.md
-      - Changes:
-          - Cleanup and documentation language: changes/cleanup-docs-language.md

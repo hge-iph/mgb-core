@@ -49,12 +49,26 @@ For each run, the regression harness:
 
 Compared outputs:
 
-- `qtudo.mgb`
-- `ytudo.mgb`
-- `twstudo.mgb`
-- `floodtudo.mgb`
+- `discharge.bin`
+- `level.bin`
+- `total_water_storage.bin`
+- `flooded_area.bin`
 
 Current manifest tolerances:
 
 - `atol = 1.0`
 - `rtol = 1e2`
+
+## Formatting and documentation gates
+
+The development dependency pins `fprettify==0.3.7`. Run the formatter
+twice and require the second run to produce no source diff:
+
+~~~bash
+python -m pip install -r requirements-dev.txt
+fprettify --recursive --config-file .fprettify.rc src
+fprettify --recursive --config-file .fprettify.rc src
+python scripts/check_fortran_format.py
+git diff --check
+python -m mkdocs build --strict
+~~~

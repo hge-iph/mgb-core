@@ -3,45 +3,52 @@
 
 ! Open or close meteorological forcing files.
 
-	SUBROUTINE manage_meteorological_input_files(file_action)
+        subroutine manage_meteorological_input_files(file_action)
 
+            use model_state
+            implicit none
+            integer, intent(in) :: file_action
 
-    USE model_state
-    implicit none
-    integer, intent(in) :: file_action
+            !input met files
+            ! Open forcing streams before the timestep loop.
+            if (file_action == 1) then
 
-    !input met files
-    ! Open forcing streams before the timestep loop.
-    if (file_action == 1) then
+                !input binary file with interpolated rainfall data
+                open (precipitation_unit, file=input_directory//'precipitation.bin', status='old', &
+                      recl=catchment_count, form='UNFORMATTED', access='DIRECT')
 
-		!input binary file with interpolated rainfall data
-		OPEN(precipitation_unit,FILE=input_directory // 'chuvabin.pbi', STATUS='old',RECL=catchment_count,FORM='UNFORMATTED',ACCESS='DIRECT')
+               if (use_temperature_timeseries == 1) open (temperature_unit, file=input_directory// &
+                                                           'air_temperature.bin', &
+                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                                           'DIRECT')
 
-        if (use_temperature_timeseries==1)   OPEN(temperature_unit,FILE=input_directory // 'met_temp.pbi', &
-                                    STATUS='old',RECL=catchment_count,FORM='UNFORMATTED',ACCESS='DIRECT')
+                if (use_radiation_timeseries == 1) open (radiation_unit, file=input_directory// &
+                                                         'solar_radiation.bin', &
+                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                                         'DIRECT')
 
-		if (use_radiation_timeseries==1)    OPEN(radiation_unit,FILE=input_directory // 'met_radiation.pbi', &
-                                    STATUS='old',RECL=catchment_count,FORM='UNFORMATTED',ACCESS='DIRECT')
+                if (use_humidity_timeseries == 1) open (relative_humidity_unit, file= &
+                                                        input_directory//'relative_humidity.bin', &
+                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                                        'DIRECT')
 
-		if (use_humidity_timeseries==1)     OPEN(relative_humidity_unit,FILE=input_directory // 'met_relh.pbi', &
-                                    STATUS='old',RECL=catchment_count,FORM='UNFORMATTED',ACCESS='DIRECT')
+            if (use_wind_timeseries == 1) open (wind_unit, file=input_directory//'wind_speed.bin', &
+                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                                    'DIRECT')
 
-        if (use_wind_timeseries==1)   OPEN(wind_unit,FILE=input_directory // 'met_wind.pbi', &
-                                    STATUS='old',RECL=catchment_count,FORM='UNFORMATTED',ACCESS='DIRECT')
+  if (use_pressure_timeseries == 1) open (pressure_unit, file=input_directory//'air_pressure.bin', &
+                                   status='old', recl=catchment_count, form='UNFORMATTED', access= &
+                                                        'DIRECT')
 
-        if (use_pressure_timeseries==1)   OPEN(pressure_unit,FILE=input_directory // 'met_pres.pbi', &
-                                    STATUS='old',RECL=catchment_count,FORM='UNFORMATTED',ACCESS='DIRECT')
+            else
+                ! Closing met files
+                close (precipitation_unit)
+                close (temperature_unit)
+                close (radiation_unit)
+                close (relative_humidity_unit)
+                close (wind_unit)
+                close (pressure_unit)
 
-	else
-		! Closing met files
-		close(precipitation_unit)
-		close(temperature_unit)
-		close(radiation_unit)
-		close(relative_humidity_unit)
-		close(wind_unit)
-		close(pressure_unit)
+            end if
 
-    end if
-
-    end subroutine
-
+        end subroutine

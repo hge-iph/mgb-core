@@ -2,7 +2,10 @@
 
 This roadmap defines a staged cleanup effort for the legacy Fortran model. The
 goal is to make future development safer and easier to review without changing
-scientific behavior, input formats, output formats, or validated runtime results.
+scientific behavior, binary/text record layouts, or validated runtime results.
+The documentation and I/O naming migration is the deliberate exception for
+runtime filenames and configuration keys; its breaking mappings are recorded in
+`docs/migration.md`.
 
 ## Working Rules
 
@@ -16,8 +19,9 @@ Default cleanup rules:
 - Branch from `main`.
 - Keep one cleanup theme per branch.
 - Prefer compiler evidence over manual guessing for unused variables.
-- Preserve existing input and output files exactly unless a branch explicitly
-  documents and tests a format change.
+- Preserve input and output payloads and record layouts exactly. A branch may
+  change runtime filenames or configuration keys only when it documents and
+  tests the breaking migration explicitly.
 - Keep Portuguese hydrological terms when translation could obscure domain
   meaning.
 - Write new comments and documentation in English.
