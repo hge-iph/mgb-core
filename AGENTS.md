@@ -42,6 +42,10 @@ python -m mkdocs serve
 python -m mkdocs build --strict
 ```
 
+### Temporary PR files
+
+Use `.dev/pr/` for temporary files related to the current PR, such as implementation notes, decisions, checklists, and draft PR descriptions. These files may be committed during development but must be deleted before the branch is squash-merged.
+
 # Build
 
 This project uses CMake with Intel `ifx`. Validated build directories are kept
