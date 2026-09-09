@@ -306,7 +306,7 @@ module model_state
     integer pseudo_two_d_enabled
     !Flag for pseudo 2D model (ipucas)
 
-    !Variables from Subroutine update_catchment_water_balance
+    !Variables from Subroutine update_catchment_hydrology
     !Auxiliaries
     real current_soil_water_storage, current_max_soil_water_storage, current_air_pressure
     real current_air_temperature, current_wind_speed, current_arno_b

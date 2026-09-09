@@ -20,7 +20,7 @@ non-authoritative.
 | vars_inerc.f90 | inertial_state.f90 | Flood-routing state meanings and units moved to model-processes.md; repeated declaration descriptions rejected. |
 | alloca_vars.f90 | allocate_model_state.f90 | Allocation purpose moved to model-process documentation; stale private-list and dated edit notes rejected. |
 | alloca_varsinerc.f90 | allocate_inertial_state.f90 | Inertial table dimensions and ownership moved to model-processes.md; duplicate allocation comments rejected. |
-| celula.f90 | update_catchment_water_balance.f90 | Vertical balance sequence, reservoirs, capillary flow, and units moved to model-processes.md; dated correction banners retained only as history in version control. |
+| celula.f90 | update_catchment_hydrology.f90 | Vertical balance sequence, reservoirs, capillary flow, and units moved to model-processes.md; dated correction banners retained only as history in version control. |
 | solo.f90 | update_soil_water_balance.f90 | ARNO infiltration and soil-balance assumptions moved to model-processes.md; comments that repeated formulas rejected. |
 | evapo.f90 | calculate_evapotranspiration.f90 | ET components and water-availability limits moved to model-processes.md; repeated variable descriptions rejected. |
 | radiacao.f90 | calculate_net_radiation.f90 | Radiation inputs, units, and monthly options moved to model-processes.md and io-reference.md; stale prose about unused data rejected. |

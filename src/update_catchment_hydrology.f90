@@ -3,7 +3,7 @@
 
 ! Update catchment water balance, runoff, and diagnostic outputs.
 
-        subroutine update_catchment_water_balance
+        subroutine update_catchment_hydrology
 
             use model_state
             use inertial_state
@@ -408,4 +408,4 @@
 
 79          format(i5, 12f6.1)
             return
-        end subroutine update_catchment_water_balance
+        end subroutine update_catchment_hydrology

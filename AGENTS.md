@@ -44,9 +44,9 @@ python -m mkdocs build --strict
 
 ## Development notes and plans
 
-Use `.dev/pr/` for temporary files specific to the current PR, such as implementation notes, checklists, and draft PR descriptions. These files must be deleted before squash-merge.
+Use `.dev/pr/` for temporary files specific to the current PR, such as implementation notes, checklists, and draft PR descriptions.
 
-Use `.dev/plans/` for implementation plans, design notes, and tracked changes that may span multiple PRs. Keep them while the planned work is active and remove them once the work is completed.
+Use `.dev/plans/` for implementation plans, design notes, and tracked changes that may span multiple PRs.
 
 # Build
 

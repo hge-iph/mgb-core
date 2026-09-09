@@ -48,7 +48,7 @@
                 ! Read rainfall and other met variables
 
                 ! Perform vertical water balance
-                call update_catchment_water_balance
+                call update_catchment_hydrology
 
                 if (routing_method(1) == 0) then
                     call route_muskingum_cunge_network

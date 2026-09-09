@@ -28,7 +28,7 @@ unchanged filename records a symbol-only rename.
 | `vars_inerc.f90` | `VARS_INERC` | `inertial_state.f90` | `inertial_state` |
 | `alloca_vars.f90` | `ALLOCA_VARS` | `allocate_model_state.f90` | `allocate_model_state` |
 | `alloca_varsinerc.f90` | `ALLOCA_VARSINERC` | `allocate_inertial_state.f90` | `allocate_inertial_state` |
-| `celula.f90` | `CELULA` | `update_catchment_water_balance.f90` | `update_catchment_water_balance` |
+| `celula.f90` | `CELULA` | `update_catchment_hydrology.f90` | `update_catchment_hydrology` |
 | `solo.f90` | `SOLO` | `update_soil_water_balance.f90` | `update_soil_water_balance` |
 | `evapo.f90` | `EVAPO` | `calculate_evapotranspiration.f90` | `calculate_evapotranspiration` |
 | `radiacao.f90` | `RADIACAO` | `calculate_net_radiation.f90` | `calculate_net_radiation` |

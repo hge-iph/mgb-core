@@ -52,7 +52,7 @@ set(MGB_MODEL_SOURCES
     src/initialize_inertial_routing.f90
     src/calculate_catchment_time_of_concentration.f90
     src/read_catchment_data.f90
-    src/update_catchment_water_balance.f90
+    src/update_catchment_hydrology.f90
     src/read_fixed_parameters.f90
     src/read_floodplain_text_data.f90
     src/read_substitution_flows.f90

@@ -2,10 +2,7 @@
 
 ## Status
 
-This is the implementation plan for incorporating the
-`cleanup/structure-and-interfaces` work into the current cleanup PR. It is a
-temporary PR document and must be removed before squash-merge, in accordance
-with `AGENTS.md`.
+This is the implementation plan for the structure-and-interfaces work.
 
 The change is architectural. It is intended to preserve scientific and runtime
 behavior while replacing the flat collection of external procedures and the
@@ -20,13 +17,13 @@ The following decisions are settled:
   one thin module per existing routine.
 - Split global declarations by domain, but retain module-global storage. Do not
   introduce derived state types or pass a model context through procedure
-  arguments in this PR.
+  arguments in this implementation.
 - Keep runtime file handling in centralized I/O modules. Scientific domain
   modules must not open, read, write, or close model data files.
 - Keep state beside its owning domain instead of creating a generic `state/`
   directory.
-- Use `catchment` as the ownership area and `catchment_water_balance` as the
-  behavioral facade. Do not create a separate HRU domain in this PR.
+- Use `catchment` as the ownership area and `catchment_hydrology` as the
+  behavioral facade. Do not create a separate HRU domain in this implementation.
 - Keep catchment geometry, HRU definitions and parameterization, meteorological
   state, and water-balance state as distinct modules under `src/catchment/`.
 - Treat reservoirs and prescribed/substituted flows as a sibling domain because
@@ -37,9 +34,10 @@ The following decisions are settled:
 - Keep `main.f90` as a broad, readable composition point. Do not reduce it to a
   one-call wrapper.
 - Put `run_simulation` and the timestep loop in one ordinary multi-procedure
-  module. `run_simulation` is public and the timestep-loop procedure is private.
+  module named `simulation_runner`. `run_simulation` is public and the
+  timestep-loop procedure is private.
 - Consolidate related procedures into ordinary Fortran modules. Do not add
-  Fortran submodules in this PR.
+  Fortran submodules in this implementation.
 - Allow scientific modules to access another domain's explicitly exported state
   where the existing algorithms exchange data. Do not allow a scientific
   behavioral facade to call another scientific behavioral facade; orchestration
@@ -129,7 +127,7 @@ This PR must not:
 - add Fortran submodules;
 - claim support for a compiler or platform not already validated;
 - split HRU declarations into a separate domain; or
-- turn each source folder into a separate CMake library in this PR.
+- turn each source folder into a separate CMake library in this implementation.
 
 Compiler errors exposed by explicit interfaces are evidence of a pre-existing
 contract problem. They are not permission to alter an algorithm silently. Stop,
@@ -148,12 +146,12 @@ src/
 │   └── runtime_support.f90
 ├── simulation/
 │   ├── simulation_state.f90
-│   └── model_simulation.f90
+│   └── simulation_runner.f90
 ├── catchment/
 │   ├── catchment_state.f90
 │   ├── meteorological_state.f90
 │   ├── water_balance_state.f90
-│   └── catchment_water_balance.f90
+│   └── catchment_hydrology.f90
 ├── reservoirs/
 │   └── reservoir_state.f90
 ├── routing/
@@ -175,7 +173,10 @@ src/
 
 Folders communicate ownership, but dependency classification is per module.
 In particular, `simulation_state` is a low-level state contract while
-`model_simulation` is high-level orchestration even though they share a folder.
+`simulation_runner` is high-level simulation orchestration even though they
+share a folder. In this plan, the model is the MGB model itself, a simulation
+is execution of that model over time, and the application owns startup,
+shutdown, and top-level orchestration.
 
 ## Module responsibilities and public APIs
 
@@ -203,10 +204,10 @@ module procedures. Removing them is a separate code-hygiene decision.
 | Module | Responsibility | Public API |
 | --- | --- | --- |
 | `simulation_state` | Shared calendar, timestep, run-range, and simulation-index state | Explicitly listed state declarations; no behavioral facade |
-| `model_simulation` | Simulation initialization/finalization and the timestep loop | `run_simulation` |
+| `simulation_runner` | Simulation initialization/finalization and the timestep loop | `run_simulation` |
 
-`run_model` becomes a private procedure inside `model_simulation`. Its existing
-timestep operation order remains unchanged.
+`run_timestep_loop` becomes a private procedure inside `simulation_runner`. Its
+existing timestep operation order remains unchanged.
 
 ### Catchment modules
 
@@ -215,9 +216,9 @@ timestep operation order remains unchanged.
 | `catchment_state` | Catchment/subbasin/HRU counts; catchment geometry, topology, HRU composition, and static parameter identity | State declarations, `allocate_catchment_state`, `deallocate_catchment_state` |
 | `meteorological_state` | Forcing options, monthly climatology, current forcing arrays, and previous temperature | State declarations, `allocate_meteorological_state`, `deallocate_meteorological_state` |
 | `water_balance_state` | Soil/vegetation parameters, dynamic stores and fluxes, ET/radiation work state, catchment-generated flow, and floodplain exchange state | State declarations, `allocate_water_balance_state`, `deallocate_water_balance_state` |
-| `catchment_water_balance` | Catchment parameter preparation and vertical water-balance behavior | `calculate_catchment_time_of_concentration`, `initialize_catchment_water_balance`, `update_catchment_water_balance` |
+| `catchment_hydrology` | Catchment parameter preparation and vertical water-balance behavior | `calculate_catchment_time_of_concentration`, `initialize_catchment_hydrology`, `update_catchment_hydrology` |
 
-Inside `catchment_water_balance`, the following existing procedures become
+Inside `catchment_hydrology`, the following existing procedures become
 private module procedures:
 
 - `calculate_net_radiation`;
@@ -297,7 +298,7 @@ the exact file operation order.
 
 Centralized I/O means ownership of runtime model files. Console diagnostics,
 application log messages written to the already-open log unit, and interactive
-startup reads may remain in `main` or `model_simulation` to preserve the current
+startup reads may remain in `main` or `simulation_runner` to preserve the current
 user-visible sequence. Scientific modules must not acquire ownership of a file.
 
 ## State ownership ledger
@@ -332,7 +333,7 @@ only` lists:
 - output I/O reads state from all producing domains.
 
 These exchanges do not justify adding a generic coupling-state module in this
-PR.
+implementation.
 
 ## Dependency direction
 
@@ -342,7 +343,7 @@ PR.
 application/main
         |
         v
-model_simulation
+simulation_runner
         |
         +----------> centralized I/O modules
         |
@@ -358,11 +359,11 @@ model_simulation
 | --- | --- |
 | `common/*` | No project modules, or another explicitly allowed common utility |
 | `*_state` | Common constants/utilities only; allocation sizes are passed as scalar arguments when the owner does not already hold them |
-| `catchment_water_balance` | State modules and common utilities |
+| `catchment_hydrology` | State modules and common utilities |
 | `muskingum_cunge_routing` | State modules and common utilities |
 | `inertial_routing` | State modules, common utilities, and compiler/OpenMP modules |
 | I/O behavior modules | State modules and common utilities; never scientific behavior modules |
-| `model_simulation` | I/O APIs, scientific domain APIs, state modules, and common utilities |
+| `simulation_runner` | I/O APIs, scientific domain APIs, state modules, and common utilities |
 | `application/main.f90` | Public orchestration, I/O, lifecycle, and state APIs required to show the high-level run sequence |
 
 Forbidden edges include:
@@ -409,9 +410,16 @@ dimensions belong to another state module. This keeps state modules from
 depending on each other. Every allocation must retain its current dimensions
 and bounds.
 
-### Initialization in `run_simulation`
+### Initialization orchestration in `run_simulation`
 
-Split `initialize_model_state` by ownership without reordering its assignments:
+`run_simulation` is the public simulation orchestrator: it opens simulation
+outputs, invokes domain initialization APIs in the required order, enters
+`run_timestep_loop`, and performs final simulation output and closure. It does
+not replace the assignment sequence from `initialize_model_state` with a new
+ordering.
+
+Extract the assignment groups from `initialize_model_state` into the owning
+initialization procedures while preserving their original order:
 
 1. Open enabled model outputs.
 2. Initialize reservoir maps and read reservoir inputs when enabled.
@@ -425,13 +433,15 @@ Split `initialize_model_state` by ownership without reordering its assignments:
 9. Write the final hotstart when configured.
 10. Close model outputs.
 
-The split must follow the existing statement order in
+The extracted assignment sequence must follow the existing statement order in
 `initialize_model_state.f90`: water-balance initialization first, river-network
-initialization second, and inertial initialization last.
+initialization second, and inertial initialization last. This preserved order
+is an implementation constraint inside the orchestration above, not a change
+to the meaning of `run_simulation`.
 
 ### Timestep order
 
-The private timestep-loop procedure retains this exact order:
+The private `run_timestep_loop` procedure retains this exact order:
 
 1. Advance timestep index.
 2. Perform scheduled hotstart output.
@@ -470,18 +480,18 @@ complete and must not change numerical results.
 | Current source | Target module/file | Treatment |
 | --- | --- | --- |
 | `main.f90` | `application/main.f90` | Retain broad startup/shutdown orchestration; replace unrestricted state imports with explicit APIs/state imports |
-| `run_simulation.f90`, `run_model.f90` | `simulation/model_simulation.f90` | Public `run_simulation`; private timestep loop |
+| `run_simulation.f90`, `run_model.f90` | `simulation/simulation_runner.f90` | Public `run_simulation`; private `run_timestep_loop` |
 | `model_state.f90` | Domain state files | Split declarations mechanically according to the ownership ledger; remove the aggregator |
 | `allocate_model_state.f90` | Domain state files | Split allocation/deallocation by owner; replace action switch with explicit lifecycle APIs |
 | `initialize_model_state.f90` | Catchment and routing facades | Split initialization in existing statement order |
 | `utils_date.f90`, `utils_time.f90` | `common/date_time.f90` | Consolidate existing module procedures and preserve signatures |
 | `linear_interpolate.f90` | `common/interpolation.f90` | Convert the external function to a public module procedure |
 | `initialize_random_seed.f90`, `update_legacy_timer.f90` | `common/runtime_support.f90` | Convert existing external utilities to public module procedures |
-| `calculate_catchment_time_of_concentration.f90` | `catchment/catchment_water_balance.f90` | Public preparation procedure |
-| `update_catchment_water_balance.f90` | `catchment/catchment_water_balance.f90` | Public timestep procedure |
-| `update_soil_water_balance.f90` | `catchment/catchment_water_balance.f90` | Private numerical helper |
-| `calculate_evapotranspiration.f90` | `catchment/catchment_water_balance.f90` | Private numerical helper |
-| `calculate_net_radiation.f90` | `catchment/catchment_water_balance.f90` | Private numerical helper |
+| `calculate_catchment_time_of_concentration.f90` | `catchment/catchment_hydrology.f90` | Public preparation procedure |
+| `update_catchment_hydrology.f90` | `catchment/catchment_hydrology.f90` | Public timestep procedure |
+| `update_soil_water_balance.f90` | `catchment/catchment_hydrology.f90` | Private numerical helper |
+| `calculate_evapotranspiration.f90` | `catchment/catchment_hydrology.f90` | Private numerical helper |
+| `calculate_net_radiation.f90` | `catchment/catchment_hydrology.f90` | Private numerical helper |
 | `calculate_muskingum_cunge_parameters.f90` | `routing/muskingum/muskingum_cunge_routing.f90` | Public preparation procedure |
 | `route_muskingum_cunge_network.f90` | `routing/muskingum/muskingum_cunge_routing.f90` | Public network procedure |
 | `route_muskingum_cunge.f90` | `routing/muskingum/muskingum_cunge_routing.f90` | Private reach helper |
@@ -499,8 +509,8 @@ complete and must not change numerical results.
 | `read_hotstart.f90`, `write_hotstart.f90` | `io/hotstart_io.f90` | Public hotstart read/write; move schedule file ownership here |
 | `write_model_outputs.f90` | `io/output_io.f90` | Explicit log/output open/write/close API |
 
-Use pure file moves before consolidation where practical so Git can retain
-history. Do not mix numerical edits into consolidation commits.
+Use pure file moves before consolidation where practical. Do not mix numerical
+edits into consolidation stages.
 
 ## CMake changes
 
@@ -514,7 +524,7 @@ history. Do not mix numerical edits into consolidation commits.
 - Keep source paths explicit; do not use recursive globbing.
 - Let CMake's Fortran dependency scanner determine compilation order rather than
   encoding a hand-maintained pseudo-order in the list.
-- Do not create per-domain static/object libraries in this PR. The existing
+- Do not create per-domain static/object libraries in this implementation. The existing
   state exchange would make their link graph more complicated than the source
   architecture, while the automated dependency check provides the intended
   boundary enforcement.
@@ -601,29 +611,27 @@ Also update:
 - `docs/testing.md` for the architecture check and added routing regression;
 - `docs/build.md` if the CTest inventory or commands change;
 - `.dev/plans/cleanup_roadmap.md` to record that the structure-and-interfaces
-  phase was incorporated into this PR; and
-- the current PR overview so it no longer presents the branch as documentation
-  and language work only.
+  phase was incorporated into the implementation scope.
 
 The existing migration and legacy-header ledgers remain separate concerns and
 must stay accurate after file consolidation.
 
 ## Regression preparation
 
-### Freeze the current branch baseline
+### Freeze the pre-refactor baseline
 
 Before moving source:
 
-1. Configure and build the current branch with a validated Intel `ifx`
+1. Configure and build the pre-refactor implementation with a validated Intel `ifx`
    environment.
 2. Run `regression_magdalena` successfully.
 3. Preserve the generated enabled output files outside the build/runtime tree.
 4. Record SHA-256 hashes for `discharge.bin`, `level.bin`,
    `total_water_storage.bin`, and `flooded_area.bin`.
 5. Record OS, compiler version, CMake version, configure command, build command,
-   test command, and thread count in the PR validation note.
+   test command, and thread count in the validation record.
 
-This baseline is in addition to the committed expected fixtures. It detects
+This baseline is in addition to the expected fixtures. It detects
 changes hidden by the current regression tolerances.
 
 ### Add Muskingum-Cunge coverage first
@@ -644,7 +652,7 @@ compile coverage alone. Before restructuring that module:
 
 If the existing fixture cannot exercise Muskingum-Cunge without a model or
 input reinterpretation, stop and document that limitation rather than inventing
-new hydrological data in this PR.
+new hydrological data in this implementation.
 
 Reservoir, hotstart, and optional-forcing paths remain coverage gaps unless
 valid existing inputs can exercise them without broadening the fixture. Their
@@ -653,17 +661,15 @@ residual risk.
 
 ## Implementation sequence
 
-Each numbered phase should be a reviewable commit or small commit group. Build
-and run the available routing regressions after every phase that changes
-Fortran source or CMake.
+Each numbered phase should be a reviewable implementation stage. Build and run
+the available routing regressions after every phase that changes Fortran source
+or CMake.
 
 ### Phase 0: Baseline and test coverage
 
-- Complete the current branch's pending Linux `ifx` regression evidence.
+- Complete the pending Linux `ifx` regression evidence.
 - Freeze exact before-refactor output hashes.
 - Add and validate the Muskingum-Cunge regression variant.
-- Confirm the worktree is otherwise clean before structural edits.
-
 Exit criterion: both routing modes have accepted pre-refactor baselines, or the
 plan is paused with an explicit coverage blocker.
 
@@ -709,11 +715,11 @@ are unchanged.
 
 ### Phase 4: Catchment module consolidation
 
-- Create `catchment_water_balance`.
+- Create `catchment_hydrology`.
 - Move the public preparation/update procedures and private soil, ET, and
   radiation helpers under one `contains` section.
 - Split the water-balance part of `initialize_model_state` into
-  `initialize_catchment_water_balance` without reordering assignments.
+  `initialize_catchment_hydrology` without reordering assignments.
 - Preserve all numerical helper dummy contracts.
 
 Exit criterion: no external catchment calculation procedure remains and both
@@ -742,7 +748,7 @@ unchanged.
   routines according to the migration ledger.
 - Replace public integer action switches with explicit open/close APIs while
   retaining private action helpers where useful.
-- Move hotstart schedule file ownership out of `model_simulation`.
+- Move hotstart schedule file ownership out of `simulation_runner`.
 - Move log open/close ownership out of main, while retaining application message
   ordering.
 - Verify the final I/O ownership map against `docs/io-reference.md`.
@@ -752,7 +758,7 @@ operation order remain unchanged, and both routing baselines are unchanged.
 
 ### Phase 7: Simulation module and broad main
 
-- Consolidate `run_simulation` and `run_model` into `model_simulation`.
+- Consolidate `run_simulation` and `run_timestep_loop` into `simulation_runner`.
 - Keep only `run_simulation` public.
 - Update main to show configuration, domain allocation, static loading,
   preparation, simulation, shutdown, and timing explicitly.
@@ -769,7 +775,7 @@ procedures and the high-level run sequence remains readable in main.
 - Add the CI and CTest hooks.
 - Add `docs/architecture.md` and update related documentation.
 - Enable the strict check only after the final module graph satisfies it.
-- Update the PR overview and cleanup roadmap for the combined scope.
+- Update the cleanup roadmap for the combined scope.
 
 Exit criterion: architecture, format, documentation, build, and regression
 checks pass from documented commands.
@@ -777,14 +783,11 @@ checks pass from documented commands.
 ### Phase 9: Final audit
 
 - Compare post-refactor outputs to the frozen same-compiler hashes.
-- Confirm committed expected outputs were not modified after their pre-refactor
+- Confirm expected outputs were not modified after their pre-refactor
   baselines were accepted.
 - Audit the final module/use graph with the checker and a manual spot check.
-- Run `git diff --check` and inspect the diff for accidental numerical edits.
+- Inspect the implementation for accidental numerical edits.
 - Record Linux and Windows validation evidence.
-- Delete all temporary `.dev/pr/` documents immediately before squash-merge,
-  after transferring durable architecture information into `docs/` and the PR
-  description.
 
 ## Validation matrix
 
@@ -793,7 +796,7 @@ checks pass from documented commands.
 | Architecture policy | `python scripts/check_fortran_architecture.py` passes |
 | Architecture checker tests | Python tests under `tests/architecture/` pass |
 | Fortran formatting | Two formatter passes followed by `python scripts/check_fortran_format.py` with no diff |
-| Whitespace | `git diff --check` passes |
+| Whitespace | No unintended whitespace changes are present |
 | Documentation | `python -m mkdocs build --strict` passes |
 | Linux build | Documented Linux x64 Intel `ifx` configure and build pass |
 | Windows build | Documented Windows x64 Intel `ifx` configure and build pass |
@@ -801,10 +804,11 @@ checks pass from documented commands.
 | Muskingum regression | New Muskingum-Cunge regression passes against its pre-refactor baseline |
 | Exact behavior check | Enabled binary output SHA-256 values match same-compiler pre-refactor runs |
 | Fixture integrity | No expected regression output changes after structural implementation starts |
-| I/O compatibility | File names, sizes, record counts, and hotstart vector layouts match the current branch |
+| I/O compatibility | File names, sizes, record counts, and hotstart vector layouts match the pre-refactor implementation |
 
-The final PR description must list the exact OS, Intel compiler version, CMake
-version, configure/build commands, CTest commands, and any path not exercised.
+The final validation record must list the exact OS, Intel compiler version,
+CMake version, configure/build commands, CTest commands, and any path not
+exercised.
 
 ## Review strategy
 
@@ -842,7 +846,7 @@ routing regressions and hotstart layout review.
 ### Consolidation hides numerical changes
 
 Mitigation: move files before combining them, keep numerical-body edits out of
-structure commits, compare extracted procedure bodies, and require exact
+structure stages, compare extracted procedure bodies, and require exact
 same-compiler output hashes.
 
 ### Cross-domain state creates cycles
@@ -874,17 +878,16 @@ sizes and hashes.
 Mitigation: keep the supported syntax narrow, add fixtures for every source form
 used by the repository, and fail on unclassified modules rather than guessing.
 
-### Combined PR becomes difficult to review
+### Combined implementation becomes difficult to review
 
-Mitigation: maintain the phased commit structure, keep this migration ledger
-current, update the PR overview to explain why documentation/language and
-architecture are combined, and provide regression evidence at each boundary.
+Mitigation: maintain the phased implementation structure, keep this migration
+ledger current, and provide regression evidence at each boundary.
 
 ## Stop conditions
 
 Pause implementation and separate or redesign the affected change if:
 
-- any committed expected output must be altered after structural work starts;
+- any expected output must be altered after structural work starts;
 - same-compiler output hashes change without an understood non-scientific
   cause;
 - an explicit interface requires a numerical kind, rank, shape, or argument-
@@ -897,7 +900,7 @@ Pause implementation and separate or redesign the affected change if:
   is consolidated;
 - the Windows or Linux validated build cannot resolve the nested module source
   structure; or
-- the PR begins performing unrelated naming, algorithm, calibration, or
+- the implementation begins performing unrelated naming, algorithm, calibration, or
   portability work.
 
 ## Definition of done
@@ -919,6 +922,5 @@ The structure-and-interfaces work is complete when:
 - inertial and Muskingum-Cunge regressions pass;
 - same-compiler generated outputs match their pre-refactor hashes;
 - durable architecture and I/O documentation are current;
-- the final PR description states that scientific behavior is unchanged and
-  includes complete validation evidence; and
-- temporary `.dev/pr/` files have been removed before squash-merge.
+- the final validation record states that scientific behavior is unchanged and
+  includes complete validation evidence.
