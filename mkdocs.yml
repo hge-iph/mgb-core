@@ -14,16 +14,16 @@ plugins:
 nav:
   - Home: index.md
   - Getting started:
-      - Build: build.md
-      - Testing: testing.md
+      - Build: getting-started/build.md
+      - Testing: getting-started/testing.md
   - Model:
-      - Processes and numerical assumptions: model-processes.md
-      - I/O reference: io-reference.md
-      - Portability: portability.md
+      - Processes and numerical assumptions: model/model-processes.md
+      - I/O reference: model/io-reference.md
+      - Portability: model/portability.md
   - Development:
-      - Architecture: architecture.md
-      - Language and naming: language-and-naming.md
-      - Fortran style: fortran-style.md
+      - Architecture: development/architecture.md
+      - Language and naming: development/language-and-naming.md
+      - Fortran style: development/fortran-style.md
   - Project:
-      - History and contributors: project-history.md
-      - References: references.md
+      - History and contributors: project/project-history.md
+      - References: project/references.md

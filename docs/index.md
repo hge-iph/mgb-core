@@ -8,14 +8,14 @@ filenames remain established MGB names.
 
 ## Start here
 
-- [Build the model](build.md) on a validated Intel `ifx` environment.
-- [Run the Magdalena regression case](testing.md).
-- Review the [source architecture and dependency rules](architecture.md).
-- Review the [portability constraints](portability.md) before changing source
+- [Build the model](getting-started/build.md) on a validated Intel `ifx` environment.
+- [Run the Magdalena regression case](getting-started/testing.md).
+- Review the [source architecture and dependency rules](development/architecture.md).
+- Review the [portability constraints](model/portability.md) before changing source
   code.
-- Read the [process and numerical assumptions](model-processes.md) and the
-  [complete I/O reference](io-reference.md) before changing a file format.
-- Follow the [language and naming guide](language-and-naming.md) when writing
+- Read the [process and numerical assumptions](model/model-processes.md) and the
+  [complete I/O reference](model/io-reference.md) before changing a file format.
+- Follow the [language and naming guide](development/language-and-naming.md) when writing
   code or documentation.
 
 ## Documentation locally

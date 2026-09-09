@@ -20,13 +20,13 @@ python -m mkdocs build --strict
 
 Useful starting points:
 
-- [Build](docs/build.md)
-- [Testing](docs/testing.md)
-- [Architecture](docs/architecture.md)
-- [Processes and I/O](docs/model-processes.md)
-- [Portability](docs/portability.md)
-- [Language and naming](docs/language-and-naming.md)
-- [Fortran style](docs/fortran-style.md)
+- [Build](docs/getting-started/build.md)
+- [Testing](docs/getting-started/testing.md)
+- [Architecture](docs/development/architecture.md)
+- [Processes and I/O](docs/model/model-processes.md)
+- [Portability](docs/model/portability.md)
+- [Language and naming](docs/development/language-and-naming.md)
+- [Fortran style](docs/development/fortran-style.md)
 
 ## Windows
 

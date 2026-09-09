@@ -32,7 +32,7 @@ explain it in the surrounding documentation.
 ## Runtime interface
 
 The current runtime interface uses the namelist groups and keys documented in
-the [I/O reference](io-reference.md), together with the established input
+the [I/O reference](../model/io-reference.md), together with the established input
 filenames listed there. Old names are not accepted as aliases. Binary layouts,
 numerical values, units, and execution order remain stable.
 

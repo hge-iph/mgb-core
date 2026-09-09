@@ -7,7 +7,7 @@ The current validated build environments are:
 - Windows x64 with Intel `ifx`
 - Linux x64 with Intel `ifx`
 
-Both builds use CMake. Build commands are documented in `docs/build.md`.
+Both builds use CMake. Build commands are documented in the [build guide](../getting-started/build.md).
 
 ## Runtime Layout
 

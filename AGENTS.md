@@ -14,7 +14,7 @@ Focus first on infrastructure that makes later refactors safer:
 - Maintain MkDocs user documentation and in-repo developer documentation.
 - Clean unused variables, stale comments, and confusing code incrementally.
 
-Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
+Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/getting-started/build.md` and `docs/model/portability.md`.
 
 ## Fortran Modernization
 
@@ -22,7 +22,7 @@ Do not claim support for platforms or compilers that have not been validated. Th
 - Reduce global-state coupling gradually; avoid broad rewrites just to make code look modern.
 - Keep comments useful: explain intent, assumptions, units, file formats, and non-obvious hydrological behavior. Remove comments that merely repeat the code.
 - Write new source identifiers, comments, and documentation in English using
-  the conventions in `docs/language-and-naming.md`.
+  the conventions in `docs/development/language-and-naming.md`.
 - Follow existing naming and layout conventions unless a PR is explicitly improving them in a narrow area.
 
 ## Validation
@@ -30,7 +30,7 @@ Do not claim support for platforms or compilers that have not been validated. Th
 - For source or build changes, run the CMake build and both `regression_magdalena_inertial` and `regression_magdalena_muskingum` on the affected supported platform when available.
 - For portability work, document the exact OS, compiler, CMake command, and any known failing assumptions.
 - For refactors, provide regression evidence showing unchanged outputs or explicitly document output changes.
-- For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/build.md`, `docs/testing.md`, and `docs/portability.md`.
+- For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/getting-started/build.md`, `docs/getting-started/testing.md`, and `docs/model/portability.md`.
 
 ## Documentation
 
