@@ -4,7 +4,7 @@ The regression suite covers both routing branches with the Magdalena fixture.
 
 ## Layout
 
-- Fixture and manifest: `tests/regression/magdalena/`
+- Inertial fixture and manifest: `tests/regression/magdalena_inertial/`
 - Muskingum-Cunge manifest and configuration override:
   `tests/regression/magdalena_muskingum/`
 - Regression runner: `tests/regression/run_regression.py`
@@ -13,21 +13,21 @@ The regression suite covers both routing branches with the Magdalena fixture.
 ## Windows
 
 ```powershell
-ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
+ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena_
 ```
 
 ```powershell
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/windows/Release/mgb_model.exe --work-dir C:\mgbmagtest
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/windows/Release/mgb_model.exe --work-dir C:\mgbmagtest
 ```
 
 ## Linux
 
 ```bash
-ctest --test-dir build/linux --output-on-failure -R regression_magdalena
+ctest --test-dir build/linux --output-on-failure -R regression_magdalena_
 ```
 
 ```bash
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena --exe build/linux/mgb_model --work-dir /tmp/mgbmagtest
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/linux/mgb_model --work-dir /tmp/mgbmagtest
 ```
 
 ## Runtime Staging Behavior
@@ -39,7 +39,7 @@ For each run, the regression harness:
    case-specific input overrides
 3. creates `<runtime>/output`
 4. runs the model with `cwd=<runtime>` and `MGB_NONINTERACTIVE=1`
-5. compares selected outputs against `tests/regression/magdalena/expected`
+5. compares selected outputs against the case's `expected` directory
 
 ## Temp Output Handling
 
@@ -62,9 +62,9 @@ Current manifest tolerances:
 - `atol = 1.0`
 - `rtol = 1e2`
 
-The `magdalena_muskingum` case selects routing mode 0 and compares runoff and
-total-water-storage records. It exists to execute the Muskingum-Cunge network
-path as part of every supported regression run.
+The `magdalena_muskingum` case selects routing mode 0 and compares discharge,
+runoff, and total-water-storage records. It exists to execute the
+Muskingum-Cunge network path as part of every supported regression run.
 
 ## Architecture gate
 

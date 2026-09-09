@@ -1,7 +1,7 @@
 {
   "case_name": "magdalena_muskingum",
   "description": "Magdalena regression case exercising Muskingum-Cunge routing.",
-  "input_dir": "../magdalena/input",
+  "input_dir": "../magdalena_inertial/input",
   "input_overrides": [
     "config.nml"
   ],
@@ -10,6 +10,12 @@
     "model.log"
   ],
   "comparisons": [
+    {
+      "path": "discharge.bin",
+      "dtype": "float32",
+      "atol": 1.0,
+      "rtol": 100.0
+    },
     {
       "path": "total_water_storage.bin",
       "dtype": "float32",

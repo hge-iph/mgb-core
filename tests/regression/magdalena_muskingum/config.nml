@@ -52,7 +52,7 @@
 ! Set each output flag to (1) to write the output or (0) to disable it.
 &output
 
-    write_discharge                          = 0                     ! River discharge (m3/s).
+    write_discharge                          = 1                     ! River discharge (m3/s).
     write_water_surface_elevation            = 0                     ! Water-surface elevation (m).
     write_flooded_level                      = 0                     ! HAND-relative water level (m).
     write_total_water_storage                = 1                     ! Terrestrial water storage (mm).

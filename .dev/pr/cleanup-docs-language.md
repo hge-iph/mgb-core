@@ -176,5 +176,5 @@ Validation is being recorded incrementally for this migration:
 - The formatter dependency and strict documentation build are checked by the
   repository scripts and CI workflow.
 - The renamed regression manifest and fixture paths are ready for
-  regression_magdalena; final numerical comparison evidence belongs to the
+  regression_magdalena_inertial; final numerical comparison evidence belongs to the
   validation run for this change.

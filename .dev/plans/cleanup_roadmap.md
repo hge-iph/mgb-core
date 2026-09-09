@@ -43,7 +43,7 @@ A cleanup branch is successful when all of the following are true:
 - Build files and scripts remain aligned with `README.md`, `docs/build.md`,
   `docs/testing.md`, and `docs/portability.md`.
 - The CMake build succeeds on an available validated environment.
-- `regression_magdalena` passes on an available validated environment.
+- `regression_magdalena_inertial` and `regression_magdalena_muskingum` pass on an available validated environment.
 - If local validation is unavailable, the PR documents the exact blocker and the
   expected CI or reviewer validation path.
 - No expected regression output is updated for cleanup-only branches.

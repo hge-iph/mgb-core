@@ -624,7 +624,7 @@ Before moving source:
 
 1. Configure and build the pre-refactor implementation with a validated Intel `ifx`
    environment.
-2. Run `regression_magdalena` successfully.
+2. Run `regression_magdalena_inertial` successfully.
 3. Preserve the generated enabled output files outside the build/runtime tree.
 4. Record SHA-256 hashes for `discharge.bin`, `level.bin`,
    `total_water_storage.bin`, and `flooded_area.bin`.
@@ -800,7 +800,7 @@ checks pass from documented commands.
 | Documentation | `python -m mkdocs build --strict` passes |
 | Linux build | Documented Linux x64 Intel `ifx` configure and build pass |
 | Windows build | Documented Windows x64 Intel `ifx` configure and build pass |
-| Inertial regression | `regression_magdalena` passes on available validated environments |
+| Inertial regression | `regression_magdalena_inertial` passes on available validated environments |
 | Muskingum regression | New Muskingum-Cunge regression passes against its pre-refactor baseline |
 | Exact behavior check | Enabled binary output SHA-256 values match same-compiler pre-refactor runs |
 | Fixture integrity | No expected regression output changes after structural implementation starts |

@@ -1,6 +1,6 @@
 {
-  "case_name": "magdalena",
-  "description": "Initial smoke-sized regression case for the Magdalena basin.",
+  "case_name": "magdalena_inertial",
+  "description": "Magdalena regression case exercising local inertial routing.",
   "input_dir": "input",
   "expected_dir": "expected",
   "required_outputs": [

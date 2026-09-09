@@ -83,10 +83,10 @@ if(BUILD_TESTING)
     )
 
     add_test(
-        NAME regression_magdalena
+        NAME regression_magdalena_inertial
         COMMAND ${Python3_EXECUTABLE}
                 ${CMAKE_SOURCE_DIR}/tests/regression/run_regression.py
-                --case-dir ${CMAKE_SOURCE_DIR}/tests/regression/magdalena
+                --case-dir ${CMAKE_SOURCE_DIR}/tests/regression/magdalena_inertial
                 --exe $<TARGET_FILE:mgb_model>
     )
 

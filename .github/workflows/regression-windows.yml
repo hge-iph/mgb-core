@@ -27,7 +27,7 @@ jobs:
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
           cmake -S . -B build
           cmake --build build --config Release
-          ctest --test-dir build -C Release --output-on-failure -R regression_magdalena
+          ctest --test-dir build -C Release --output-on-failure -R regression_magdalena_
 
       - name: Upload Regression Logs
         if: failure()
