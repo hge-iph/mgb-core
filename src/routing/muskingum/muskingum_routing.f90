@@ -1,6 +1,4 @@
-! SPDX-License-Identifier: GPL-3.0-or-later
-
-module muskingum_cunge_routing
+module muskingum_routing
 
     implicit none
     private
@@ -638,4 +636,4 @@ routed_q(reach_index + 1, interval_index + 1) = max(routed_q(reach_index + 1, in
         return
     end subroutine route_muskingum_cunge
 
-end module muskingum_cunge_routing
+end module muskingum_routing

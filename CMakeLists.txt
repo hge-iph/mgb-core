@@ -39,7 +39,7 @@ set(MGB_RESERVOIR_SOURCES
 
 set(MGB_ROUTING_SOURCES
     src/routing/muskingum/muskingum_state.f90
-    src/routing/muskingum/muskingum_cunge_routing.f90
+    src/routing/muskingum/muskingum_routing.f90
     src/routing/inertial/inertial_state.f90
     src/routing/inertial/inertial_routing.f90
 )

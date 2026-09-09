@@ -1,6 +1,3 @@
-! SPDX-License-Identifier: GPL-3.0-or-later
-! Copyright (C) 2019 Hidrologia de Grande Escala (HGE)
-
 module io_state
 
     use catchment_state, only: max_subbasin_count

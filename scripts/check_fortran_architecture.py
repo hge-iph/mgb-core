@@ -25,7 +25,7 @@ CLASSIFICATION = {
     "meteorological_state": "state", "water_balance_state": "state",
     "reservoir_state": "state", "muskingum_state": "state", "inertial_state": "state",
     "io_state": "state", "output_state": "state",
-    "catchment_hydrology": "facade", "muskingum_cunge_routing": "facade",
+    "catchment_hydrology": "facade", "muskingum_routing": "facade",
     "inertial_routing": "facade", "configuration_io": "io", "static_input_io": "io",
     "meteorological_io": "io", "hotstart_io": "io", "output_io": "io",
     "simulation_runner": "runner",
@@ -110,7 +110,7 @@ def expected_location(name: str, category: str) -> str:
         }[name]
     if category == "facade":
         return {"catchment_hydrology": "catchment/",
-                "muskingum_cunge_routing": "routing/muskingum/",
+                "muskingum_routing": "routing/muskingum/",
                 "inertial_routing": "routing/inertial/"}[name]
     return EXPECTED_PATHS[category] or ""
 

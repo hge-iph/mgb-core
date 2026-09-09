@@ -1,6 +1,3 @@
-! SPDX-License-Identifier: GPL-3.0-or-later
-! Copyright (C) 2026 Hidrologia de Grande Escala (HGE)
-
 ! Read model inputs, initialize state, run the simulation, and release resources.
 
 program mgb_model
@@ -27,7 +24,7 @@ program mgb_model
     use configuration_io, only: read_model_configuration
     use inertial_routing, only: prepare_inertial_routing
     use meteorological_io, only: close_meteorological_inputs, open_meteorological_inputs
-    use muskingum_cunge_routing, only: calculate_muskingum_cunge_parameters
+    use muskingum_routing, only: calculate_muskingum_cunge_parameters
     use output_io, only: close_model_log, open_model_log
     use simulation_runner, only: run_simulation
     use static_input_io, only: read_catchment_inputs, read_floodplain_inputs

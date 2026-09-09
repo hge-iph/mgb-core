@@ -13,7 +13,7 @@ src/
 ├── catchment/{catchment_state,meteorological_state,water_balance_state,
 │             catchment_hydrology}.f90
 ├── reservoirs/reservoir_state.f90
-├── routing/muskingum/{muskingum_state,muskingum_cunge_routing}.f90
+├── routing/muskingum/{muskingum_state,muskingum_routing}.f90
 ├── routing/inertial/{inertial_state,inertial_routing}.f90
 └── io/{io_state,output_state,configuration_io,static_input_io,
        meteorological_io,hotstart_io,output_io}.f90
@@ -34,7 +34,7 @@ src/
 | `catchment_hydrology` | Parameter preparation and vertical water balance | `calculate_catchment_time_of_concentration`, `initialize_catchment_hydrology`, `update_catchment_hydrology` |
 | `reservoir_state` | Prescribed flows and reservoir substitution | State declarations, allocate/initialize/deallocate APIs |
 | `muskingum_state` | Muskingum-Cunge parameters and route state | State declarations, allocate/deallocate APIs |
-| `muskingum_cunge_routing` | Muskingum-Cunge preparation and routing | Calculate, initialize, and network-route APIs |
+| `muskingum_routing` | Muskingum-Cunge preparation and routing | Calculate, initialize, and network-route APIs |
 | `inertial_state` | Inertial configuration, topology, tables, and hydraulic state | State declarations, allocate/deallocate APIs |
 | `inertial_routing` | Inertial preparation and routing | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
 | `io_state` | Runtime directories, units, and format work fields | State declarations |

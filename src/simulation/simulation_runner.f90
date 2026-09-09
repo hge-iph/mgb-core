@@ -1,5 +1,3 @@
-! SPDX-License-Identifier: GPL-3.0-or-later
-
 module simulation_runner
 
     implicit none
@@ -12,7 +10,7 @@ contains
         use catchment_hydrology, only: initialize_catchment_hydrology
         use hotstart_io, only: read_hotstart, read_hotstart_schedule, write_hotstart
         use inertial_routing, only: initialize_inertial_routing
-        use muskingum_cunge_routing, only: initialize_muskingum_cunge_routing
+        use muskingum_routing, only: initialize_muskingum_cunge_routing
         use output_io, only: close_model_outputs, open_model_outputs
         use static_input_io, only: read_reservoir_inputs
         use reservoir_state, only: initialize_reservoir_state, reservoir_substitution_enabled
@@ -77,7 +75,7 @@ contains
         use hotstart_io, only: write_hotstart
         use inertial_routing, only: route_inertial_flow
         use meteorological_io, only: read_meteorological_forcing
-        use muskingum_cunge_routing, only: route_muskingum_cunge_network
+        use muskingum_routing, only: route_muskingum_cunge_network
         use output_io, only: write_model_outputs
         use simulation_state, only: day, hour, julian_day, minute, model_timestep, month, &
                                     timestep_count, timestep_index, year

@@ -157,7 +157,7 @@ src/
 ├── routing/
 │   ├── muskingum/
 │   │   ├── muskingum_state.f90
-│   │   └── muskingum_cunge_routing.f90
+│   │   └── muskingum_routing.f90
 │   └── inertial/
 │       ├── inertial_state.f90
 │       └── inertial_routing.f90
@@ -246,11 +246,11 @@ remains the responsibility of `static_input_io`.
 | Module | Responsibility | Public API |
 | --- | --- | --- |
 | `muskingum_state` | Muskingum-Cunge parameters, boundary arrays, network flow state, component fractions, and lifecycle | State declarations, `allocate_muskingum_state`, `deallocate_muskingum_state` |
-| `muskingum_cunge_routing` | Parameter preparation, initial river state, and network routing | `calculate_muskingum_cunge_parameters`, `initialize_muskingum_cunge_routing`, `route_muskingum_cunge_network` |
+| `muskingum_routing` | Parameter preparation, initial river state, and network routing | `calculate_muskingum_cunge_parameters`, `initialize_muskingum_cunge_routing`, `route_muskingum_cunge_network` |
 | `inertial_state` | Routing selection, inertial configuration, floodplain topology/tables, dynamic hydraulic state, OpenMP work state, and lifecycle | State declarations, `allocate_inertial_state`, `deallocate_inertial_state` |
 | `inertial_routing` | Inertial route preparation, initialization, and execution | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
 
-`route_muskingum_cunge` becomes private inside `muskingum_cunge_routing`.
+`route_muskingum_cunge` becomes private inside `muskingum_routing`.
 
 The following become private inside `inertial_routing`:
 
@@ -360,7 +360,7 @@ simulation_runner
 | `common/*` | No project modules, or another explicitly allowed common utility |
 | `*_state` | Common constants/utilities only; allocation sizes are passed as scalar arguments when the owner does not already hold them |
 | `catchment_hydrology` | State modules and common utilities |
-| `muskingum_cunge_routing` | State modules and common utilities |
+| `muskingum_routing` | State modules and common utilities |
 | `inertial_routing` | State modules, common utilities, and compiler/OpenMP modules |
 | I/O behavior modules | State modules and common utilities; never scientific behavior modules |
 | `simulation_runner` | I/O APIs, scientific domain APIs, state modules, and common utilities |
@@ -492,9 +492,9 @@ complete and must not change numerical results.
 | `update_soil_water_balance.f90` | `catchment/catchment_hydrology.f90` | Private numerical helper |
 | `calculate_evapotranspiration.f90` | `catchment/catchment_hydrology.f90` | Private numerical helper |
 | `calculate_net_radiation.f90` | `catchment/catchment_hydrology.f90` | Private numerical helper |
-| `calculate_muskingum_cunge_parameters.f90` | `routing/muskingum/muskingum_cunge_routing.f90` | Public preparation procedure |
-| `route_muskingum_cunge_network.f90` | `routing/muskingum/muskingum_cunge_routing.f90` | Public network procedure |
-| `route_muskingum_cunge.f90` | `routing/muskingum/muskingum_cunge_routing.f90` | Private reach helper |
+| `calculate_muskingum_cunge_parameters.f90` | `routing/muskingum/muskingum_routing.f90` | Public preparation procedure |
+| `route_muskingum_cunge_network.f90` | `routing/muskingum/muskingum_routing.f90` | Public network procedure |
+| `route_muskingum_cunge.f90` | `routing/muskingum/muskingum_routing.f90` | Private reach helper |
 | `inertial_state.f90`, `allocate_inertial_state.f90` | `routing/inertial/inertial_state.f90` | Split non-inertial declarations out; add explicit allocation/deallocation APIs |
 | `build_flood_topology.f90`, `build_floodplain_tables.f90` | `routing/inertial/inertial_routing.f90` | Private preparation helpers |
 | `initialize_inertial_routing.f90` | `routing/inertial/inertial_routing.f90` | Public initialization procedure |
@@ -727,7 +727,7 @@ routing baselines are unchanged.
 
 ### Phase 5: Routing module consolidation
 
-- Create `muskingum_cunge_routing`; make the reach solver private.
+- Create `muskingum_routing`; make the reach solver private.
 - Move the river-routing part of initialization into
   `initialize_muskingum_cunge_routing`.
 - Create `inertial_routing`; make numerical and topology helpers private.
