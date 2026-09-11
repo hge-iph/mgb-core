@@ -26,12 +26,12 @@ contains
         ! inertial module
         if (routing_method(1) == 1) then
             call initialize_reservoir_state
-                !! SIN_RESERV
+            !! SIN_RESERV
             if (reservoir_substitution_enabled == 1) then
                 write (*, *) 'READING SUBSTITUTION FLOW DATA'
-                    !! SIN_RESERV
+                !! SIN_RESERV
                 call read_reservoir_inputs
-                    !! SIN_RESERV
+                !! SIN_RESERV
             end if
         end if
 
@@ -78,18 +78,18 @@ contains
         use muskingum_routing, only: route_muskingum_cunge_network
         use output_io, only: write_model_outputs
         use simulation_state, only: day, hour, julian_day, minute, model_timestep, month, &
-                                    timestep_count, timestep_index, year
+            & timestep_count, timestep_index, year
         use runoff_state, only: catchment_count, catchment_index
         use evapotranspiration_state, only: air_temperature, previous_air_temperature
         use evapotranspiration_state, only: potential_open_water_et
         use runoff_state, only: catchment_q_current, groundwater_q, subsurface_q, surface_q, &
-                                total_water_storage
+            & total_water_storage
         use muskingum_state, only: outgoing_q_current
         use inertial_state, only: bankfull_depth, current_flooded_area, inertial_catchment_count, &
-                                  inertial_q, routing_method, stage_table, water_surface_elevation
+            & inertial_q, routing_method, stage_table, water_surface_elevation
         use output_state, only: catchment_q_output, flooded_area_output, hand_output, &
-                       potential_open_water_et_output, q_river_output, total_water_storage_output, &
-                                water_surface_elevation_output, write_hotstart_mode
+            & potential_open_water_et_output, q_river_output, total_water_storage_output, &
+            & water_surface_elevation_output, write_hotstart_mode
 
         implicit none
 
@@ -120,9 +120,9 @@ contains
             completion_percentage = (100.*real(timestep_index)/real(timestep_count))
             !% of simulation completion
             write (*, &
-               '(i5,"    ",i4,"-",i2.2,"-",i2.2," ",i2.2,":",i2.2,"  ",f10.1,"      ",f6.2," %")') &
-                timestep_index, year, month, day, hour, minute, maximum_domain_q, &
-                completion_percentage
+            & '(i5,"    ",i4,"-",i2.2,"-",i2.2," ",i2.2,":",i2.2,"  ",f10.1,"      ",f6.2," %")') &
+                & timestep_index, year, month, day, hour, minute, &
+                & maximum_domain_q, completion_percentage
 
             ! Reads climate data
             previous_air_temperature = air_temperature
@@ -138,9 +138,9 @@ contains
 
             ! Calculates lateral inflow
             do catchment_index = 1, catchment_count
-                catchment_q_current(catchment_index) = groundwater_q(catchment_index) + &
-                                                       subsurface_q(catchment_index) + &
-                                                       surface_q(catchment_index)
+                catchment_q_current(catchment_index) = &
+                    & groundwater_q(catchment_index) + subsurface_q(catchment_index) &
+                    & + surface_q(catchment_index)
                 !sums surface, subsurface and
             end do
 
@@ -152,23 +152,22 @@ contains
             do catchment_index = 1, catchment_count
                 q_river_output(catchment_index) = inertial_q(catchment_index)
                 water_surface_elevation_output(catchment_index) = &
-                    water_surface_elevation(catchment_index)
-                total_water_storage_output(catchment_index) = &
-                    total_water_storage(catchment_index)
+                    & water_surface_elevation(catchment_index)
+                total_water_storage_output(catchment_index) = total_water_storage(catchment_index)
                 flooded_area_output(catchment_index) = current_flooded_area(catchment_index)
                 catchment_q_output(catchment_index) = catchment_q_current(catchment_index)
-                hand_output(catchment_index) = water_surface_elevation(catchment_index) - &
-                                               real(stage_table(1, catchment_index)) - &
-                                               real(bankfull_depth(catchment_index))
+                hand_output(catchment_index) = &
+                    & water_surface_elevation(catchment_index) - real(stage_table(1, &
+                    & catchment_index)) - real(bankfull_depth(catchment_index))
                 potential_open_water_et_output(catchment_index) = &
-                    potential_open_water_et(catchment_index)
+                    & potential_open_water_et(catchment_index)
             end do
 
             call write_model_outputs
 
             ! Advance Julian date for next time step
-            julian_day = calculate_julian_day(year, month, day, hour, minute) &
-                         + (real(model_timestep, real_kind)/86400.0_real_kind)
+            julian_day = calculate_julian_day(year, month, day, hour, &
+                & minute) + (real(model_timestep, real_kind)/86400.0_real_kind)
 
         end do
         !End time loop

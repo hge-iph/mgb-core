@@ -18,10 +18,10 @@ contains
             if (query_x < x_values(upper_index)) then
                 ! Interpolate, or extrapolate below the first tabulated value.
                 lower_index = upper_index - 1
-                linear_interpolate = y_values(lower_index) &
-                                     + (y_values(upper_index) - y_values(lower_index)) &
-                                     *(query_x - x_values(lower_index))/(x_values(upper_index) - &
-                                                                         x_values(lower_index))
+                linear_interpolate = &
+                    & y_values(lower_index) + (y_values(upper_index) - y_values(lower_index))* &
+                    & (query_x - x_values(lower_index))/ &
+                    & (x_values(upper_index) - x_values(lower_index))
                 exit
             elseif (query_x == x_values(upper_index)) then
                 linear_interpolate = y_values(upper_index)
@@ -29,10 +29,10 @@ contains
             elseif (upper_index == point_count) then
                 ! Extrapolate above the final tabulated value.
                 lower_index = upper_index - 1
-                linear_interpolate = y_values(lower_index) &
-                                     + (y_values(upper_index) - y_values(lower_index)) &
-                                     *(query_x - x_values(lower_index))/(x_values(upper_index) - &
-                                                                         x_values(lower_index))
+                linear_interpolate = &
+                    & y_values(lower_index) + (y_values(upper_index) - y_values(lower_index))* &
+                    & (query_x - x_values(lower_index))/ &
+                    & (x_values(upper_index) - x_values(lower_index))
             end if
         end do
     end function linear_interpolate

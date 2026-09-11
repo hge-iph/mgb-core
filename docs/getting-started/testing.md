@@ -88,13 +88,12 @@ python -m unittest discover -s tests/architecture
 
 ## Formatting and documentation gates
 
-The development dependency pins `fprettify==0.3.7`. Run the formatter
-twice and require the second run to produce no source diff:
+The development dependency pins `fprettify==0.3.7`. The format checker runs it
+on a temporary copy, then validates the repository's manual indentation and
+continuation layout:
 
 ~~~bash
 python -m pip install -r requirements-dev.txt
-fprettify --recursive --config-file .fprettify.rc src
-fprettify --recursive --config-file .fprettify.rc src
 python scripts/check_fortran_format.py
 python scripts/check_fortran_architecture.py
 git diff --check

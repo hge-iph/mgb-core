@@ -7,9 +7,9 @@ module reservoir_state
     save
 
     public :: reservoir_count, reservoir_index_by_catchment, reservoir_outflow, &
-           reservoir_start_timestep, reservoir_substitution_enabled, routing_downstream_catchment, &
-              substituted_q, substitution_catchment, substitution_count, substitution_enabled, &
-              allocate_reservoir_state, deallocate_reservoir_state, initialize_reservoir_state
+        & reservoir_start_timestep, reservoir_substitution_enabled, routing_downstream_catchment, &
+        & substituted_q, substitution_catchment, substitution_count, substitution_enabled, &
+        & allocate_reservoir_state, deallocate_reservoir_state, initialize_reservoir_state
 
     integer substitution_count
     integer substitution_catchment(max_subbasin_count)

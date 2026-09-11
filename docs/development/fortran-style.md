@@ -1,8 +1,9 @@
 # Fortran style guide
 
-The repository formats every Fortran 90 source with fprettify 0.3.7. The
-exact settings are committed in .fprettify.rc and the dependency is pinned in
-requirements-dev.txt.
+The repository checks every Fortran 90 source with fprettify 0.3.7. The
+formatter validates Fortran-aware whitespace without replacing the manual
+continuation layout. Its settings are committed in `.fprettify.rc` and the
+dependency is pinned in `requirements-dev.txt`.
 
 ## Required style
 
@@ -18,7 +19,13 @@ requirements-dev.txt.
 - Use explicit double-colon declarations.
 - Give project modules default `private` visibility and list their public API.
 - Use `only` lists for every project-module import.
-- Indent continuations and align blocks consistently.
+- Indent nested blocks in four-space increments.
+- Put `&` at the start of every continuation line and indent it four spaces
+  beyond the statement that it continues.
+- Break lists at commas and expressions or calls at natural operator and
+  argument boundaries; avoid aligning continuations under arbitrary tokens.
+- Long format-control literals may keep their continuation marker at the
+  statement indentation to remain within the line-length limit.
 - Do not change kinds, interfaces, relational syntax, calculations, or
   declaration semantics merely to satisfy formatting.
 
@@ -33,11 +40,12 @@ behavior-preserving continuation pass wraps legacy allocations, expressions,
 I/O statements, and declarations without changing their calculations or
 interfaces.
 
-OpenMP directive lines beginning with !$omp are the one line-length
+OpenMP directive lines beginning with `!$omp` are the one line-length
 exclusion: fprettify 0.3.7 does not safely split their private lists, and
 rewriting those directives would change parallel-region syntax rather than
-formatting whitespace. Comments are not lowercased because prose and citations
-are documentation.
+formatting whitespace. Numeric `format` labels retain their required source
+syntax. Comments are not lowercased because prose and citations are
+documentation.
 Generated documentation, namelist values, and runtime strings are not
 formatted as Fortran source.
 
@@ -47,12 +55,11 @@ Run from the repository root:
 
 ~~~bash
 python -m pip install -r requirements-dev.txt
-fprettify --recursive --config-file .fprettify.rc src
-fprettify --recursive --config-file .fprettify.rc src
 python scripts/check_fortran_format.py
 python scripts/check_fortran_architecture.py
 git diff --check
 ~~~
 
-The second formatter invocation must be clean. The CI workflow runs the same
-check and fails if formatting the copied source tree would produce a diff.
+The format checker runs fprettify on a temporary copy to validate the source,
+then checks indentation, continuation markers, whitespace, and line lengths
+in the working tree. The CI workflow runs the same check.

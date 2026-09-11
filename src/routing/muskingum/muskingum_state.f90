@@ -4,19 +4,19 @@ module muskingum_state
     private
     save
 
-    public :: concentration_time, current_reach_length, current_reference_q, &
-              elevation_difference, flow_velocity, groundwater_routing_volume, &
-              incoming_groundwater_fraction_current, incoming_groundwater_fraction_previous, &
-              incoming_q_boundary, incoming_q_current, incoming_q_previous, &
-              incoming_subsurface_fraction_current, incoming_subsurface_fraction_previous, &
-           incoming_surface_fraction_current, incoming_surface_fraction_previous, initial_river_q, &
-              manning_n, max_muskingum_reach_count, muskingum_reach_count, muskingum_timestep, &
-              outgoing_groundwater_fraction_current, outgoing_groundwater_fraction_previous, &
-              outgoing_q_boundary, outgoing_q_current, outgoing_q_previous, &
-              outgoing_subsurface_fraction_current, outgoing_subsurface_fraction_previous, &
-              outgoing_surface_fraction_current, outgoing_surface_fraction_previous, reference_q, &
-              subsurface_routing_volume, surface_routing_volume, wave_celerity, &
-              allocate_muskingum_state, deallocate_muskingum_state
+    public :: concentration_time, current_reach_length, current_reference_q, elevation_difference, &
+        & flow_velocity, groundwater_routing_volume, incoming_groundwater_fraction_current, &
+        & incoming_groundwater_fraction_previous, incoming_q_boundary, incoming_q_current, &
+        & incoming_q_previous, incoming_subsurface_fraction_current, &
+        & incoming_subsurface_fraction_previous, incoming_surface_fraction_current, &
+        & incoming_surface_fraction_previous, initial_river_q, manning_n, &
+        & max_muskingum_reach_count, muskingum_reach_count, muskingum_timestep, &
+        & outgoing_groundwater_fraction_current, outgoing_groundwater_fraction_previous, &
+        & outgoing_q_boundary, outgoing_q_current, outgoing_q_previous, &
+        & outgoing_subsurface_fraction_current, outgoing_subsurface_fraction_previous, &
+        & outgoing_surface_fraction_current, outgoing_surface_fraction_previous, reference_q, &
+        & subsurface_routing_volume, surface_routing_volume, wave_celerity, &
+        & allocate_muskingum_state, deallocate_muskingum_state
 
     integer, parameter :: max_muskingum_reach_count = 150
     integer, allocatable :: muskingum_reach_count(:)
@@ -28,9 +28,11 @@ module muskingum_state
     real, allocatable :: incoming_q_previous(:), outgoing_q_previous(:)
     real, allocatable :: incoming_q_current(:), outgoing_q_current(:)
     real, allocatable :: incoming_groundwater_fraction_current(:)
-  real, allocatable :: incoming_subsurface_fraction_current(:), incoming_surface_fraction_current(:)
+    real, allocatable :: incoming_subsurface_fraction_current(:), &
+        & incoming_surface_fraction_current(:)
     real, allocatable :: outgoing_groundwater_fraction_current(:)
-  real, allocatable :: outgoing_subsurface_fraction_current(:), outgoing_surface_fraction_current(:)
+    real, allocatable :: outgoing_subsurface_fraction_current(:), &
+        & outgoing_surface_fraction_current(:)
     real, allocatable :: groundwater_routing_volume(:), subsurface_routing_volume(:)
     real, allocatable :: surface_routing_volume(:)
     real, allocatable :: incoming_q_boundary(:, :), outgoing_q_boundary(:, :)
@@ -80,31 +82,35 @@ contains
     end subroutine allocate_muskingum_state
 
     subroutine deallocate_muskingum_state
-  if (allocated(outgoing_surface_fraction_previous)) deallocate (outgoing_surface_fraction_previous)
+        if (allocated(outgoing_surface_fraction_previous)) &
+            & deallocate (outgoing_surface_fraction_previous)
         if (allocated(outgoing_subsurface_fraction_previous)) &
-            deallocate (outgoing_subsurface_fraction_previous)
+            & deallocate (outgoing_subsurface_fraction_previous)
         if (allocated(outgoing_groundwater_fraction_previous)) &
-            deallocate (outgoing_groundwater_fraction_previous)
-  if (allocated(incoming_surface_fraction_previous)) deallocate (incoming_surface_fraction_previous)
+            & deallocate (outgoing_groundwater_fraction_previous)
+        if (allocated(incoming_surface_fraction_previous)) &
+            & deallocate (incoming_surface_fraction_previous)
         if (allocated(incoming_subsurface_fraction_previous)) &
-            deallocate (incoming_subsurface_fraction_previous)
+            & deallocate (incoming_subsurface_fraction_previous)
         if (allocated(incoming_groundwater_fraction_previous)) &
-            deallocate (incoming_groundwater_fraction_previous)
+            & deallocate (incoming_groundwater_fraction_previous)
         if (allocated(flow_velocity)) deallocate (flow_velocity)
         if (allocated(manning_n)) deallocate (manning_n)
         if (allocated(surface_routing_volume)) deallocate (surface_routing_volume)
         if (allocated(subsurface_routing_volume)) deallocate (subsurface_routing_volume)
         if (allocated(groundwater_routing_volume)) deallocate (groundwater_routing_volume)
-    if (allocated(outgoing_surface_fraction_current)) deallocate (outgoing_surface_fraction_current)
+        if (allocated(outgoing_surface_fraction_current)) &
+            & deallocate (outgoing_surface_fraction_current)
         if (allocated(outgoing_subsurface_fraction_current)) &
-            deallocate (outgoing_subsurface_fraction_current)
+            & deallocate (outgoing_subsurface_fraction_current)
         if (allocated(outgoing_groundwater_fraction_current)) &
-            deallocate (outgoing_groundwater_fraction_current)
-    if (allocated(incoming_surface_fraction_current)) deallocate (incoming_surface_fraction_current)
+            & deallocate (outgoing_groundwater_fraction_current)
+        if (allocated(incoming_surface_fraction_current)) &
+            & deallocate (incoming_surface_fraction_current)
         if (allocated(incoming_subsurface_fraction_current)) &
-            deallocate (incoming_subsurface_fraction_current)
+            & deallocate (incoming_subsurface_fraction_current)
         if (allocated(incoming_groundwater_fraction_current)) &
-            deallocate (incoming_groundwater_fraction_current)
+            & deallocate (incoming_groundwater_fraction_current)
         if (allocated(outgoing_q_current)) deallocate (outgoing_q_current)
         if (allocated(incoming_q_current)) deallocate (incoming_q_current)
         if (allocated(outgoing_q_previous)) deallocate (outgoing_q_previous)

@@ -3,7 +3,7 @@ module date_time
     implicit none
     private
     public :: format_date_string, parse_date_string, calculate_integer_julian_day, &
-              calculate_julian_day, convert_julian_day_to_calendar, calculate_timestep_count
+        & calculate_julian_day, convert_julian_day_to_calendar, calculate_timestep_count
 
     integer, parameter :: real_kind = 8
 
@@ -41,9 +41,8 @@ contains
 
         integer, intent(in) :: year, month, day
 
-        calculate_integer_julian_day = day - 32075 + 1461*(year + 4800 + (month - 14)/12)/4 &
-                                       + 367*(month - 2 - (month - 14)/12*12)/12 &
-                                       - 3*((year + 4900 + (month - 14)/12)/100)/4
+        calculate_integer_julian_day = day - 32075 + 1461*(year + 4800 + (month - 14)/12)/4 + 367* &
+            & (month - 2 - (month - 14)/12*12)/12 - 3*((year + 4900 + (month - 14)/12)/100)/4
 
     end function calculate_integer_julian_day
 
@@ -57,9 +56,8 @@ contains
 
         julian_day_number = calculate_integer_julian_day(year, month, day)
 
-        julian_day_result = real(julian_day_number, real_kind) &
-                            + real(hour, real_kind)/24.0_real_kind &
-                            + real(minute, real_kind)/1440.0_real_kind
+        julian_day_result = real(julian_day_number, real_kind) + real(hour, real_kind)/ &
+            & 24.0_real_kind + real(minute, real_kind)/1440.0_real_kind
 
     end function calculate_julian_day
 
@@ -114,8 +112,8 @@ contains
         ! model_timestep is expressed in seconds.
 
         ! Avoiding rounding errors
-        calculate_timestep_count = int(real(((julian_end - julian_start)*86400.0_real_kind/ &
-                                             model_timestep), 4))
+        calculate_timestep_count = int(real(((julian_end - julian_start)* &
+            & 86400.0_real_kind/model_timestep), 4))
 
     end function calculate_timestep_count
 

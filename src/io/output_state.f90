@@ -5,22 +5,23 @@ module output_state
     save
 
     public :: capillary_water_output, catchment_q_output, et_output, flooded_area_output, &
-          groundwater_q_output, groundwater_runoff_depth_output, groundwater_storage_depth_output, &
-              hand_output, hotstart_write_schedule, incremental_q_output, interception_et_output, &
-              interception_storage_output, open_water_et_output, potential_open_water_et_output, &
-            q_river_output, read_hotstart_mode, soil_saturation_output, soil_vegetation_et_output, &
-              soil_water_output, subsurface_runoff_depth_output, subsurface_storage_depth_output, &
-              surface_runoff_depth_output, surface_storage_depth_output, surface_water_output, &
-              total_water_storage_output, water_hru_et_output, water_surface_elevation_output, &
-              write_discharge_output, write_et_output, write_flooded_area_output, &
-              write_groundwater_flux_output, write_groundwater_storage_output, write_hand_output, &
-             write_hotstart_mode, write_interception_et_output, write_interception_storage_output, &
-            write_open_water_et_output, write_potential_open_water_et_output, write_runoff_output, &
-              write_soil_moisture_output, write_soil_saturation_output, &
-              write_soil_vegetation_et_output, write_subsurface_flux_output, &
-         write_subsurface_storage_output, write_surface_flux_output, write_surface_storage_output, &
-          write_surface_water_output, write_total_water_storage_output, write_water_hru_et_output, &
-              write_water_surface_elevation_output, allocate_output_state, deallocate_output_state
+        & groundwater_q_output, groundwater_runoff_depth_output, groundwater_storage_depth_output, &
+        & hand_output, hotstart_write_schedule, incremental_q_output, interception_et_output, &
+        & interception_storage_output, open_water_et_output, potential_open_water_et_output, &
+        & q_river_output, read_hotstart_mode, soil_saturation_output, soil_vegetation_et_output, &
+        & soil_water_output, subsurface_runoff_depth_output, subsurface_storage_depth_output, &
+        & surface_runoff_depth_output, surface_storage_depth_output, surface_water_output, &
+        & total_water_storage_output, water_hru_et_output, water_surface_elevation_output, &
+        & write_discharge_output, write_et_output, write_flooded_area_output, &
+        & write_groundwater_flux_output, write_groundwater_storage_output, write_hand_output, &
+        & write_hotstart_mode, write_interception_et_output, write_interception_storage_output, &
+        & write_open_water_et_output, write_potential_open_water_et_output, write_runoff_output, &
+        & write_soil_moisture_output, write_soil_saturation_output, &
+        & write_soil_vegetation_et_output, write_subsurface_flux_output, &
+        & write_subsurface_storage_output, &
+        & write_surface_flux_output, write_surface_storage_output, &
+        & write_surface_water_output, write_total_water_storage_output, write_water_hru_et_output, &
+        & write_water_surface_elevation_output, allocate_output_state, deallocate_output_state
 
     integer write_discharge_output, write_soil_moisture_output
     integer write_water_surface_elevation_output, write_hand_output
@@ -95,7 +96,8 @@ contains
         if (allocated(groundwater_runoff_depth_output)) deallocate (groundwater_runoff_depth_output)
         if (allocated(subsurface_storage_depth_output)) deallocate (subsurface_storage_depth_output)
         if (allocated(surface_storage_depth_output)) deallocate (surface_storage_depth_output)
-      if (allocated(groundwater_storage_depth_output)) deallocate (groundwater_storage_depth_output)
+        if (allocated(groundwater_storage_depth_output)) &
+            & deallocate (groundwater_storage_depth_output)
         if (allocated(capillary_water_output)) deallocate (capillary_water_output)
         if (allocated(interception_storage_output)) deallocate (interception_storage_output)
         if (allocated(soil_water_output)) deallocate (soil_water_output)

@@ -5,28 +5,27 @@ module runoff_state
     save
 
     public :: catchment_area, catchment_count, catchment_index, catchment_order, &
-            catchment_subbasin, catchment_x, catchment_y, catchments_per_subbasin, climate_region, &
-              current_catchment_area, current_river_width, downstream_catchment, drainage_area, &
-              hru_count, hru_index, hru_name, hru_percentage, longest_reach_length, &
-              longest_reach_slope, max_hru_count, max_subbasin_count, river_length, river_slope, &
-              river_width, subbasin_count, subbasin_index, subbasin_outlet_catchment, &
-              arno_b, brooks_corey_lambda, capillary_flux, capillary_threshold_fraction, &
-              catchment_capillary_q, catchment_q_current, catchment_q_previous, &
-              catchment_soil_water_sum, current_arno_b, current_brooks_corey_lambda, &
-              current_capillary_flux, current_capillary_threshold_fraction, &
-              current_floodplain_infiltration, current_floodplain_infiltration_rate, &
-              current_groundwater_conductivity, current_max_soil_water_storage, &
-              current_precipitation, current_soil_water_storage, &
-              current_subsurface_conductivity, floodplain_infiltration, &
-              floodplain_infiltration_rate, groundwater_conductivity, groundwater_delay, &
-              groundwater_q, groundwater_routing_coefficient, groundwater_storage, &
-              hru_area_fraction, max_capillary_flux, max_soil_water_storage, &
-              minimum_soil_storage, precipitation, remaining_groundwater_storage, &
-              remaining_subsurface_storage, remaining_surface_storage, soil_water_storage, &
-              specific_baseflow, subsurface_conductivity, subsurface_delay, subsurface_q, &
-              subsurface_routing_coefficient, subsurface_storage, surface_delay, surface_q, &
-              surface_routing_coefficient, surface_storage, total_water_storage, &
-              allocate_runoff_state, deallocate_runoff_state
+        & catchment_subbasin, catchment_x, catchment_y, catchments_per_subbasin, climate_region, &
+        & current_catchment_area, current_river_width, downstream_catchment, drainage_area, &
+        & hru_count, hru_index, hru_name, hru_percentage, longest_reach_length, &
+        & longest_reach_slope, max_hru_count, max_subbasin_count, river_length, river_slope, &
+        & river_width, subbasin_count, subbasin_index, subbasin_outlet_catchment, arno_b, &
+        & brooks_corey_lambda, capillary_flux, capillary_threshold_fraction, &
+        & catchment_capillary_q, &
+        & catchment_q_current, catchment_q_previous, catchment_soil_water_sum, current_arno_b, &
+        & current_brooks_corey_lambda, current_capillary_flux, &
+        & current_capillary_threshold_fraction, current_floodplain_infiltration, &
+        & current_floodplain_infiltration_rate, current_groundwater_conductivity, &
+        & current_max_soil_water_storage, current_precipitation, current_soil_water_storage, &
+        & current_subsurface_conductivity, floodplain_infiltration, floodplain_infiltration_rate, &
+        & groundwater_conductivity, groundwater_delay, groundwater_q, &
+        & groundwater_routing_coefficient, groundwater_storage, hru_area_fraction, &
+        & max_capillary_flux, max_soil_water_storage, minimum_soil_storage, precipitation, &
+        & remaining_groundwater_storage, remaining_subsurface_storage, remaining_surface_storage, &
+        & soil_water_storage, specific_baseflow, subsurface_conductivity, subsurface_delay, &
+        & subsurface_q, subsurface_routing_coefficient, subsurface_storage, surface_delay, &
+        & surface_q, surface_routing_coefficient, surface_storage, total_water_storage, &
+        & allocate_runoff_state, deallocate_runoff_state
 
     integer, parameter :: max_hru_count = 12
     integer, parameter :: max_subbasin_count = 505

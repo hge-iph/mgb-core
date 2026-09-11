@@ -20,12 +20,11 @@ contains
 
     subroutine manage_meteorological_input_files(file_action)
         use runoff_state, only: catchment_count, precipitation
-        use evapotranspiration_state, only: air_pressure, air_temperature, &
-                              relative_humidity, use_humidity_timeseries, use_pressure_timeseries, &
-                        use_radiation_timeseries, use_temperature_timeseries, use_wind_timeseries, &
-                                            wind_speed
+        use evapotranspiration_state, only: air_pressure, air_temperature, relative_humidity, &
+            & use_humidity_timeseries, use_pressure_timeseries, use_radiation_timeseries, &
+            & use_temperature_timeseries, use_wind_timeseries, wind_speed
         use io_state, only: input_directory, precipitation_unit, pressure_unit, radiation_unit, &
-                            relative_humidity_unit, temperature_unit, wind_unit
+            & relative_humidity_unit, temperature_unit, wind_unit
 
         implicit none
         integer, intent(in) :: file_action
@@ -38,30 +37,26 @@ contains
 
             !input binary file with interpolated rainfall data
             open (precipitation_unit, file=input_directory//'precipitation.bin', status='old', &
-                  recl=record_length, form='UNFORMATTED', access='DIRECT')
+                & recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-            if (use_temperature_timeseries == 1) open (temperature_unit, file=input_directory// &
-                                                       'air_temperature.bin', &
-                                     status='old', recl=record_length, form='UNFORMATTED', access= &
-                                                       'DIRECT')
+            if (use_temperature_timeseries == 1) open (temperature_unit, file= &
+                & input_directory//'air_temperature.bin', status='old', recl=record_length, form= &
+                & 'UNFORMATTED', access='DIRECT')
 
-            if (use_radiation_timeseries == 1) open (radiation_unit, file=input_directory// &
-                                                     'solar_radiation.bin', &
-                                     status='old', recl=record_length, form='UNFORMATTED', access= &
-                                                     'DIRECT')
+            if (use_radiation_timeseries == 1) open (radiation_unit, file= &
+                & input_directory//'solar_radiation.bin', status='old', recl=record_length, form= &
+                & 'UNFORMATTED', access='DIRECT')
 
             if (use_humidity_timeseries == 1) open (relative_humidity_unit, file= &
-                                                    input_directory//'relative_humidity.bin', &
-                                     status='old', recl=record_length, form='UNFORMATTED', access= &
-                                                    'DIRECT')
+                & input_directory//'relative_humidity.bin', status='old', recl=record_length, &
+                & form='UNFORMATTED', access='DIRECT')
 
             if (use_wind_timeseries == 1) open (wind_unit, file=input_directory//'wind_speed.bin', &
-                                     status='old', recl=record_length, form='UNFORMATTED', access= &
-                                                'DIRECT')
+                & status='old', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-  if (use_pressure_timeseries == 1) open (pressure_unit, file=input_directory//'air_pressure.bin', &
-                                     status='old', recl=record_length, form='UNFORMATTED', access= &
-                                                    'DIRECT')
+            if (use_pressure_timeseries == 1) open (pressure_unit, file= &
+                & input_directory//'air_pressure.bin', status='old', recl=record_length, form= &
+                & 'UNFORMATTED', access='DIRECT')
 
         else
             ! Closing met files
@@ -80,12 +75,12 @@ contains
         use simulation_state, only: month
         use runoff_state, only: catchment_count, precipitation
         use evapotranspiration_state, only: air_pressure, air_temperature, monthly_air_pressure, &
-                          monthly_air_temperature, monthly_relative_humidity, monthly_solar_input, &
-                                            monthly_wind_speed, relative_humidity, solar_input, &
-                       use_humidity_timeseries, use_pressure_timeseries, use_radiation_timeseries, &
-                                         use_temperature_timeseries, use_wind_timeseries, wind_speed
+            & monthly_air_temperature, monthly_relative_humidity, monthly_solar_input, &
+            & monthly_wind_speed, relative_humidity, solar_input, use_humidity_timeseries, &
+            & use_pressure_timeseries, use_radiation_timeseries, use_temperature_timeseries, &
+            & use_wind_timeseries, wind_speed
         use io_state, only: precipitation_unit, pressure_unit, radiation_unit, &
-                            relative_humidity_unit, temperature_unit, wind_unit
+            & relative_humidity_unit, temperature_unit, wind_unit
 
         implicit none
 
@@ -97,33 +92,33 @@ contains
 
         ! Using vectorized read for monthly data
         if (use_temperature_timeseries == 0) air_temperature(:) = monthly_air_temperature(:, &
-                                                                                       month_number)
+            & month_number)
         if (use_radiation_timeseries == 0) solar_input(:) = monthly_solar_input(:, month_number)
         if (use_humidity_timeseries == 0) relative_humidity(:) = monthly_relative_humidity(:, &
-                                                                                       month_number)
+            & month_number)
         if (use_wind_timeseries == 0) wind_speed(:) = monthly_wind_speed(:, month_number)
         if (use_pressure_timeseries == 0) air_pressure(:) = monthly_air_pressure(:, month_number)
 
         ! Reads precipitation data
         read (precipitation_unit, rec=forcing_record_index) (precipitation(climate_cell_index), &
-                                                             climate_cell_index=1, catchment_count)
+            & climate_cell_index=1, catchment_count)
 
         ! Reads meteorological data at the same time interval of precipitation
         if (use_temperature_timeseries == 1) read (temperature_unit, rec= &
-                 forcing_record_index) (air_temperature(climate_cell_index), climate_cell_index=1, &
-                                                                          catchment_count)
+            & forcing_record_index) (air_temperature(climate_cell_index), climate_cell_index=1, &
+            & catchment_count)
         if (use_radiation_timeseries == 1) read (radiation_unit, rec= &
-                     forcing_record_index) (solar_input(climate_cell_index), climate_cell_index=1, &
-                                                                        catchment_count)
+            & forcing_record_index) (solar_input(climate_cell_index), climate_cell_index=1, &
+            & catchment_count)
         if (use_humidity_timeseries == 1) read (relative_humidity_unit, rec= &
-               forcing_record_index) (relative_humidity(climate_cell_index), climate_cell_index=1, &
-                                                                       catchment_count)
+            & forcing_record_index) (relative_humidity(climate_cell_index), climate_cell_index=1, &
+            & catchment_count)
         if (use_wind_timeseries == 1) read (wind_unit, rec= &
-                      forcing_record_index) (wind_speed(climate_cell_index), climate_cell_index=1, &
-                                                                   catchment_count)
+            & forcing_record_index) (wind_speed(climate_cell_index), climate_cell_index=1, &
+            & catchment_count)
         if (use_pressure_timeseries == 1) read (pressure_unit, rec= &
-                    forcing_record_index) (air_pressure(climate_cell_index), climate_cell_index=1, &
-                                                                       catchment_count)
+            & forcing_record_index) (air_pressure(climate_cell_index), climate_cell_index=1, &
+            & catchment_count)
 
     end subroutine read_meteorological_forcing
 

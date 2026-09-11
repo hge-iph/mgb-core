@@ -2,23 +2,21 @@
 
 program mgb_model
 
-    use simulation_state, only: day, first_subbasin, hour, last_subbasin, minute, &
-                                model_timestep, month, timestep_count, year
-    use runoff_state, only: allocate_runoff_state, catchment_count, &
-                            deallocate_runoff_state, hru_count, subbasin_count
+    use simulation_state, only: day, first_subbasin, hour, last_subbasin, minute, model_timestep, &
+        & month, timestep_count, year
+    use runoff_state, only: allocate_runoff_state, catchment_count, deallocate_runoff_state, &
+        & hru_count, subbasin_count
     use evapotranspiration_state, only: allocate_evapotranspiration_state, climate_cell_count, &
-                                        climate_region_count, deallocate_evapotranspiration_state, &
-                                        monthly_radiation_option
+        & climate_region_count, deallocate_evapotranspiration_state, monthly_radiation_option
     use reservoir_state, only: allocate_reservoir_state, deallocate_reservoir_state, &
-                               reservoir_substitution_enabled, substitution_count
+        & reservoir_substitution_enabled, substitution_count
     use muskingum_state, only: allocate_muskingum_state, deallocate_muskingum_state
-    use inertial_state, only: allocate_inertial_state, courant_alpha, &
-                              deallocate_inertial_state, downstream_water_surface_slope, &
-                              inertial_catchment_count, inertial_routing_enabled, &
-                              pseudo_two_d_enabled, routing_method, thread_count
+    use inertial_state, only: allocate_inertial_state, courant_alpha, deallocate_inertial_state, &
+        & downstream_water_surface_slope, inertial_catchment_count, inertial_routing_enabled, &
+        & pseudo_two_d_enabled, routing_method, thread_count
     use io_state, only: hotstart_input_directory, input_directory, log_unit, output_directory
-    use output_state, only: allocate_output_state, deallocate_output_state, &
-                            read_hotstart_mode, write_hotstart_mode
+    use output_state, only: allocate_output_state, deallocate_output_state, read_hotstart_mode, &
+        & write_hotstart_mode
     use runoff_processing, only: calculate_catchment_time_of_concentration
     use configuration_io, only: read_model_configuration
     use inertial_routing, only: prepare_inertial_routing
@@ -39,7 +37,7 @@ program mgb_model
     integer clock_ticks
     character(8) noninteractive_env
     logical noninteractive
-!  Statements used to calculate the processing time
+    !  Statements used to calculate the processing time
 
     call system_clock(count=clock_start, count_rate=clock_rate, count_max=clock_max)
     noninteractive = .false.
@@ -47,7 +45,7 @@ program mgb_model
     call get_environment_variable('MGB_NONINTERACTIVE', noninteractive_env)
     if (trim(adjustl(noninteractive_env)) == '1') noninteractive = .true.
 
-!   Input and output directories and log file
+    !   Input and output directories and log file
     input_directory = trim(adjustl(('./input/')))
     output_directory = trim(adjustl(('./output/')))
     hotstart_input_directory = trim(adjustl(('./hotstart/')))
@@ -68,7 +66,7 @@ program mgb_model
     write (log_unit, *) 'Allocating variables...'
     call allocate_runoff_state
     call allocate_evapotranspiration_state(catchment_count, hru_count, climate_cell_count, &
-                                           climate_region_count)
+        & climate_region_count)
     call allocate_reservoir_state(catchment_count, timestep_count)
     call allocate_muskingum_state(catchment_count)
     call allocate_inertial_state(catchment_count)
@@ -94,8 +92,8 @@ program mgb_model
         write (log_unit, *) 'FLOODPLAIN READ OK'
     end if
 
-! End of subroutines related to input files that are read only once reading and MGB variables
-! allocation
+    ! End of subroutines related to input files that are read only once reading and MGB variables
+    ! allocation
 
     write (*, *) 'Calculating river geometry information...'
     write (log_unit, *) 'Calculating river geometry information...'
@@ -114,25 +112,26 @@ program mgb_model
         write (*, *) 'Floodplain tables built'
     end if
 
-! End of subroutines that calculates Unit-catchments, rivers channels, and floodplains
-! characteristics
+    ! End of subroutines that calculates Unit-catchments, rivers channels, and floodplains
+    ! characteristics
 
-!  Openning of MGB input files that are read during the simulation
+    !  Openning of MGB input files that are read during the simulation
     write (*, *) 'Opening input meteorological files...'
     write (log_unit, *) 'Opening input meteorological files...'
     call open_meteorological_inputs
 
-! End of openning MGB-IPH main input and output files that are read and written over the simulation
+    ! End of openning MGB-IPH main input and output files that are read and written over the
+    ! simulation
 
-!  Ask for verification
-!  Informs the model general setup
+    !  Ask for verification
+    !  Informs the model general setup
     write (log_unit, *) 'Input data reading process ended'
     write (log_unit, *) ''
     write (log_unit, '(A30,I8)') 'Number of catchments:', catchment_count
     write (log_unit, '(A30,I8)') 'Number of subbasins:', subbasin_count
     write (log_unit, '(A30,I8)') 'Number of HRUs:', hru_count
- write (log_unit, '(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)') 'Start date:', year, month, day, &
-        hour, minute
+    write (log_unit, '(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)') 'Start date:', year, month, &
+        & day, hour, minute
     write (log_unit, '(A30,F16.2)') 'Time step (s):', model_timestep
     write (log_unit, '(A30,I8)') 'Number of time steps:', timestep_count
     write (log_unit, '(A30,I8)') 'Number of substitution gauges:', substitution_count
@@ -143,16 +142,15 @@ program mgb_model
     write (log_unit, *), 'monthly_radiation_option (0=sun.hours; 1=sun.perc; 2=radiation):'
     write (log_unit, '(A30,I8)') 'monthly_radiation_option:', monthly_radiation_option
     write (log_unit, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', &
-        reservoir_substitution_enabled
-    write (log_unit, '(A40,I8)') 'routing_mode (0=Muskingum; 1=inertial):', &
-        inertial_routing_enabled
+        & reservoir_substitution_enabled
+    write (log_unit, '(A40,I8)') 'routing_mode (0=Muskingum; 1=inertial):', inertial_routing_enabled
     write (log_unit, '(A40,I8)') 'thread_count:', thread_count
     write (log_unit, '(A40,I8)') 'Pseudo 2D routing Flag (0=no; 1=yes):', pseudo_two_d_enabled
     write (log_unit, '(A40,I8)') 'hotstart_read_mode (0=no; 1=yes):', read_hotstart_mode
     write (log_unit, '(A40,I8)') 'hotstart_write_mode (0=no; 1=yes):', write_hotstart_mode
     write (log_unit, '(A40,F10.2)') 'courant_alpha:', courant_alpha
     write (log_unit, '(A40,F10.6)') 'downstream boundary slope (m/m):', &
-        downstream_water_surface_slope
+        & downstream_water_surface_slope
     write (log_unit, *) ''
     write (log_unit, *) 'PLEASE VERIFY INPUT INFORMATION AND PRESS ENTER TO START RUN...'
     write (log_unit, *) ''
@@ -162,7 +160,8 @@ program mgb_model
     write (*, '(A30,I8)') 'Number of catchments:', catchment_count
     write (*, '(A30,I8)') 'Number of subbasins:', subbasin_count
     write (*, '(A30,I8)') 'Number of HRUs:', hru_count
-    write(*,'(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)')'Start date:',year,month,day,hour,minute
+    write (*, '(A30,I6,"-",I2.2,"-",I2.2," ",I2.2,":",I2.2)') 'Start date:', year, month, &
+        & day, hour, minute
     write (*, '(A30,F16.2)') 'Time step (s):', model_timestep
     write (*, '(A30,I8)') 'Number of time steps:', timestep_count
     write (*, '(A30,I8)') 'Number of substitution gauges:', substitution_count
@@ -174,7 +173,7 @@ program mgb_model
     write (*, '(A30,I8)') 'monthly_radiation_option:', monthly_radiation_option
     write (*, *)
     write (*, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', &
-        reservoir_substitution_enabled
+        & reservoir_substitution_enabled
     write (*, '(A40,I8)') 'routing_mode (0=Muskingum; 1=inertial):', inertial_routing_enabled
     write (*, '(A40,I8)') 'thread_count:', thread_count
     write (*, '(A40,I8)') 'hotstart_read_mode (0=no; 1=yes):', read_hotstart_mode
@@ -198,7 +197,7 @@ program mgb_model
     !Warns about the chosen mode
     call run_simulation
 
-!  After running the model, finish the time count, close all files, and clean all variables
+    !  After running the model, finish the time count, close all files, and clean all variables
 
     call close_meteorological_inputs
     call deallocate_output_state
@@ -208,9 +207,9 @@ program mgb_model
     call deallocate_evapotranspiration_state
     call deallocate_runoff_state
 
-! End of closings and cleanings
+    ! End of closings and cleanings
 
-! Inform the user that the model run is over and informations about total processing time
+    ! Inform the user that the model run is over and informations about total processing time
 
     write (*, *) 'MGB MODEL ENDED SUCCESSFULLY'
     write (log_unit, *) 'MGB MODEL ENDED SUCCESSFULLY'

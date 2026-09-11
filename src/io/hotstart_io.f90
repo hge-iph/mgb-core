@@ -14,7 +14,7 @@ contains
         implicit none
 
         open (hotstart_list_unit, file=input_directory//'hotstart_schedule.txt', status='OLD', &
-              action='READ')
+            & action='READ')
         hotstart_write_schedule = 0
         do timestep_index = 1, timestep_count
             read (hotstart_list_unit, *) hotstart_write_schedule(timestep_index)
@@ -28,14 +28,14 @@ contains
         use runoff_state, only: catchment_count, catchment_index, hru_count, hru_index
         use evapotranspiration_state, only: air_temperature, interception_storage
         use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
-                                subsurface_storage, surface_storage
+            & subsurface_storage, surface_storage
         use muskingum_state, only: incoming_q_current, initial_river_q, muskingum_reach_count, &
-                                   outgoing_q_current
+            & outgoing_q_current
         use inertial_state, only: current_flooded_area, current_water_volume, face_q, inertial_q, &
-                                neighbor_q, previous_water_volume, stage_table_index, water_depth, &
-                                  water_surface_elevation
+            & neighbor_q, previous_water_volume, stage_table_index, water_depth, &
+            & water_surface_elevation
         use io_state, only: hotstart_input_directory, inertial_hotstart_unit, &
-                            water_balance_hotstart_unit
+            & water_balance_hotstart_unit
 
         implicit none
         integer :: record_length, state_index, state_variable_count, reach_index
@@ -44,9 +44,9 @@ contains
         character(len=10) :: hotstart_filename
         logical :: file_exists
 
-      state_variable_count = (catchment_count*hru_count) + (6*catchment_count) + (catchment_count* &
-                                     hru_count) + (sum(muskingum_reach_count) + catchment_count) + &
-                               catchment_count
+        state_variable_count = (catchment_count*hru_count) + (6* &
+            & catchment_count) + (catchment_count*hru_count) + (sum(muskingum_reach_count) &
+            & + catchment_count) + catchment_count
         !
         allocate (hotstart_water_balance_vector(state_variable_count))
         inquire (iolength=record_length) hotstart_water_balance_vector
@@ -55,31 +55,31 @@ contains
         hotstart_filename = format_date_string(year, month, day, hour)
 
         !Check if the hotstart exists
-        inquire (file=hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)// &
-                 '.bin', exist=file_exists)
+        inquire (file=hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
+            & exist=file_exists)
         if (.not. file_exists) then
             write (*, *) 'A problem occurred when reading runoff_state_'// &
-                trim(hotstart_filename)//'.bin. File does not exist, simulation aborted.'
+                & trim(hotstart_filename)//'.bin. File does not exist, simulation aborted.'
             error stop 'Missing water balance hotstart file'
         end if
 
         write (*, *)
         write (*, *) 'Reading Water Balance State Variables for: ', hotstart_filename
 
-        open (water_balance_hotstart_unit, file=hotstart_input_directory//'runoff_state_'// &
-            trim(hotstart_filename)//'.bin', status='old', recl=record_length, form='UNFORMATTED', &
-              access='DIRECT')
+        open (water_balance_hotstart_unit, file= &
+            & hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', status= &
+            & 'old', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-        read (water_balance_hotstart_unit, rec=1) &
-            (hotstart_water_balance_vector(state_index), state_index=1, &
-             state_variable_count)
+        read (water_balance_hotstart_unit, rec=1) (hotstart_water_balance_vector(state_index), &
+            & state_index=1, state_variable_count)
         ! Reading state variables:
 
         state_index = 0
         do catchment_index = 1, catchment_count
             do hru_index = 1, hru_count
                 state_index = state_index + 1
-         soil_water_storage(catchment_index, hru_index) = hotstart_water_balance_vector(state_index)
+                soil_water_storage(catchment_index, hru_index) = &
+                    & hotstart_water_balance_vector(state_index)
                 !Reading Soil Moisture
             end do
         end do
@@ -116,14 +116,16 @@ contains
         do catchment_index = 1, catchment_count
             do hru_index = 1, hru_count
                 state_index = state_index + 1
-       interception_storage(catchment_index, hru_index) = hotstart_water_balance_vector(state_index)
+                interception_storage(catchment_index, hru_index) = &
+                    & hotstart_water_balance_vector(state_index)
                 !Reading Canopy interception volume
             end do
         end do
         do catchment_index = 1, catchment_count
             do reach_index = 1, muskingum_reach_count(catchment_index) + 1
                 state_index = state_index + 1
-          initial_river_q(catchment_index, reach_index) = hotstart_water_balance_vector(state_index)
+                initial_river_q(catchment_index, reach_index) = &
+                    & hotstart_water_balance_vector(state_index)
                 !Reading Canopy interception volume
             end do
         end do
@@ -144,11 +146,11 @@ contains
         write (*, *) 'Reading Hydraulic State Variables for: ', hotstart_filename
         write (*, *)
 
-        open (inertial_hotstart_unit, file=hotstart_input_directory//'inertial_state_'// &
-              trim(hotstart_filename)//'.bin', status='old', recl=record_length, form= &
-              'UNFORMATTED', access='DIRECT')
+        open (inertial_hotstart_unit, file= &
+            & hotstart_input_directory//'inertial_state_'//trim(hotstart_filename)//'.bin', &
+            & status='old', recl=record_length, form='UNFORMATTED', access='DIRECT')
         read (inertial_hotstart_unit, rec=1) (inertial_state_vector(state_index), state_index=1, &
-                                              state_variable_count)
+            & state_variable_count)
         ! Reading state variables:
 
         state_index = 0
@@ -218,14 +220,14 @@ contains
         use runoff_state, only: catchment_count, catchment_index, hru_count, hru_index
         use evapotranspiration_state, only: air_temperature, interception_storage
         use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
-                                subsurface_storage, surface_storage
+            & subsurface_storage, surface_storage
         use muskingum_state, only: incoming_q_current, initial_river_q, muskingum_reach_count, &
-                                   outgoing_q_current
+            & outgoing_q_current
         use inertial_state, only: current_flooded_area, current_water_volume, face_q, inertial_q, &
-                                neighbor_q, previous_water_volume, stage_table_index, water_depth, &
-                                  water_surface_elevation
+            & neighbor_q, previous_water_volume, stage_table_index, water_depth, &
+            & water_surface_elevation
         use io_state, only: hotstart_input_directory, inertial_hotstart_unit, &
-                            water_balance_hotstart_unit
+            & water_balance_hotstart_unit
         use output_state, only: write_hotstart_mode
 
         implicit none
@@ -234,9 +236,9 @@ contains
         real*8, allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
 
-      state_variable_count = (catchment_count*hru_count) + (6*catchment_count) + (catchment_count* &
-                                     hru_count) + (sum(muskingum_reach_count) + catchment_count) + &
-                               catchment_count
+        state_variable_count = (catchment_count*hru_count) + (6* &
+            & catchment_count) + (catchment_count*hru_count) + (sum(muskingum_reach_count) &
+            & + catchment_count) + catchment_count
         !
 
         ! For option 1, model state variables are saved only at the end of simulation
@@ -261,9 +263,9 @@ contains
         allocate (hotstart_water_balance_vector(state_variable_count))
         inquire (iolength=record_length) hotstart_water_balance_vector
 
-        open (water_balance_hotstart_unit, file=hotstart_input_directory//'runoff_state_'// &
-              trim(hotstart_filename)//'.bin', status='unknown', recl=record_length, form= &
-              'UNFORMATTED', access='DIRECT')
+        open (water_balance_hotstart_unit, file= &
+            & hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', status= &
+            & 'unknown', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
         write (*, *) 'Writing Water Balance State Variables for: ', hotstart_filename
 
@@ -272,7 +274,8 @@ contains
         do catchment_index = 1, catchment_count
             do hru_index = 1, hru_count
                 state_index = state_index + 1
-         hotstart_water_balance_vector(state_index) = soil_water_storage(catchment_index, hru_index)
+                hotstart_water_balance_vector(state_index) = soil_water_storage(catchment_index, &
+                    & hru_index)
                 !Soil Water for each HRU
             end do
         end do
@@ -309,14 +312,16 @@ contains
         do catchment_index = 1, catchment_count
             do hru_index = 1, hru_count
                 state_index = state_index + 1
-       hotstart_water_balance_vector(state_index) = interception_storage(catchment_index, hru_index)
+                hotstart_water_balance_vector(state_index) = interception_storage(catchment_index, &
+                    & hru_index)
                 !Intercepted water stored on canopy reservoir
             end do
         end do
         do catchment_index = 1, catchment_count
             do reach_index = 1, muskingum_reach_count(catchment_index) + 1
                 state_index = state_index + 1
-          hotstart_water_balance_vector(state_index) = initial_river_q(catchment_index, reach_index)
+                hotstart_water_balance_vector(state_index) = initial_river_q(catchment_index, &
+                    & reach_index)
             end do
         end do
         do catchment_index = 1, catchment_count
@@ -325,9 +330,8 @@ contains
             !Runoff generated at catchment
         end do
 
-        write (water_balance_hotstart_unit, rec=1) &
-            (hotstart_water_balance_vector(state_index), state_index=1, &
-             state_variable_count)
+        write (water_balance_hotstart_unit, rec=1) (hotstart_water_balance_vector(state_index), &
+            & state_index=1, state_variable_count)
         deallocate (hotstart_water_balance_vector)
 
         close (water_balance_hotstart_unit)
@@ -341,9 +345,9 @@ contains
         allocate (inertial_state_vector(state_variable_count))
         inquire (iolength=record_length) inertial_state_vector
 
-        open (inertial_hotstart_unit, file=hotstart_input_directory//'inertial_state_'// &
-              trim(hotstart_filename)//'.bin', status='unknown', recl=record_length, form= &
-              'UNFORMATTED', access='DIRECT')
+        open (inertial_hotstart_unit, file= &
+            & hotstart_input_directory//'inertial_state_'//trim(hotstart_filename)//'.bin', &
+            & status='unknown', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
         state_index = 0
         do catchment_index = 1, catchment_count
@@ -401,7 +405,7 @@ contains
         end do
 
         write (inertial_hotstart_unit, rec=1) (inertial_state_vector(state_index), state_index=1, &
-                                               state_variable_count)
+            & state_variable_count)
 
         deallocate (inertial_state_vector)
         close (inertial_hotstart_unit)

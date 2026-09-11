@@ -5,7 +5,7 @@ module simulation_state
     save
 
     public :: day, day_of_year, first_subbasin, hour, julian_day, last_subbasin, minute, &
-              model_timestep, month, timestep_count, timestep_index, year
+        & model_timestep, month, timestep_count, timestep_index, year
 
     integer timestep_count
     integer timestep_index
