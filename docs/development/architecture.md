@@ -24,11 +24,12 @@ src/
 ├── simulation/
 │   ├── simulation_state.f90
 │   └── simulation_runner.f90
-├── catchment/
-│   ├── catchment_state.f90
-│   ├── meteorological_state.f90
-│   ├── water_balance_state.f90
-│   └── catchment_hydrology.f90
+├── evapotranspiration/
+│   ├── evapotranspiration_state.f90
+│   └── evapotranspiration_processing.f90
+├── runoff/
+│   ├── runoff_state.f90
+│   └── runoff_processing.f90
 ├── reservoirs/
 │   └── reservoir_state.f90
 ├── routing/
@@ -62,9 +63,9 @@ The architecture uses the following roles:
   simulation, and shutdown.
 - **Simulation orchestration** is `simulation_runner`. It coordinates domain
   initialization, the timestep loop, hotstarts, and model-output lifecycle.
-- **Scientific facades** are `catchment_hydrology`, `muskingum_routing`, and
-  `inertial_routing`. Each exposes a small domain API and keeps its numerical
-  helpers private.
+- **Scientific facades** are `evapotranspiration_processing`,
+  `runoff_processing`, `muskingum_routing`, and `inertial_routing`. Each
+  exposes a small domain API and keeps its numerical helpers private.
 - **Domain state** is held by the `*_state` modules. State remains beside its
   owning domain instead of being collected in a general state module.
 - **Centralized I/O** modules own runtime model files. Scientific modules
@@ -91,14 +92,14 @@ them.
 | `simulation_state` | Calendar, timestep, run range, and simulation index | Public state declarations; no behavioral API |
 | `simulation_runner` | Simulation initialization/finalization and the timestep loop | `run_simulation` |
 
-### Catchment and reservoir modules
+### Evapotranspiration, runoff, and reservoir modules
 
 | Module | Responsibility | Public behavior or lifecycle API |
 | --- | --- | --- |
-| `catchment_state` | Catchment geometry, topology, subbasin and HRU identity, and entity counts | `allocate_catchment_state`, `deallocate_catchment_state` |
-| `meteorological_state` | Forcing options, climatology, current forcing, and previous temperature | `allocate_meteorological_state`, `deallocate_meteorological_state` |
-| `water_balance_state` | Soil and vegetation parameters, dynamic stores, fluxes, ET, radiation work state, and lateral flow | `allocate_water_balance_state`, `deallocate_water_balance_state` |
-| `catchment_hydrology` | Parameter preparation and vertical catchment water balance | `calculate_catchment_time_of_concentration`, `initialize_catchment_hydrology`, `update_catchment_hydrology` |
+| `evapotranspiration_state` | Non-precipitation forcing, climatology, vegetation and interception state, and ET/radiation results | `allocate_evapotranspiration_state`, `deallocate_evapotranspiration_state` |
+| `evapotranspiration_processing` | Radiation, interception, and evapotranspiration calculations | `calculate_evapotranspiration` |
+| `runoff_state` | Catchment/HRU definition, precipitation, soil and linear-reservoir state, and generated flow | `allocate_runoff_state`, `deallocate_runoff_state` |
+| `runoff_processing` | Catchment preparation, initialization, and the vertical runoff balance | `calculate_catchment_time_of_concentration`, `initialize_runoff`, `update_runoff` |
 | `reservoir_state` | Prescribed gauge flows, reservoir substitution, routing overrides, and associated state | `allocate_reservoir_state`, `initialize_reservoir_state`, `deallocate_reservoir_state` |
 
 ### Routing modules
@@ -127,9 +128,8 @@ them.
 | Owner | State groups |
 | --- | --- |
 | `simulation_state` | Timestep count/index and duration; calendar fields and Julian day; first and last simulated subbasins |
-| `catchment_state` | Capacity limits and entity counts; catchment/subbasin indices and relationships; drainage topology; areas, coordinates, and reach geometry; HRU identity and percentages; climate-region assignment and catchment ordering |
-| `meteorological_state` | Forcing-selection flags; monthly-radiation option and climatology; station coordinates; current forcing arrays and previous temperature |
-| `water_balance_state` | Soil/vegetation parameters; routing coefficients; soil, interception, surface, subsurface, and groundwater stores and fluxes; ET/radiation/capillary state; open-water evaporation; terrestrial storage; floodplain exchange and catchment-generated flow |
+| `evapotranspiration_state` | Forcing-selection flags; climatology and station coordinates; temperature, humidity, wind, pressure, and radiation; vegetation parameters; interception storage; ET and radiation work/results; open-water evaporation |
+| `runoff_state` | Entity counts; catchment/subbasin topology and geometry; HRU identity and percentages; climate-region assignment; precipitation; soil and runoff parameters; soil, surface, subsurface, and groundwater stores and fluxes; capillary and floodplain exchange; terrestrial storage |
 | `reservoir_state` | Prescribed-flow series and locations; reservoir configuration, catchment maps, start timesteps, outflows, and downstream overrides |
 | `muskingum_state` | Routing inputs and reach counts; celerity and concentration time; boundary and reach flows; component fractions, routing volumes, and velocity |
 | `inertial_state` | Routing selection and configuration; upstream and lateral-face topology; source and derived floodplain tables; discharge, stage, depth, volume, and area; interpolation and OpenMP work state |
@@ -156,42 +156,46 @@ The allowed project-module dependencies are:
 | --- | --- |
 | Common utility | Another explicitly required common utility; never model state |
 | State module | Common utilities only, apart from the two fixed-bound exceptions below |
-| Scientific facade | State modules and common utilities |
+| Scientific facade | State modules and common utilities; `runoff_processing` may also call `evapotranspiration_processing` |
 | I/O behavior module | State modules and common utilities |
 | `simulation_runner` | I/O APIs, scientific facades, state modules, and common utilities |
 | `application/main.f90` | Public orchestration, I/O, lifecycle, and state APIs needed to show the complete application sequence |
 
 The two permitted state-to-state edges are
-`reservoir_state -> catchment_state` and `io_state -> catchment_state`. Both
-import fixed legacy capacity bounds from `catchment_state`; they are explicit,
+`reservoir_state -> runoff_state` and `io_state -> runoff_state`. Both
+import fixed legacy capacity bounds from `runoff_state`; they are explicit,
 narrow exceptions.
 When an allocation needs dimensions owned elsewhere, its lifecycle procedure
 normally receives scalar dimensions as arguments.
 
 Forbidden dependencies include:
 
-- one scientific facade calling another scientific facade;
+- one scientific facade calling another scientific facade, except for the
+  explicit `runoff_processing -> evapotranspiration_processing` edge;
 - a state module using a behavioral module;
 - a scientific facade using an I/O behavior module;
 - an I/O module using a scientific facade;
 - a common utility depending on model state; and
 - a general state aggregator that re-exports all domain state.
 
-The composition layers call the facades in the required order. Facades may
-exchange explicitly exported state, but they may not hide orchestration by
-calling one another.
+The composition layers call the facades in the required order. The sole nested
+scientific call preserves the legacy per-HRU sequence: runoff processing calls
+evapotranspiration processing before updating soil water and generated runoff.
 
 ## Cross-domain scientific exchanges
 
 The numerical algorithms still require deliberate exchanges across ownership
 boundaries. They are exposed by `use, only` lists:
 
-- meteorological I/O updates the forcing arrays consumed by catchment
-  hydrology, including precipitation used by inertial continuity;
-- catchment hydrology reads routing selection and flooded area so inundated
-  area can affect the terrestrial water balance;
-- catchment hydrology produces surface, subsurface, and groundwater flow,
-  floodplain infiltration, open-water evaporation, and potential ET;
+- meteorological I/O updates ET forcing state and precipitation in runoff
+  state; inertial continuity also consumes precipitation directly;
+- runoff processing reads routing selection and flooded area so inundated area
+  can affect the terrestrial water balance;
+- runoff processing supplies current soil and precipitation state to ET
+  processing, then consumes the adjusted precipitation and ET demand;
+- runoff processing produces surface, subsurface, and groundwater flow plus
+  floodplain infiltration; ET processing produces interception,
+  evapotranspiration, open-water evaporation, and potential ET;
 - both routing implementations consume catchment-generated flow;
 - Muskingum-Cunge routing consumes open-water evaporation and prescribed-flow
   substitution state;

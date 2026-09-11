@@ -19,11 +19,11 @@ contains
     end subroutine close_meteorological_inputs
 
     subroutine manage_meteorological_input_files(file_action)
-        use catchment_state, only: catchment_count
-        use meteorological_state, only: air_pressure, air_temperature, precipitation, &
+        use runoff_state, only: catchment_count, precipitation
+        use evapotranspiration_state, only: air_pressure, air_temperature, &
                               relative_humidity, use_humidity_timeseries, use_pressure_timeseries, &
                         use_radiation_timeseries, use_temperature_timeseries, use_wind_timeseries, &
-                                        wind_speed
+                                            wind_speed
         use io_state, only: input_directory, precipitation_unit, pressure_unit, radiation_unit, &
                             relative_humidity_unit, temperature_unit, wind_unit
 
@@ -78,12 +78,12 @@ contains
 
     subroutine read_meteorological_forcing(month_number, forcing_record_index)
         use simulation_state, only: month
-        use catchment_state, only: catchment_count
-        use meteorological_state, only: air_pressure, air_temperature, monthly_air_pressure, &
+        use runoff_state, only: catchment_count, precipitation
+        use evapotranspiration_state, only: air_pressure, air_temperature, monthly_air_pressure, &
                           monthly_air_temperature, monthly_relative_humidity, monthly_solar_input, &
-                                monthly_wind_speed, precipitation, relative_humidity, solar_input, &
+                                            monthly_wind_speed, relative_humidity, solar_input, &
                        use_humidity_timeseries, use_pressure_timeseries, use_radiation_timeseries, &
-                                        use_temperature_timeseries, use_wind_timeseries, wind_speed
+                                         use_temperature_timeseries, use_wind_timeseries, wind_speed
         use io_state, only: precipitation_unit, pressure_unit, radiation_unit, &
                             relative_humidity_unit, temperature_unit, wind_unit
 

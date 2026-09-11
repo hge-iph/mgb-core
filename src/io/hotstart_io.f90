@@ -25,10 +25,10 @@ contains
     subroutine read_hotstart
         use date_time, only: format_date_string
         use simulation_state, only: day, hour, minute, month, year
-        use catchment_state, only: catchment_count, catchment_index, hru_count, hru_index
-        use meteorological_state, only: air_temperature
-        use water_balance_state, only: catchment_q_current, groundwater_storage, &
-                       interception_storage, soil_water_storage, subsurface_storage, surface_storage
+        use runoff_state, only: catchment_count, catchment_index, hru_count, hru_index
+        use evapotranspiration_state, only: air_temperature, interception_storage
+        use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
+                                subsurface_storage, surface_storage
         use muskingum_state, only: incoming_q_current, initial_river_q, muskingum_reach_count, &
                                    outgoing_q_current
         use inertial_state, only: current_flooded_area, current_water_volume, face_q, inertial_q, &
@@ -55,10 +55,10 @@ contains
         hotstart_filename = format_date_string(year, month, day, hour)
 
         !Check if the hotstart exists
-        inquire (file=hotstart_input_directory//'water_balance_state_'//trim(hotstart_filename)// &
+        inquire (file=hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)// &
                  '.bin', exist=file_exists)
         if (.not. file_exists) then
-            write (*, *) 'A problem occurred when reading water_balance_state_'// &
+            write (*, *) 'A problem occurred when reading runoff_state_'// &
                 trim(hotstart_filename)//'.bin. File does not exist, simulation aborted.'
             error stop 'Missing water balance hotstart file'
         end if
@@ -66,7 +66,7 @@ contains
         write (*, *)
         write (*, *) 'Reading Water Balance State Variables for: ', hotstart_filename
 
-        open (water_balance_hotstart_unit, file=hotstart_input_directory//'water_balance_state_'// &
+        open (water_balance_hotstart_unit, file=hotstart_input_directory//'runoff_state_'// &
             trim(hotstart_filename)//'.bin', status='old', recl=record_length, form='UNFORMATTED', &
               access='DIRECT')
 
@@ -215,10 +215,10 @@ contains
     subroutine write_hotstart
         use date_time, only: convert_julian_day_to_calendar, format_date_string
         use simulation_state, only: day, hour, julian_day, minute, month, timestep_index, year
-        use catchment_state, only: catchment_count, catchment_index, hru_count, hru_index
-        use meteorological_state, only: air_temperature
-        use water_balance_state, only: catchment_q_current, groundwater_storage, &
-                       interception_storage, soil_water_storage, subsurface_storage, surface_storage
+        use runoff_state, only: catchment_count, catchment_index, hru_count, hru_index
+        use evapotranspiration_state, only: air_temperature, interception_storage
+        use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
+                                subsurface_storage, surface_storage
         use muskingum_state, only: incoming_q_current, initial_river_q, muskingum_reach_count, &
                                    outgoing_q_current
         use inertial_state, only: current_flooded_area, current_water_volume, face_q, inertial_q, &
@@ -261,7 +261,7 @@ contains
         allocate (hotstart_water_balance_vector(state_variable_count))
         inquire (iolength=record_length) hotstart_water_balance_vector
 
-        open (water_balance_hotstart_unit, file=hotstart_input_directory//'water_balance_state_'// &
+        open (water_balance_hotstart_unit, file=hotstart_input_directory//'runoff_state_'// &
               trim(hotstart_filename)//'.bin', status='unknown', recl=record_length, form= &
               'UNFORMATTED', access='DIRECT')
 

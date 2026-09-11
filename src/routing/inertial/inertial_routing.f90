@@ -7,7 +7,7 @@ module inertial_routing
 contains
 
     subroutine prepare_inertial_routing
-        use catchment_state, only: downstream_catchment
+        use runoff_state, only: downstream_catchment
         use reservoir_state, only: routing_downstream_catchment
 
         implicit none
@@ -18,7 +18,7 @@ contains
     end subroutine prepare_inertial_routing
 
     subroutine build_flood_topology
-        use catchment_state, only: catchment_count, catchment_index, downstream_catchment
+        use runoff_state, only: catchment_count, catchment_index, downstream_catchment
         use inertial_state, only: upstream_topology
 
         !Parameters and variables
@@ -42,7 +42,7 @@ contains
     end subroutine build_flood_topology
 
     subroutine build_floodplain_tables
-        use catchment_state, only: catchment_count, catchment_index, river_length, river_width
+        use runoff_state, only: catchment_count, catchment_index, river_length, river_width
         use inertial_state, only: area_table, bankfull_depth, floodplain_area, &
                         floodplain_bottom_elevation, floodplain_elevation, floodplain_point_count, &
                                   stage_table, volume_table
@@ -95,8 +95,8 @@ contains
     subroutine initialize_inertial_routing
         use interpolation, only: linear_interpolate
         use simulation_state, only: model_timestep
-        use catchment_state, only: catchment_area, catchment_count, catchment_index, &
-                                   river_length, river_slope, river_width
+        use runoff_state, only: catchment_area, catchment_count, catchment_index, &
+                                river_length, river_slope, river_width
         use muskingum_state, only: reference_q
         use inertial_state, only: area_table, current_flooded_area, current_water_volume, face_q, &
                 floodplain_point_count, grace_total_water_storage, inertial_manning_n, inertial_q, &
@@ -171,8 +171,8 @@ contains
 
     subroutine calculate_inertial_timestep
         use simulation_state, only: first_subbasin, last_subbasin, model_timestep
-        use catchment_state, only: catchment_count, catchment_index, catchment_subbasin, &
-                                   river_length, subbasin_index
+        use runoff_state, only: catchment_count, catchment_index, catchment_subbasin, &
+                                river_length, subbasin_index
         use inertial_state, only: courant_alpha, gravity, inertial_timestep, &
                                   max_inertial_timestep, max_water_depth, water_depth
 
@@ -209,8 +209,8 @@ contains
 
     subroutine calculate_inertial_discharge
         use simulation_state, only: first_subbasin, last_subbasin, timestep_index
-        use catchment_state, only: catchment_count, catchment_index, catchment_subbasin, &
-                                   river_length, river_width, subbasin_index
+        use runoff_state, only: catchment_count, catchment_index, catchment_subbasin, &
+                                river_length, river_width, subbasin_index
         use reservoir_state, only: reservoir_index_by_catchment, reservoir_outflow, &
                                    routing_downstream_catchment
         use muskingum_state, only: flow_velocity, outgoing_q_current
@@ -443,11 +443,11 @@ contains
     subroutine update_inertial_continuity
         use simulation_state, only: first_subbasin, last_subbasin, model_timestep, &
                                     timestep_index
-        use catchment_state, only: catchment_area, catchment_count, catchment_index, &
-                                   catchment_subbasin, subbasin_index
-        use meteorological_state, only: precipitation
-        use water_balance_state, only: catchment_q_current, floodplain_infiltration, &
-                                       potential_open_water_et, total_water_storage
+        use runoff_state, only: catchment_area, catchment_count, catchment_index, &
+                                catchment_subbasin, subbasin_index
+        use evapotranspiration_state, only: potential_open_water_et
+        use runoff_state, only: catchment_q_current, floodplain_infiltration, precipitation, &
+                                total_water_storage
         use reservoir_state, only: reservoir_index_by_catchment, reservoir_start_timestep
         use inertial_state, only: area_table, current_flooded_area, current_water_volume, &
                      floodplain_point_count, inertial_elapsed_time, inertial_q, inertial_timestep, &

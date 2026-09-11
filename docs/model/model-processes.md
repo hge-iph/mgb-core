@@ -10,16 +10,18 @@ For each meteorological timestep, MGB:
 
 1. optionally writes the configured hotstart state;
 2. reads precipitation and the selected meteorological forcing series;
-3. updates the vertical catchment water balance for every HRU;
+3. calculates evapotranspiration and then updates runoff for every HRU within
+   the vertical water-balance loop;
 4. routes the river network with Muskingum-Cunge when selected;
 5. assembles lateral groundwater, subsurface, and surface inflows;
 6. advances local inertial routing, including floodplain continuity;
 7. stores one output value per catchment for each enabled output stream; and
 8. advances the calendar and Julian date.
 
-The order is part of the numerical behavior. In particular, the current
-timestep forcing is used by the vertical balance before lateral inflow is
-handed to routing.
+The order is part of the numerical behavior. In particular, runoff processing
+calls evapotranspiration processing for each HRU before updating that HRU's
+soil storage and generated flow. The current timestep forcing is used by this
+vertical balance before lateral inflow is handed to routing.
 
 ## Vertical water balance
 

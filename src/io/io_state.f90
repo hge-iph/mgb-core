@@ -1,6 +1,6 @@
 module io_state
 
-    use catchment_state, only: max_subbasin_count
+    use runoff_state, only: max_subbasin_count
 
     implicit none
     private

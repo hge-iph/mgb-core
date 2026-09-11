@@ -30,11 +30,14 @@ set(MGB_SIMULATION_SOURCES
     src/simulation/simulation_runner.f90
 )
 
-set(MGB_CATCHMENT_SOURCES
-    src/catchment/catchment_state.f90
-    src/catchment/meteorological_state.f90
-    src/catchment/water_balance_state.f90
-    src/catchment/catchment_hydrology.f90
+set(MGB_EVAPOTRANSPIRATION_SOURCES
+    src/evapotranspiration/evapotranspiration_state.f90
+    src/evapotranspiration/evapotranspiration_processing.f90
+)
+
+set(MGB_RUNOFF_SOURCES
+    src/runoff/runoff_state.f90
+    src/runoff/runoff_processing.f90
 )
 
 set(MGB_RESERVOIR_SOURCES
@@ -65,7 +68,8 @@ set(MGB_APPLICATION_SOURCES
 add_executable(mgb_model
     ${MGB_COMMON_SOURCES}
     ${MGB_SIMULATION_SOURCES}
-    ${MGB_CATCHMENT_SOURCES}
+    ${MGB_EVAPOTRANSPIRATION_SOURCES}
+    ${MGB_RUNOFF_SOURCES}
     ${MGB_RESERVOIR_SOURCES}
     ${MGB_ROUTING_SOURCES}
     ${MGB_IO_SOURCES}

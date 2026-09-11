@@ -7,7 +7,7 @@ module simulation_runner
 contains
 
     subroutine run_simulation
-        use catchment_hydrology, only: initialize_catchment_hydrology
+        use runoff_processing, only: initialize_runoff
         use hotstart_io, only: read_hotstart, read_hotstart_schedule, write_hotstart
         use inertial_routing, only: initialize_inertial_routing
         use muskingum_routing, only: initialize_muskingum_cunge_routing
@@ -37,7 +37,7 @@ contains
 
         ! Model initial conditions
         write (log_unit, *) 'Calling initial conditions...'
-        call initialize_catchment_hydrology
+        call initialize_runoff
         call initialize_muskingum_cunge_routing
         if (inertial_catchment_count > 0) call initialize_inertial_routing
 
@@ -71,7 +71,7 @@ contains
 
     subroutine run_timestep_loop
         use date_time, only: calculate_julian_day, convert_julian_day_to_calendar
-        use catchment_hydrology, only: update_catchment_hydrology
+        use runoff_processing, only: update_runoff
         use hotstart_io, only: write_hotstart
         use inertial_routing, only: route_inertial_flow
         use meteorological_io, only: read_meteorological_forcing
@@ -79,10 +79,11 @@ contains
         use output_io, only: write_model_outputs
         use simulation_state, only: day, hour, julian_day, minute, model_timestep, month, &
                                     timestep_count, timestep_index, year
-        use catchment_state, only: catchment_count, catchment_index
-        use meteorological_state, only: air_temperature, previous_air_temperature
-        use water_balance_state, only: catchment_q_current, groundwater_q, &
-                               potential_open_water_et, subsurface_q, surface_q, total_water_storage
+        use runoff_state, only: catchment_count, catchment_index
+        use evapotranspiration_state, only: air_temperature, previous_air_temperature
+        use evapotranspiration_state, only: potential_open_water_et
+        use runoff_state, only: catchment_q_current, groundwater_q, subsurface_q, surface_q, &
+                                total_water_storage
         use muskingum_state, only: outgoing_q_current
         use inertial_state, only: bankfull_depth, current_flooded_area, inertial_catchment_count, &
                                   inertial_q, routing_method, stage_table, water_surface_elevation
@@ -129,7 +130,7 @@ contains
             ! Read rainfall and other met variables
 
             ! Perform vertical water balance
-            call update_catchment_hydrology
+            call update_runoff
 
             if (routing_method(1) == 0) then
                 call route_muskingum_cunge_network

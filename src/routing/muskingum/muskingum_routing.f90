@@ -8,9 +8,9 @@ module muskingum_routing
 contains
 
     subroutine initialize_muskingum_cunge_routing
-        use catchment_state, only: catchment_count, catchment_index, downstream_catchment
-        use water_balance_state, only: catchment_q_current, catchment_q_previous, &
-                                       groundwater_q, subsurface_q, surface_q
+        use runoff_state, only: catchment_count, catchment_index, downstream_catchment
+        use runoff_state, only: catchment_q_current, catchment_q_previous, &
+                                groundwater_q, subsurface_q, surface_q
         use reservoir_state, only: substituted_q, substitution_catchment, substitution_count
         use muskingum_state, only: incoming_q_boundary, incoming_q_current, incoming_q_previous, &
                                    incoming_groundwater_fraction_current, &
@@ -73,8 +73,8 @@ contains
 
     subroutine calculate_muskingum_cunge_parameters
         use simulation_state, only: model_timestep
-        use catchment_state, only: catchment_count, catchment_index, catchment_order, &
-                                   current_river_width, river_length, river_slope, river_width
+        use runoff_state, only: catchment_count, catchment_index, catchment_order, &
+                                current_river_width, river_length, river_slope, river_width
         use muskingum_state, only: current_reference_q, manning_n, max_muskingum_reach_count, &
                                muskingum_reach_count, muskingum_timestep, reference_q, wave_celerity
 
@@ -134,11 +134,11 @@ contains
     subroutine route_muskingum_cunge_network
         use simulation_state, only: first_subbasin, last_subbasin, model_timestep, &
                                     timestep_index
-        use catchment_state, only: catchment_count, catchment_index, catchment_subbasin, &
+        use runoff_state, only: catchment_count, catchment_index, catchment_subbasin, &
                         catchment_x, downstream_catchment, river_length, river_slope, river_width, &
-                                   subbasin_index
-        use water_balance_state, only: catchment_q_current, catchment_q_previous, groundwater_q, &
-                                       subsurface_q, surface_q
+                                subbasin_index
+        use runoff_state, only: catchment_q_current, catchment_q_previous, groundwater_q, &
+                                subsurface_q, surface_q
         use reservoir_state, only: substituted_q, substitution_catchment, substitution_count, &
                                    substitution_enabled
         use muskingum_state, only: flow_velocity, groundwater_routing_volume, &
@@ -565,8 +565,8 @@ contains
                       reach_count_argument, interval_count_argument, coefficient_1, coefficient_2, &
                                      coefficient_3)
         use simulation_state, only: day
-        use catchment_state, only: catchment_index
-        use water_balance_state, only: open_water_evaporation_q
+        use runoff_state, only: catchment_index
+        use evapotranspiration_state, only: open_water_evaporation_q
         use muskingum_state, only: incoming_q_boundary, initial_river_q, &
                                    max_muskingum_reach_count, outgoing_q_boundary
 

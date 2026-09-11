@@ -4,12 +4,11 @@ program mgb_model
 
     use simulation_state, only: day, first_subbasin, hour, last_subbasin, minute, &
                                 model_timestep, month, timestep_count, year
-    use catchment_state, only: allocate_catchment_state, catchment_count, &
-                               deallocate_catchment_state, hru_count, subbasin_count
-    use meteorological_state, only: allocate_meteorological_state, climate_cell_count, &
-                                    climate_region_count, deallocate_meteorological_state, &
-                                    monthly_radiation_option
-    use water_balance_state, only: allocate_water_balance_state, deallocate_water_balance_state
+    use runoff_state, only: allocate_runoff_state, catchment_count, &
+                            deallocate_runoff_state, hru_count, subbasin_count
+    use evapotranspiration_state, only: allocate_evapotranspiration_state, climate_cell_count, &
+                                        climate_region_count, deallocate_evapotranspiration_state, &
+                                        monthly_radiation_option
     use reservoir_state, only: allocate_reservoir_state, deallocate_reservoir_state, &
                                reservoir_substitution_enabled, substitution_count
     use muskingum_state, only: allocate_muskingum_state, deallocate_muskingum_state
@@ -20,7 +19,7 @@ program mgb_model
     use io_state, only: hotstart_input_directory, input_directory, log_unit, output_directory
     use output_state, only: allocate_output_state, deallocate_output_state, &
                             read_hotstart_mode, write_hotstart_mode
-    use catchment_hydrology, only: calculate_catchment_time_of_concentration
+    use runoff_processing, only: calculate_catchment_time_of_concentration
     use configuration_io, only: read_model_configuration
     use inertial_routing, only: prepare_inertial_routing
     use meteorological_io, only: close_meteorological_inputs, open_meteorological_inputs
@@ -67,10 +66,9 @@ program mgb_model
 
     write (*, *) 'Allocating variables...'
     write (log_unit, *) 'Allocating variables...'
-    call allocate_catchment_state
-    call allocate_meteorological_state(catchment_count, climate_cell_count)
-    call allocate_water_balance_state(catchment_count, hru_count, subbasin_count, &
-                                      climate_region_count)
+    call allocate_runoff_state
+    call allocate_evapotranspiration_state(catchment_count, hru_count, climate_cell_count, &
+                                           climate_region_count)
     call allocate_reservoir_state(catchment_count, timestep_count)
     call allocate_muskingum_state(catchment_count)
     call allocate_inertial_state(catchment_count)
@@ -207,9 +205,8 @@ program mgb_model
     call deallocate_inertial_state
     call deallocate_muskingum_state
     call deallocate_reservoir_state
-    call deallocate_water_balance_state
-    call deallocate_meteorological_state
-    call deallocate_catchment_state
+    call deallocate_evapotranspiration_state
+    call deallocate_runoff_state
 
 ! End of closings and cleanings
 

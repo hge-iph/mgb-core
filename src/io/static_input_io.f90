@@ -42,11 +42,11 @@ contains
     end subroutine read_reservoir_inputs
 
     subroutine read_fixed_parameters
-        use catchment_state, only: catchment_count, climate_region, hru_count, hru_index, &
-                                   hru_name
-        use meteorological_state, only: climate_region_count
-        use water_balance_state, only: albedo, leaf_area_index, surface_resistance, &
-                                       vegetation_height
+        use runoff_state, only: catchment_count, climate_region, hru_count, hru_index, &
+                                hru_name
+        use evapotranspiration_state, only: climate_region_count
+        use evapotranspiration_state, only: albedo, leaf_area_index, surface_resistance, &
+                                            vegetation_height
         use io_state, only: climate_region_unit, fixed_parameter_unit, input_directory
         ! File with monthly fixed parameters for each HRU.
 
@@ -120,12 +120,12 @@ contains
     end
 
     subroutine read_calibrated_parameters
-        use catchment_state, only: hru_count, hru_index, hru_name, subbasin_count
-        use water_balance_state, only: arno_b, brooks_corey_lambda, capillary_threshold_fraction, &
-                                       floodplain_infiltration_rate, groundwater_conductivity, &
+        use runoff_state, only: hru_count, hru_index, hru_name, subbasin_count
+        use runoff_state, only: arno_b, brooks_corey_lambda, capillary_threshold_fraction, &
+                                floodplain_infiltration_rate, groundwater_conductivity, &
                       groundwater_routing_coefficient, max_capillary_flux, max_soil_water_storage, &
                        specific_baseflow, subsurface_conductivity, subsurface_routing_coefficient, &
-                                       surface_routing_coefficient
+                                surface_routing_coefficient
         use io_state, only: calibrated_parameter_unit, header_fields, input_directory
         ! Reads soil and routing calibration parameters.
 
@@ -181,12 +181,12 @@ contains
 
     subroutine read_catchment_data
         use simulation_state, only: first_subbasin, last_subbasin
-        use catchment_state, only: catchment_area, catchment_count, catchment_index, &
+        use runoff_state, only: catchment_area, catchment_count, catchment_index, &
               catchment_order, catchment_subbasin, catchment_x, catchment_y, downstream_catchment, &
                         drainage_area, hru_count, hru_index, hru_percentage, longest_reach_length, &
                       longest_reach_slope, river_length, river_slope, river_width, subbasin_index, &
-                                   subbasin_outlet_catchment
-        use water_balance_state, only: max_soil_water_storage
+                                subbasin_outlet_catchment
+        use runoff_state, only: max_soil_water_storage
         use muskingum_state, only: manning_n, reference_q
         use inertial_state, only: bankfull_depth, inertial_manning_n, inertial_routing_enabled, &
                                   routing_method
@@ -318,8 +318,8 @@ contains
     end
 
     subroutine read_climatology
-        use catchment_state, only: catchment_count
-        use meteorological_state, only: monthly_air_pressure, monthly_air_temperature, &
+        use runoff_state, only: catchment_count
+        use evapotranspiration_state, only: monthly_air_pressure, monthly_air_temperature, &
                                   monthly_relative_humidity, monthly_solar_input, monthly_wind_speed
         use io_state, only: climatology_unit, input_directory
 
@@ -409,8 +409,8 @@ contains
     end subroutine read_substitution_flows
 
     subroutine read_floodplain_binary_data
-        use catchment_state, only: catchment_count, catchment_index, catchment_x
-        use water_balance_state, only: vegetation_height
+        use runoff_state, only: catchment_count, catchment_index, catchment_x
+        use evapotranspiration_state, only: vegetation_height
         use inertial_state, only: face_catchment_1, face_catchment_2, face_count, face_distance, &
                                floodplain_area, floodplain_bottom_elevation, floodplain_elevation, &
                                   floodplain_point_count, pseudo_two_d_enabled
@@ -495,7 +495,7 @@ contains
     end
 
     subroutine read_floodplain_text_data
-        use catchment_state, only: catchment_index, catchment_x
+        use runoff_state, only: catchment_index, catchment_x
         use inertial_state, only: face_catchment_1, face_catchment_2, face_count, face_distance, &
                                first_face_elevation, floodplain_area, floodplain_bottom_elevation, &
                                  floodplain_elevation, floodplain_point_count, second_face_elevation
@@ -545,7 +545,7 @@ contains
     subroutine read_reservoir_data
         use date_time, only: calculate_integer_julian_day
         use simulation_state, only: day, month, timestep_count, timestep_index, year
-        use catchment_state, only: catchment_count, catchment_index
+        use runoff_state, only: catchment_count, catchment_index
         use reservoir_state, only: reservoir_count, reservoir_index_by_catchment, &
                            reservoir_outflow, reservoir_start_timestep, routing_downstream_catchment
         use inertial_state, only: area_table, floodplain_elevation, floodplain_point_count, &

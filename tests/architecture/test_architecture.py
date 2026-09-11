@@ -33,8 +33,8 @@ class ArchitectureCheckerTests(unittest.TestCase):
         self.assertEqual([], check_tree(self.src))
 
     def test_continued_use_only_is_accepted(self) -> None:
-        self.write("catchment/catchment_state.f90", self.module("catchment_state"))
-        body = "use catchment_state, only: &\n  value\n"
+        self.write("runoff/runoff_state.f90", self.module("runoff_state"))
+        body = "use runoff_state, only: &\n  value\n"
         self.write("io/configuration_io.f90", self.module("configuration_io", body))
         self.assertEqual([], check_tree(self.src))
 
@@ -43,21 +43,52 @@ class ArchitectureCheckerTests(unittest.TestCase):
         self.write("routing/inertial/inertial_state.f90", self.module("inertial_state", body))
         self.assertEqual([], check_tree(self.src))
 
+    def test_evapotranspiration_and_runoff_module_paths(self) -> None:
+        self.write(
+            "evapotranspiration/evapotranspiration_state.f90",
+            self.module("evapotranspiration_state"),
+        )
+        self.write(
+            "evapotranspiration/evapotranspiration_processing.f90",
+            self.module("evapotranspiration_processing"),
+        )
+        self.write("runoff/runoff_state.f90", self.module("runoff_state"))
+        self.write("runoff/runoff_processing.f90", self.module("runoff_processing"))
+        self.assertEqual([], check_tree(self.src))
+
     def test_permitted_state_dependency(self) -> None:
-        self.write("catchment/catchment_state.f90", self.module("catchment_state"))
-        body = "use catchment_state, only: value\n"
+        self.write("runoff/runoff_state.f90", self.module("runoff_state"))
+        body = "use runoff_state, only: value\n"
         self.write("reservoirs/reservoir_state.f90", self.module("reservoir_state", body))
         self.assertEqual([], check_tree(self.src))
 
     def test_forbidden_facade_dependency(self) -> None:
-        self.write("catchment/catchment_hydrology.f90", self.module("catchment_hydrology"))
-        body = "use catchment_hydrology, only: value\n"
+        self.write("runoff/runoff_processing.f90", self.module("runoff_processing"))
+        body = "use runoff_processing, only: value\n"
         self.write("routing/inertial/inertial_routing.f90", self.module("inertial_routing", body))
         self.assertTrue(any("forbidden dependency" in error for error in check_tree(self.src)))
 
+    def test_runoff_processing_may_call_evapotranspiration_processing(self) -> None:
+        self.write(
+            "evapotranspiration/evapotranspiration_processing.f90",
+            self.module("evapotranspiration_processing"),
+        )
+        body = "use evapotranspiration_processing, only: value\n"
+        self.write("runoff/runoff_processing.f90", self.module("runoff_processing", body))
+        self.assertEqual([], check_tree(self.src))
+
+    def test_evapotranspiration_processing_may_not_call_runoff_processing(self) -> None:
+        self.write("runoff/runoff_processing.f90", self.module("runoff_processing"))
+        body = "use runoff_processing, only: value\n"
+        self.write(
+            "evapotranspiration/evapotranspiration_processing.f90",
+            self.module("evapotranspiration_processing", body),
+        )
+        self.assertTrue(any("forbidden dependency" in error for error in check_tree(self.src)))
+
     def test_unrestricted_project_use(self) -> None:
-        self.write("catchment/catchment_state.f90", self.module("catchment_state"))
-        self.write("io/configuration_io.f90", self.module("configuration_io", "use catchment_state\n"))
+        self.write("runoff/runoff_state.f90", self.module("runoff_state"))
+        self.write("io/configuration_io.f90", self.module("configuration_io", "use runoff_state\n"))
         self.assertTrue(any("requires an only list" in error for error in check_tree(self.src)))
 
     def test_missing_default_private(self) -> None:

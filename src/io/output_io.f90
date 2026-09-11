@@ -37,9 +37,10 @@ contains
 
     subroutine write_model_outputs
         use simulation_state, only: timestep_index
-        use catchment_state, only: catchment_count, catchment_index
-        use water_balance_state, only: evapotranspiration, groundwater_storage, &
-                      interception_storage, subsurface_storage, surface_storage, total_water_storage
+        use runoff_state, only: catchment_count, catchment_index
+        use evapotranspiration_state, only: evapotranspiration, interception_storage
+        use runoff_state, only: groundwater_storage, subsurface_storage, surface_storage, &
+                                total_water_storage
         use io_state, only: discharge_output_unit, et_output_unit, flooded_area_output_unit, &
                   groundwater_flux_output_unit, groundwater_storage_output_unit, hand_output_unit, &
                             interception_et_output_unit, interception_storage_output_unit, &
@@ -143,7 +144,7 @@ contains
     ! Open or close the configured output streams.
     subroutine manage_output_files(file_action)
 
-        use catchment_state, only: catchment_count
+        use runoff_state, only: catchment_count
         use io_state, only: discharge_output_unit, et_output_unit, flooded_area_output_unit, &
                   groundwater_flux_output_unit, groundwater_storage_output_unit, hand_output_unit, &
                             interception_et_output_unit, interception_storage_output_unit, &
