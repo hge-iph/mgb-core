@@ -4,8 +4,8 @@ module muskingum_state
     private
     save
 
-    public :: concentration_time, current_reach_length, current_reference_q, elevation_difference, &
-        & flow_velocity, groundwater_routing_volume, incoming_groundwater_fraction_current, &
+    public :: concentration_time, flow_velocity, groundwater_routing_volume, &
+        & incoming_groundwater_fraction_current, &
         & incoming_groundwater_fraction_previous, incoming_q_boundary, incoming_q_current, &
         & incoming_q_previous, incoming_subsurface_fraction_current, &
         & incoming_subsurface_fraction_previous, incoming_surface_fraction_current, &
@@ -23,8 +23,6 @@ module muskingum_state
     real, allocatable :: muskingum_timestep(:)
     real, allocatable :: wave_celerity(:), concentration_time(:)
     real, allocatable :: reference_q(:)
-    real current_reference_q
-    real current_reach_length, elevation_difference
     real, allocatable :: incoming_q_previous(:), outgoing_q_previous(:)
     real, allocatable :: incoming_q_current(:), outgoing_q_current(:)
     real, allocatable :: incoming_groundwater_fraction_current(:)

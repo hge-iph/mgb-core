@@ -4,26 +4,19 @@ module runoff_state
     private
     save
 
-    public :: catchment_area, catchment_count, catchment_index, catchment_order, &
+    public :: catchment_area, catchment_count, catchment_order, &
         & catchment_subbasin, catchment_x, catchment_y, catchments_per_subbasin, climate_region, &
-        & current_catchment_area, current_river_width, downstream_catchment, drainage_area, &
-        & hru_count, hru_index, hru_name, hru_percentage, longest_reach_length, &
+        & downstream_catchment, drainage_area, hru_count, hru_name, hru_percentage, &
+        & longest_reach_length, &
         & longest_reach_slope, max_hru_count, max_subbasin_count, river_length, river_slope, &
-        & river_width, subbasin_count, subbasin_index, subbasin_outlet_catchment, arno_b, &
+        & river_width, subbasin_count, subbasin_outlet_catchment, arno_b, &
         & brooks_corey_lambda, capillary_flux, capillary_threshold_fraction, &
-        & catchment_capillary_q, &
-        & catchment_q_current, catchment_q_previous, catchment_soil_water_sum, current_arno_b, &
-        & current_brooks_corey_lambda, current_capillary_flux, &
-        & current_capillary_threshold_fraction, current_floodplain_infiltration, &
-        & current_floodplain_infiltration_rate, current_groundwater_conductivity, &
-        & current_max_soil_water_storage, current_precipitation, current_soil_water_storage, &
-        & current_subsurface_conductivity, floodplain_infiltration, floodplain_infiltration_rate, &
-        & groundwater_conductivity, groundwater_delay, groundwater_q, &
-        & groundwater_routing_coefficient, groundwater_storage, hru_area_fraction, &
-        & max_capillary_flux, max_soil_water_storage, minimum_soil_storage, precipitation, &
-        & remaining_groundwater_storage, remaining_subsurface_storage, remaining_surface_storage, &
-        & soil_water_storage, specific_baseflow, subsurface_conductivity, subsurface_delay, &
-        & subsurface_q, subsurface_routing_coefficient, subsurface_storage, surface_delay, &
+        & catchment_q_current, catchment_q_previous, floodplain_infiltration, &
+        & floodplain_infiltration_rate, groundwater_conductivity, groundwater_q, &
+        & groundwater_routing_coefficient, groundwater_storage, max_capillary_flux, &
+        & max_soil_water_storage, precipitation, soil_water_storage, specific_baseflow, &
+        & subsurface_conductivity, subsurface_q, subsurface_routing_coefficient, &
+        & subsurface_storage, &
         & surface_q, surface_routing_coefficient, surface_storage, total_water_storage, &
         & allocate_runoff_state, deallocate_runoff_state
 
@@ -35,17 +28,13 @@ module runoff_state
     character(10) hru_name(max_hru_count)
     integer, allocatable :: subbasin_outlet_catchment(:)
     real, allocatable :: river_width(:)
-    real current_river_width
     integer, allocatable :: catchment_subbasin(:), downstream_catchment(:)
     real, allocatable :: longest_reach_slope(:), longest_reach_length(:)
     real, allocatable :: catchment_x(:), catchment_y(:)
     integer, allocatable :: climate_region(:)
     real, allocatable :: catchment_area(:), drainage_area(:), river_length(:), river_slope(:)
     real, allocatable :: hru_percentage(:, :)
-    integer catchment_index
-    integer subbasin_index, hru_index
     integer, allocatable :: catchment_order(:)
-    real current_catchment_area
     real, allocatable :: specific_baseflow(:)
     real, allocatable :: max_soil_water_storage(:, :), arno_b(:, :)
     real, allocatable :: subsurface_conductivity(:, :), groundwater_conductivity(:, :)
@@ -58,17 +47,8 @@ module runoff_state
     real, allocatable :: groundwater_q(:), subsurface_q(:), surface_q(:)
     real, allocatable :: groundwater_storage(:), subsurface_storage(:), surface_storage(:)
     real(4), allocatable :: precipitation(:)
-    real current_soil_water_storage, current_max_soil_water_storage, current_arno_b
-    real current_subsurface_conductivity, current_groundwater_conductivity
-    real current_precipitation, current_floodplain_infiltration_rate, current_brooks_corey_lambda
-    real current_capillary_flux, current_capillary_threshold_fraction
-    real remaining_groundwater_storage, remaining_subsurface_storage, remaining_surface_storage
-    real hru_area_fraction, catchment_soil_water_sum, catchment_capillary_q
     real, allocatable :: total_water_storage(:)
-    real minimum_soil_storage
-    real, allocatable :: groundwater_delay(:), subsurface_delay(:), surface_delay(:)
     real, allocatable :: floodplain_infiltration(:)
-    real current_floodplain_infiltration
 
 contains
 
@@ -113,17 +93,11 @@ contains
         allocate (surface_storage(catchment_count))
         allocate (precipitation(catchment_count))
         allocate (total_water_storage(catchment_count))
-        allocate (groundwater_delay(catchment_count))
-        allocate (subsurface_delay(catchment_count))
-        allocate (surface_delay(catchment_count))
         allocate (floodplain_infiltration(catchment_count))
     end subroutine allocate_runoff_state
 
     subroutine deallocate_runoff_state
         if (allocated(floodplain_infiltration)) deallocate (floodplain_infiltration)
-        if (allocated(surface_delay)) deallocate (surface_delay)
-        if (allocated(subsurface_delay)) deallocate (subsurface_delay)
-        if (allocated(groundwater_delay)) deallocate (groundwater_delay)
         if (allocated(total_water_storage)) deallocate (total_water_storage)
         if (allocated(precipitation)) deallocate (precipitation)
         if (allocated(surface_storage)) deallocate (surface_storage)

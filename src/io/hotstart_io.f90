@@ -7,17 +7,19 @@ module hotstart_io
 contains
 
     subroutine read_hotstart_schedule
-        use simulation_state, only: timestep_count, timestep_index
+        use simulation_state, only: timestep_count
         use io_state, only: hotstart_list_unit, input_directory
         use output_state, only: hotstart_write_schedule
 
         implicit none
 
+        integer :: i_step
+
         open (hotstart_list_unit, file=input_directory//'hotstart_schedule.txt', status='OLD', &
             & action='READ')
         hotstart_write_schedule = 0
-        do timestep_index = 1, timestep_count
-            read (hotstart_list_unit, *) hotstart_write_schedule(timestep_index)
+        do i_step = 1, timestep_count
+            read (hotstart_list_unit, *) hotstart_write_schedule(i_step)
         end do
         close (hotstart_list_unit)
     end subroutine read_hotstart_schedule
@@ -25,7 +27,7 @@ contains
     subroutine read_hotstart
         use date_time, only: format_date_string
         use simulation_state, only: day, hour, minute, month, year
-        use runoff_state, only: catchment_count, catchment_index, hru_count, hru_index
+        use runoff_state, only: catchment_count, hru_count
         use evapotranspiration_state, only: air_temperature, interception_storage
         use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
             & subsurface_storage, surface_storage
@@ -38,7 +40,7 @@ contains
             & water_balance_hotstart_unit
 
         implicit none
-        integer :: record_length, state_index, state_variable_count, reach_index
+        integer :: i_catch, i_hru, record_length, state_index, state_variable_count, reach_index
         real(4), allocatable :: hotstart_water_balance_vector(:)
         real*8, allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
@@ -75,63 +77,63 @@ contains
         ! Reading state variables:
 
         state_index = 0
-        do catchment_index = 1, catchment_count
-            do hru_index = 1, hru_count
+        do i_catch = 1, catchment_count
+            do i_hru = 1, hru_count
                 state_index = state_index + 1
-                soil_water_storage(catchment_index, hru_index) = &
+                soil_water_storage(i_catch, i_hru) = &
                     & hotstart_water_balance_vector(state_index)
                 !Reading Soil Moisture
             end do
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            groundwater_storage(catchment_index) = hotstart_water_balance_vector(state_index)
+            groundwater_storage(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading water in baseflow reservoir
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            subsurface_storage(catchment_index) = hotstart_water_balance_vector(state_index)
+            subsurface_storage(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading water in subsurface reservoir
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            surface_storage(catchment_index) = hotstart_water_balance_vector(state_index)
+            surface_storage(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading water surface volume
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            air_temperature(catchment_index) = hotstart_water_balance_vector(state_index)
+            air_temperature(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading Temperature
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            incoming_q_current(catchment_index) = hotstart_water_balance_vector(state_index)
+            incoming_q_current(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading Flow entering into the catchment
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            outgoing_q_current(catchment_index) = hotstart_water_balance_vector(state_index)
+            outgoing_q_current(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading Flow going out of catchment
         end do
-        do catchment_index = 1, catchment_count
-            do hru_index = 1, hru_count
+        do i_catch = 1, catchment_count
+            do i_hru = 1, hru_count
                 state_index = state_index + 1
-                interception_storage(catchment_index, hru_index) = &
+                interception_storage(i_catch, i_hru) = &
                     & hotstart_water_balance_vector(state_index)
                 !Reading Canopy interception volume
             end do
         end do
-        do catchment_index = 1, catchment_count
-            do reach_index = 1, muskingum_reach_count(catchment_index) + 1
+        do i_catch = 1, catchment_count
+            do reach_index = 1, muskingum_reach_count(i_catch) + 1
                 state_index = state_index + 1
-                initial_river_q(catchment_index, reach_index) = &
+                initial_river_q(i_catch, reach_index) = &
                     & hotstart_water_balance_vector(state_index)
                 !Reading Canopy interception volume
             end do
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            catchment_q_current(catchment_index) = hotstart_water_balance_vector(state_index)
+            catchment_q_current(i_catch) = hotstart_water_balance_vector(state_index)
             !Reading Runoff generation at each cell
         end do
 
@@ -154,57 +156,57 @@ contains
         ! Reading state variables:
 
         state_index = 0
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_q(catchment_index) = inertial_state_vector(state_index)
-            !Streamflow at catchment (catchment_index)
+            inertial_q(i_catch) = inertial_state_vector(state_index)
+            !Streamflow at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            water_depth(catchment_index) = inertial_state_vector(state_index)
-            !Water depth at catchment (catchment_index)
+            water_depth(i_catch) = inertial_state_vector(state_index)
+            !Water depth at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            water_surface_elevation(catchment_index) = inertial_state_vector(state_index)
-            !Water elevation at catchment (catchment_index)
+            water_surface_elevation(i_catch) = inertial_state_vector(state_index)
+            !Water elevation at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            previous_water_volume(catchment_index) = inertial_state_vector(state_index)
-            !Previous Water storage at catchment (catchment_index)
+            previous_water_volume(i_catch) = inertial_state_vector(state_index)
+            !Previous Water storage at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            current_water_volume(catchment_index) = inertial_state_vector(state_index)
-            !Actual Water storage at catchment (catchment_index)
+            current_water_volume(i_catch) = inertial_state_vector(state_index)
+            !Actual Water storage at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            current_flooded_area(catchment_index) = inertial_state_vector(state_index)
-            !Flooded Area at catchment (catchment_index)
+            current_flooded_area(i_catch) = inertial_state_vector(state_index)
+            !Flooded Area at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            stage_table_index(catchment_index) = int(inertial_state_vector(state_index))
-            !Index of Volume level at catchment (catchment_index)
+            stage_table_index(i_catch) = int(inertial_state_vector(state_index))
+            !Index of Volume level at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            face_q(catchment_index) = inertial_state_vector(state_index)
+            face_q(i_catch) = inertial_state_vector(state_index)
             !Streamflow coming (or leaving) the catchment through connections
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            neighbor_q(catchment_index) = inertial_state_vector(state_index)
+            neighbor_q(i_catch) = inertial_state_vector(state_index)
             !Updated flow for interconnections (signal can be positive or negative)
         end do
 
@@ -216,8 +218,8 @@ contains
 
     subroutine write_hotstart
         use date_time, only: convert_julian_day_to_calendar, format_date_string
-        use simulation_state, only: day, hour, julian_day, minute, month, timestep_index, year
-        use runoff_state, only: catchment_count, catchment_index, hru_count, hru_index
+        use simulation_state, only: day, hour, julian_day, minute, month, year
+        use runoff_state, only: catchment_count, hru_count
         use evapotranspiration_state, only: air_temperature, interception_storage
         use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
             & subsurface_storage, surface_storage
@@ -231,7 +233,7 @@ contains
         use output_state, only: write_hotstart_mode
 
         implicit none
-        integer :: record_length, state_index, state_variable_count, reach_index
+        integer :: i_catch, i_hru, record_length, state_index, state_variable_count, reach_index
         real(4), allocatable :: hotstart_water_balance_vector(:)
         real*8, allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
@@ -248,7 +250,7 @@ contains
             ! compute calendar date
             call convert_julian_day_to_calendar(julian_day, year, month, day, hour, minute)
 
-            ! For option 2, check if the current timestep_index is flagged to save MGB initial
+            ! For option 2, check if the current timestep is flagged to save MGB initial
             ! conditions for the beginning of each time step.
             ! For option 3, model state variables will be saved for the beginning of each time
             ! step,
@@ -271,62 +273,62 @@ contains
 
         ! Writing state variables:
         state_index = 0
-        do catchment_index = 1, catchment_count
-            do hru_index = 1, hru_count
+        do i_catch = 1, catchment_count
+            do i_hru = 1, hru_count
                 state_index = state_index + 1
-                hotstart_water_balance_vector(state_index) = soil_water_storage(catchment_index, &
-                    & hru_index)
+                hotstart_water_balance_vector(state_index) = soil_water_storage(i_catch, &
+                    & i_hru)
                 !Soil Water for each HRU
             end do
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = groundwater_storage(catchment_index)
+            hotstart_water_balance_vector(state_index) = groundwater_storage(i_catch)
             !Reservoir Volume for baseflow
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = subsurface_storage(catchment_index)
+            hotstart_water_balance_vector(state_index) = subsurface_storage(i_catch)
             !Reservoir Volume for subsurface flow
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = surface_storage(catchment_index)
+            hotstart_water_balance_vector(state_index) = surface_storage(i_catch)
             !Reservoir Volume for surface flow
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = air_temperature(catchment_index)
+            hotstart_water_balance_vector(state_index) = air_temperature(i_catch)
             !Temperature in previous time step
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = incoming_q_current(catchment_index)
+            hotstart_water_balance_vector(state_index) = incoming_q_current(i_catch)
             !Streamflow at upstream of catchments
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = outgoing_q_current(catchment_index)
+            hotstart_water_balance_vector(state_index) = outgoing_q_current(i_catch)
             !Streamflow at downstream of catchments
         end do
-        do catchment_index = 1, catchment_count
-            do hru_index = 1, hru_count
+        do i_catch = 1, catchment_count
+            do i_hru = 1, hru_count
                 state_index = state_index + 1
-                hotstart_water_balance_vector(state_index) = interception_storage(catchment_index, &
-                    & hru_index)
+                hotstart_water_balance_vector(state_index) = interception_storage(i_catch, &
+                    & i_hru)
                 !Intercepted water stored on canopy reservoir
             end do
         end do
-        do catchment_index = 1, catchment_count
-            do reach_index = 1, muskingum_reach_count(catchment_index) + 1
+        do i_catch = 1, catchment_count
+            do reach_index = 1, muskingum_reach_count(i_catch) + 1
                 state_index = state_index + 1
-                hotstart_water_balance_vector(state_index) = initial_river_q(catchment_index, &
+                hotstart_water_balance_vector(state_index) = initial_river_q(i_catch, &
                     & reach_index)
             end do
         end do
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = catchment_q_current(catchment_index)
+            hotstart_water_balance_vector(state_index) = catchment_q_current(i_catch)
             !Runoff generated at catchment
         end do
 
@@ -350,57 +352,57 @@ contains
             & status='unknown', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
         state_index = 0
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = inertial_q(catchment_index)
-            !Streamflow at catchment (catchment_index)
+            inertial_state_vector(state_index) = inertial_q(i_catch)
+            !Streamflow at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = water_depth(catchment_index)
-            !Water depth at catchment (catchment_index)
+            inertial_state_vector(state_index) = water_depth(i_catch)
+            !Water depth at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = water_surface_elevation(catchment_index)
-            !Water elevation at catchment (catchment_index)
+            inertial_state_vector(state_index) = water_surface_elevation(i_catch)
+            !Water elevation at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = previous_water_volume(catchment_index)
-            !Previous Water storage at catchment (catchment_index)
+            inertial_state_vector(state_index) = previous_water_volume(i_catch)
+            !Previous Water storage at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = current_water_volume(catchment_index)
-            !Actual Water storage at catchment (catchment_index)
+            inertial_state_vector(state_index) = current_water_volume(i_catch)
+            !Actual Water storage at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = current_flooded_area(catchment_index)
-            !Flooded Area at catchment (catchment_index)
+            inertial_state_vector(state_index) = current_flooded_area(i_catch)
+            !Flooded Area at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = dble(stage_table_index(catchment_index))
-            !index of Volume level at catchment (catchment_index)
+            inertial_state_vector(state_index) = dble(stage_table_index(i_catch))
+            !index of Volume level at catchment (i_catch)
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = face_q(catchment_index)
+            inertial_state_vector(state_index) = face_q(i_catch)
             !Streamflow coming (or leaving) the catchment through connections
         end do
 
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = neighbor_q(catchment_index)
+            inertial_state_vector(state_index) = neighbor_q(i_catch)
             !Updated flow for interconnections (signal can be positive or negative)
         end do
 

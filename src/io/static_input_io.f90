@@ -42,7 +42,7 @@ contains
     end subroutine read_reservoir_inputs
 
     subroutine read_fixed_parameters
-        use runoff_state, only: catchment_count, climate_region, hru_count, hru_index, hru_name
+        use runoff_state, only: catchment_count, climate_region, hru_count, hru_name
         use evapotranspiration_state, only: climate_region_count
         use evapotranspiration_state, only: albedo, leaf_area_index, surface_resistance, &
             & vegetation_height
@@ -50,7 +50,7 @@ contains
         ! File with monthly fixed parameters for each HRU.
 
         implicit none
-        integer :: month_index, climate_region_index_loop, catchment_record_index
+        integer :: month_index, climate_region_index_loop, catchment_record_index, i_hru
         integer :: ignored_catchment_id
         character(20) :: header_text
         character(5) :: month_labels(12)
@@ -64,33 +64,33 @@ contains
             read (fixed_parameter_unit, 71) header_text
             read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index= &
                 & 1, 12)
-            do hru_index = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(hru_index), (albedo(hru_index, &
+            do i_hru = 1, hru_count
+                read (fixed_parameter_unit, 72) hru_name(i_hru), (albedo(i_hru, &
                     & month_index, climate_region_index_loop), month_index=1, 12)
             end do
             ! Read leaf area index:
             read (fixed_parameter_unit, 71) header_text
             read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index= &
                 & 1, 12)
-            do hru_index = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(hru_index), (leaf_area_index(hru_index, &
+            do i_hru = 1, hru_count
+                read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, &
                     & month_index, climate_region_index_loop), month_index=1, 12)
             end do
             ! Read vegetation height:
             read (fixed_parameter_unit, 71) header_text
             read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index= &
                 & 1, 12)
-            do hru_index = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(hru_index), (vegetation_height(hru_index, &
+            do i_hru = 1, hru_count
+                read (fixed_parameter_unit, 72) hru_name(i_hru), (vegetation_height(i_hru, &
                     & month_index, climate_region_index_loop), month_index=1, 12)
             end do
             ! Read surface resistance:
             read (fixed_parameter_unit, 71) header_text
             read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index= &
                 & 1, 12)
-            do hru_index = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(hru_index), &
-                    & (surface_resistance(hru_index, month_index, climate_region_index_loop), &
+            do i_hru = 1, hru_count
+                read (fixed_parameter_unit, 72) hru_name(i_hru), &
+                    & (surface_resistance(i_hru, month_index, climate_region_index_loop), &
                     & month_index=1, 12)
             end do
         end do
@@ -115,7 +115,7 @@ contains
     end
 
     subroutine read_calibrated_parameters
-        use runoff_state, only: hru_count, hru_index, hru_name, subbasin_count
+        use runoff_state, only: hru_count, hru_name, subbasin_count
         use runoff_state, only: arno_b, brooks_corey_lambda, capillary_threshold_fraction, &
             & floodplain_infiltration_rate, groundwater_conductivity, &
             & groundwater_routing_coefficient, max_capillary_flux, max_soil_water_storage, &
@@ -125,7 +125,7 @@ contains
         ! Reads soil and routing calibration parameters.
 
         implicit none
-        integer :: current_subbasin, header_index
+        integer :: current_subbasin, header_index, i_hru
         real :: unused_hru_parameters(subbasin_count, hru_count)
         real :: unused_routing_parameter(subbasin_count)
         ! Specific base flow (M3/S/KM2): specific_baseflow(subbasin_count)
@@ -143,16 +143,16 @@ contains
         do current_subbasin = 1, subbasin_count
             read (calibrated_parameter_unit, 72) header_fields(1)
             read (calibrated_parameter_unit, 72) (header_fields(header_index), header_index=1, 5)
-            do hru_index = 1, hru_count
-                read (calibrated_parameter_unit, 71) hru_name(hru_index), &
-                    & max_soil_water_storage(current_subbasin, hru_index), &
-                    & arno_b(current_subbasin, hru_index), &
-                    & groundwater_conductivity(current_subbasin, hru_index), &
-                    & subsurface_conductivity(current_subbasin, hru_index), &
-                    & brooks_corey_lambda(current_subbasin, hru_index), &
-                    & max_capillary_flux(current_subbasin, hru_index), &
-                    & capillary_threshold_fraction(current_subbasin, hru_index), &
-                    & floodplain_infiltration_rate(current_subbasin, hru_index)
+            do i_hru = 1, hru_count
+                read (calibrated_parameter_unit, 71) hru_name(i_hru), &
+                    & max_soil_water_storage(current_subbasin, i_hru), &
+                    & arno_b(current_subbasin, i_hru), &
+                    & groundwater_conductivity(current_subbasin, i_hru), &
+                    & subsurface_conductivity(current_subbasin, i_hru), &
+                    & brooks_corey_lambda(current_subbasin, i_hru), &
+                    & max_capillary_flux(current_subbasin, i_hru), &
+                    & capillary_threshold_fraction(current_subbasin, i_hru), &
+                    & floodplain_infiltration_rate(current_subbasin, i_hru)
 
             end do
             read (calibrated_parameter_unit, 73) header_fields(1), &
@@ -174,10 +174,10 @@ contains
 
     subroutine read_catchment_data
         use simulation_state, only: first_subbasin, last_subbasin
-        use runoff_state, only: catchment_area, catchment_count, catchment_index, catchment_order, &
+        use runoff_state, only: catchment_area, catchment_count, catchment_order, &
             & catchment_subbasin, catchment_x, catchment_y, downstream_catchment, drainage_area, &
-            & hru_count, hru_index, hru_percentage, longest_reach_length, longest_reach_slope, &
-            & river_length, river_slope, river_width, subbasin_index, subbasin_outlet_catchment
+            & hru_count, hru_percentage, longest_reach_length, longest_reach_slope, river_length, &
+            & river_slope, river_width, subbasin_outlet_catchment
         use runoff_state, only: max_soil_water_storage
         use muskingum_state, only: manning_n, reference_q
         use inertial_state, only: bankfull_depth, inertial_manning_n, inertial_routing_enabled, &
@@ -187,7 +187,7 @@ contains
         implicit none
         integer :: catchment_id(catchment_count)
         integer :: catchment_record_index, hru_input_index, current_subbasin, secondary_hru_index
-        integer :: enabled_outlet_index, input_catchment_sequence
+        integer :: enabled_outlet_index, input_catchment_sequence, i_catch, i_hru, i_sub
         real :: max_enabled_drainage_area, redistributed_water_hru_percentage
 
         max_enabled_drainage_area = 0.0
@@ -255,17 +255,17 @@ contains
         write (*, *) ''
         write (*, *) 'Minimun reach lenght set to 2.5 km'
         ! Correct length of main river. Minimum length = 2.5 km:
-        do catchment_index = 1, catchment_count
-            river_length(catchment_index) = max(river_length(catchment_index), 2.5)
+        do i_catch = 1, catchment_count
+            river_length(i_catch) = max(river_length(i_catch), 2.5)
         end do
         ! Change units of river slope to m/m
         write (*, *) 'Reach slopes from geometry transformed to m/m'
         river_slope = river_slope/1000.0
         ! Correct length of longest tributary:
         write (*, *) 'Minimun tributarie lenght set to 0.001 km'
-        do catchment_index = 1, catchment_count
-            longest_reach_length(catchment_index) = max(&
-                & longest_reach_length(catchment_index), 0.001)
+        do i_catch = 1, catchment_count
+            longest_reach_length(i_catch) = max(&
+                & longest_reach_length(i_catch), 0.001)
         end do
         write (*, *) 'Radiation calculation is using sunshine'
 
@@ -273,29 +273,29 @@ contains
         if (inertial_routing_enabled == 1) then
             write (*, *) 'Redistributing the area of HRU water to other uses'
             !read_calibrated_parameters.F90 must be called before this
-            do catchment_index = 1, catchment_count
-                subbasin_index = catchment_subbasin(catchment_index)
+            do i_catch = 1, catchment_count
+                i_sub = catchment_subbasin(i_catch)
                 redistributed_water_hru_percentage = 0.0
                 !HRU loop
-                do hru_index = 1, hru_count
-                    if (max_soil_water_storage(subbasin_index, hru_index) < 0.001) then
-                        if (hru_percentage(catchment_index, hru_index) > 99.999) then
+                do i_hru = 1, hru_count
+                    if (max_soil_water_storage(i_sub, i_hru) < 0.001) then
+                        if (hru_percentage(i_catch, i_hru) > 99.999) then
                             do secondary_hru_index = 1, hru_count
                                 !HRUs will have the same area
-                                hru_percentage(catchment_index, hru_index) = 100./dble(hru_count)
+                                hru_percentage(i_catch, i_hru) = 100./dble(hru_count)
                             end do
                         end if
                         !Eliminating HRU water
-                        redistributed_water_hru_percentage = hru_percentage(catchment_index, &
-                            & hru_index)
-                        hru_percentage(catchment_index, hru_index) = 0.0
+                        redistributed_water_hru_percentage = hru_percentage(i_catch, &
+                            & i_hru)
+                        hru_percentage(i_catch, i_hru) = 0.0
                     end if
                 end do
                 ! Redistribute the removed water-HRU fraction among the other HRUs.
-                do hru_index = 1, hru_count
-                    hru_percentage(catchment_index, hru_index) = hru_percentage(catchment_index, &
-                        & hru_index) + hru_percentage(catchment_index, &
-                        & hru_index)*redistributed_water_hru_percentage/ &
+                do i_hru = 1, hru_count
+                    hru_percentage(i_catch, i_hru) = hru_percentage(i_catch, &
+                        & i_hru) + hru_percentage(i_catch, &
+                        & i_hru)*redistributed_water_hru_percentage/ &
                         & (100.-redistributed_water_hru_percentage)
                 end do
             end do
@@ -375,18 +375,18 @@ contains
     end subroutine read_climatology
 
     subroutine read_substitution_flows
-        use simulation_state, only: timestep_count, timestep_index
+        use simulation_state, only: timestep_count
         use reservoir_state, only: substituted_q, substitution_count
         use io_state, only: header_fields, input_directory, substitution_flow_unit
 
         implicit none
-        integer :: input_year, input_month, substitution_index, input_day
+        integer :: input_year, input_month, substitution_index, input_day, i_step
         open (substitution_flow_unit, file=input_directory//'substitution_flows.txt', status='OLD')
         read (substitution_flow_unit, 701) (header_fields(substitution_index), substitution_index= &
             & 1, substitution_count)
-        do timestep_index = 1, timestep_count
+        do i_step = 1, timestep_count
             read (substitution_flow_unit, *) input_year, input_month, input_day, &
-                & (substituted_q(substitution_index, timestep_index), substitution_index=1, &
+                & (substituted_q(substitution_index, i_step), substitution_index=1, &
                 & substitution_count)
         end do
         close (substitution_flow_unit)
@@ -395,7 +395,7 @@ contains
     end subroutine read_substitution_flows
 
     subroutine read_floodplain_binary_data
-        use runoff_state, only: catchment_count, catchment_index, catchment_x
+        use runoff_state, only: catchment_count, catchment_x
         use evapotranspiration_state, only: vegetation_height
         use inertial_state, only: face_catchment_1, face_catchment_2, face_count, face_distance, &
             & floodplain_area, floodplain_bottom_elevation, floodplain_elevation, &
@@ -403,7 +403,7 @@ contains
         use io_state, only: face_connection_unit, flood_area_unit, flood_stage_unit, input_directory
 
         implicit none
-        integer data_index, direct_access_record, io_status
+        integer data_index, direct_access_record, i_catch, io_status
         integer :: flood_area_record_length, flood_stage_record_length
         integer, parameter :: floodplain_elevation_increment = 1
         !Increment in floodplain is assumed to be 1m
@@ -420,20 +420,20 @@ contains
         !input binary file with interpolated rainfall data
 
         !The Structure of interpolate_stage_area.bin file is as follows:
-        !2 - Water Level elevations [catchment_index = 1,2... catchment_count] as INTEGER(KIND=4)
+        !2 - Water Level elevations [i_catch = 1,2... catchment_count] as INTEGER(KIND=4)
         !3 - Floodplain elevations  [i = 1, 2 ... standard_floodplain_point_count] as REAL(KIND=8)
 
         direct_access_record = 1
         read (flood_stage_unit, rec= &
-            & direct_access_record) (floodplain_bottom_elevation(catchment_index), &
-            & catchment_index=1, catchment_count)
+            & direct_access_record) (floodplain_bottom_elevation(i_catch), &
+            & i_catch=1, catchment_count)
         !Fills the vegetation_height values of floodplain increment
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             do data_index = 1, standard_floodplain_point_count
                 !For each point floodplain increment, computes the elevation
-                floodplain_elevation(data_index, catchment_index) = &
+                floodplain_elevation(data_index, i_catch) = &
                     & int(floodplain_elevation_increment*data_index) &
-                    & + floodplain_bottom_elevation(catchment_index)
+                    & + floodplain_bottom_elevation(i_catch)
                 !Multiplications between Integer and Real Must be verified
             end do
         end do
@@ -449,9 +449,9 @@ contains
         !input binary file with Floodplain area
 
         direct_access_record = 1
-        do catchment_index = 1, catchment_count
+        do i_catch = 1, catchment_count
             read (flood_area_unit, rec=direct_access_record) (floodplain_area(data_index, &
-                & catchment_index), data_index=1, standard_floodplain_point_count)
+                & i_catch), data_index=1, standard_floodplain_point_count)
             direct_access_record = direct_access_record + 1
         end do
 
@@ -479,14 +479,14 @@ contains
     end
 
     subroutine read_floodplain_text_data
-        use runoff_state, only: catchment_index, catchment_x
+        use runoff_state, only: catchment_x
         use inertial_state, only: face_catchment_1, face_catchment_2, face_count, face_distance, &
             & first_face_elevation, floodplain_area, floodplain_bottom_elevation, &
             & floodplain_elevation, floodplain_point_count, second_face_elevation
         use io_state, only: face_connection_unit, input_directory, stage_area_unit
 
         implicit none
-        integer connection_index, io_status
+        integer connection_index, i_catch, io_status
 
         !Opening the level catchment_x flooded area file
         open (stage_area_unit, file=input_directory//'floodplain_stage_area.txt', status='OLD', &
@@ -496,13 +496,13 @@ contains
         read (stage_area_unit, *)
         floodplain_point_count = 0
         do
-            read (stage_area_unit, *, iostat=io_status) catchment_index, &
-                & floodplain_bottom_elevation(catchment_index), &
-                & floodplain_elevation(floodplain_point_count(catchment_index) + 1, &
-                & catchment_index), floodplain_area(floodplain_point_count(catchment_index) + 1, &
-                & catchment_index)
+            read (stage_area_unit, *, iostat=io_status) i_catch, &
+                & floodplain_bottom_elevation(i_catch), &
+                & floodplain_elevation(floodplain_point_count(i_catch) + 1, &
+                & i_catch), floodplain_area(floodplain_point_count(i_catch) + 1, &
+                & i_catch)
             if (io_status .ne. 0) exit
-            floodplain_point_count(catchment_index) = floodplain_point_count(catchment_index) + 1
+            floodplain_point_count(i_catch) = floodplain_point_count(i_catch) + 1
         end do
         close (stage_area_unit)
 
@@ -529,12 +529,12 @@ contains
 
     subroutine read_reservoir_data
         use date_time, only: calculate_integer_julian_day
-        use simulation_state, only: day, month, timestep_count, timestep_index, year
-        use runoff_state, only: catchment_count, catchment_index
+        use simulation_state, only: day, month, timestep_count, year
+        use runoff_state, only: catchment_count
         use reservoir_state, only: reservoir_count, reservoir_index_by_catchment, &
             & reservoir_outflow, reservoir_start_timestep, routing_downstream_catchment
         use inertial_state, only: area_table, floodplain_elevation, floodplain_point_count, &
-            & stage_table, upstream_count, upstream_topology, volume_table
+            & stage_table, upstream_topology, volume_table
         use io_state, only: input_directory
 
         implicit none
@@ -542,7 +542,7 @@ contains
         integer, parameter :: reservoir_input_unit = 159
         integer :: reservoir_lake_catchment_count, listed_lake_catchment_count
         integer :: ignored_reservoir_code, reservoir_index, lake_list_index
-        integer :: floodplain_point_index, first_outflow_timestep
+        integer :: floodplain_point_index, first_outflow_timestep, i_catch, i_step, upstream_count
         integer :: simulate_reservoir, disable_lake_floodplain
         integer :: any_reservoir_substitution
         integer :: data_month, data_day, data_year, skipped_outflow_timesteps
@@ -574,21 +574,21 @@ contains
             end if
 
             ! The first catchment in the record contains the dam.
-            catchment_index = reservoir_lake_catchments(listed_lake_catchment_count + 1)
+            i_catch = reservoir_lake_catchments(listed_lake_catchment_count + 1)
 
             if (simulate_reservoir > 0) then
-                reservoir_index_by_catchment(catchment_index) = reservoir_index
+                reservoir_index_by_catchment(i_catch) = reservoir_index
                 any_reservoir_substitution = 1
 
                 ! Terminate the reservoir catchment and its direct upstream links.
-                upstream_count = upstream_topology(catchment_index, 1)
+                upstream_count = upstream_topology(i_catch, 1)
                 if (upstream_count > 0) then
                     do lake_list_index = 1, upstream_count
-                        routing_downstream_catchment(upstream_topology(catchment_index, &
+                        routing_downstream_catchment(upstream_topology(i_catch, &
                             & 1 + lake_list_index)) = -2
                     end do
                 end if
-                routing_downstream_catchment(catchment_index) = -2
+                routing_downstream_catchment(i_catch) = -2
             end if
 
             if (disable_lake_floodplain > 0) then
@@ -606,21 +606,21 @@ contains
         lake_list_index = 1
         do while (reservoir_lake_catchments(lake_list_index) > 0)
 
-            catchment_index = reservoir_lake_catchments(lake_list_index)
-            area_table(3, catchment_index) = area_table(2, catchment_index)
-            volume_table(3, catchment_index) = volume_table(2, catchment_index) + area_table(3, &
-                & catchment_index)*(stage_table(3, catchment_index) - stage_table(2, &
-                & catchment_index))*1000000.0
+            i_catch = reservoir_lake_catchments(lake_list_index)
+            area_table(3, i_catch) = area_table(2, i_catch)
+            volume_table(3, i_catch) = volume_table(2, i_catch) + area_table(3, &
+                & i_catch)*(stage_table(3, i_catch) - stage_table(2, &
+                & i_catch))*1000000.0
 
             ! Extend the constant-area table through all floodplain elevations.
-            do floodplain_point_index = 1, floodplain_point_count(catchment_index) - 1
-                area_table(floodplain_point_index + 3, catchment_index) = area_table(2, &
-                    & catchment_index)
+            do floodplain_point_index = 1, floodplain_point_count(i_catch) - 1
+                area_table(floodplain_point_index + 3, i_catch) = area_table(2, &
+                    & i_catch)
                 incremental_volume = (floodplain_elevation(floodplain_point_index + 1, &
-                    & catchment_index) - floodplain_elevation(floodplain_point_index, &
-                    & catchment_index))*1000000.0*area_table(2, catchment_index)
-                volume_table(floodplain_point_index + 3, catchment_index) = &
-                    & volume_table(floodplain_point_index + 2, catchment_index) + incremental_volume
+                    & i_catch) - floodplain_elevation(floodplain_point_index, &
+                    & i_catch))*1000000.0*area_table(2, i_catch)
+                volume_table(floodplain_point_index + 3, i_catch) = &
+                    & volume_table(floodplain_point_index + 2, i_catch) + incremental_volume
             end do
 
             lake_list_index = lake_list_index + 1
@@ -649,25 +649,25 @@ contains
             open (reservoir_input_unit, file=input_directory//'reservoir_outflow.txt')
 
             ! Skip observations before the simulation period.
-            do timestep_index = 1, skipped_outflow_timesteps
+            do i_step = 1, skipped_outflow_timesteps
                 read (reservoir_input_unit, *)
             end do
 
-            do timestep_index = first_outflow_timestep, timestep_count
+            do i_step = first_outflow_timestep, timestep_count
                 read (reservoir_input_unit, *) data_year, data_month, data_day, &
-                    & reservoir_outflow(timestep_index, :)
+                    & reservoir_outflow(i_step, :)
             end do
 
             close (reservoir_input_unit)
 
             ! Find the first available outflow for each simulated reservoir.
             reservoir_start_timestep = 1
-            do catchment_index = 1, catchment_count
-                if (reservoir_index_by_catchment(catchment_index) > 0) then
-                    reservoir_index = reservoir_index_by_catchment(catchment_index)
-                    do timestep_index = 1, timestep_count
-                        if (reservoir_outflow(timestep_index, reservoir_index) > 0) then
-                            reservoir_start_timestep(catchment_index) = timestep_index
+            do i_catch = 1, catchment_count
+                if (reservoir_index_by_catchment(i_catch) > 0) then
+                    reservoir_index = reservoir_index_by_catchment(i_catch)
+                    do i_step = 1, timestep_count
+                        if (reservoir_outflow(i_step, reservoir_index) > 0) then
+                            reservoir_start_timestep(i_catch) = i_step
                             exit
                         end if
                     end do

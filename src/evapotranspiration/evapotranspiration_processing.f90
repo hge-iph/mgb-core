@@ -6,256 +6,170 @@ module evapotranspiration_processing
 
 contains
 
-    subroutine calculate_evapotranspiration
+    subroutine calculate_evapotranspiration(p, w, wm, pa, ta, wind, rh, solar, t_prev, lai, &
+        & alb, z_veg, rs, si, lat, et_soil, et_int, et_total, et_int_pot, et_water_pot, &
+        & lambda_e, r_top, r_short)
         use simulation_state, only: model_timestep
-        use runoff_state, only: current_max_soil_water_storage, current_precipitation, &
-            & current_soil_water_storage
-        use evapotranspiration_state, only: actual_interception_et, actual_vapor_pressure, &
-            & aerodynamic_resistance, air_density, available_interception_storage, &
-            & current_air_pressure, current_air_temperature, current_interception_storage, &
-            & current_leaf_area_index, current_surface_resistance, current_total_et, &
-            & current_vegetation_height, current_wind_speed, latent_heat_vaporization, &
-            & max_interception_storage, net_radiation, open_water_aerodynamic_resistance, &
-            & potential_interception_et, potential_open_water_et_current, psychrometric_constant, &
-            & remaining_et_demand_fraction, saturation_vapor_pressure, &
-            & saturation_vapor_pressure_slope, soil_moisture_unlimited_et_threshold, &
-            & soil_vegetation_et, surface_resistance_factor, surface_roughness, &
-            & vapor_pressure_deficit, water_density, wet_air_specific_heat, wilting_point, &
-            & wind_speed_reference
 
         implicit none
 
-        call calculate_net_radiation
+        ! Symbols:
+        ! p, w, wm       precipitation and soil storage [mm per step, mm, mm]
+        ! pa, ta, wind   air pressure, temperature, and 10 m wind [kPa, deg C, m/s]
+        ! rh             relative humidity [percent]
+        ! t_prev         previous air temperature [deg C]
+        ! solar          solar forcing [hours, percent, or MJ/m2/day by option]
+        ! lai, alb       leaf-area index and albedo [1, 1]
+        ! z_veg, rs      vegetation height and surface resistance [m, s/m]
+        ! si             interception storage [mm]
+        ! lat            catchment latitude [degrees]
+        ! et_soil, et_int, et_total, et_int_pot, et_water_pot evapotranspiration depths
+        ! [mm per step]
+        ! lambda_e       latent heat of vaporization [MJ/kg]
+        ! r_net          net radiation after conversion to seconds [MJ/m2/s]
+        ! r_top, r_short top-of-atmosphere and surface radiation [MJ/m2/day]
+        ! e_a, e_s, e_d actual, saturation, and deficit vapor pressure [kPa]
+        ! s_e, gamma     saturation-pressure slope and psychrometric constant [kPa/deg C]
+        ! rho_a, rho_w   air and water density [kg/m3]
+        ! c_p            air specific heat [MJ/kg/deg C]
+        ! z0, z, u10, u2 roughness, capped height, adjusted winds [m, m, m/s, m/s]
+        ! r_a, r_aw      vegetation and open-water aerodynamic resistance [s/m]
+        ! w_u, w_w       unlimited and wilting soil-water thresholds [mm]
+        ! f_rs, si_a, si_m, f_et resistance, available/max interception, and demand fraction
+        ! [1, mm, mm, 1]
 
-        vapor_pressure_deficit = saturation_vapor_pressure - actual_vapor_pressure
-        ! Vapor pressure deficit in KPa
-        psychrometric_constant = 0.0016286*current_air_pressure/latent_heat_vaporization
-        ! KPa/C (EQ. 4.2.28)
-        saturation_vapor_pressure_slope = (4098.0*saturation_vapor_pressure)/ &
-            & ((237.3 + current_air_temperature)**2.)
-        ! (EQ. 4.2.3)
-        air_density = 3.486*(current_air_pressure/(275.0 + current_air_temperature))
-        ! KG/M3 (EQ. 4.2.4)
+        real, intent(inout) :: p, si, rs
+        real, intent(in) :: w, wm, pa, ta, wind, rh, solar, t_prev
+        real, intent(in) :: lai, alb, z_veg, lat
+        real, intent(out) :: et_soil, et_int, et_total, et_int_pot, et_water_pot, lambda_e
+        real, intent(out) :: r_top, r_short
 
-        net_radiation = net_radiation/(3600.0*24.0)
-        ! Net Radiation in MJ/m2/s
+        real, parameter :: rho_w = 1000.0
+        real, parameter :: c_p = 0.001013
+        real, volatile :: r_net
+        real, volatile :: e_a, e_s, e_d, s_e, gamma
+        real, volatile :: rho_a, z0, z, u10, u2
+        real, volatile :: r_a, r_aw
+        real, volatile :: w_u, w_w
+        ! The dry-soil branch intentionally preserves this legacy factor between calls.
+        real, save :: f_rs = 0.0
+        real, volatile :: si_a, si_m, f_et
 
-        ! Aerodynamic roughness of vegetation
-        surface_roughness = 0.1*current_vegetation_height
+        call calculate_net_radiation(solar, ta, t_prev, rh, alb, lat, lambda_e, r_net, r_top, &
+            & r_short, e_a, e_s)
 
-        ! Aerodynamic resistance is based on Bremicker work
-        ! Fix wind speed at 2m to 10m above the ground
-        ! Considering current_wind_speed input as wind at 10m
-        current_wind_speed = current_wind_speed + 0.1
-        !        Avoid zero value issues
-        wind_speed_reference = current_wind_speed/((log(10.0/surface_roughness))/ &
-            & log(2.0/surface_roughness))
-        !wind speed at 2m for calculation of aerodynamic_resistance and potential evapotranspiration
+        e_d = e_s - e_a
+        gamma = 0.0016286*pa/lambda_e
+        s_e = (4098.0*e_s)/((237.3 + ta)**2.)
+        rho_a = 3.486*(pa/(275.0 + ta))
 
-        ! Aerodynamic resistance according to Shuttleworth
-        current_vegetation_height = min(current_vegetation_height, 12.5)
-        !limits vegetation height to avoid problems
-        aerodynamic_resistance = ((log((10.-current_vegetation_height* &
-            & 0.67)/(current_vegetation_height*0.123)))*(log((10.-current_vegetation_height* &
-            & 0.67)/(current_vegetation_height*0.0123))))/(0.41*0.41*current_wind_speed)
-        open_water_aerodynamic_resistance = (4.72*(log(2./0.00137))**2.)/(1.+ &
-            & 0.536*wind_speed_reference)
-        !aerodynamic_resistance for open water evaporation ! (EQ.4.2.29) from Shuttleworth
+        r_net = r_net/(3600.0*24.0)
 
-        ! Calculate Surface Resistance (current_surface_resistance) for soil moisture
-        ! conditions
-        soil_moisture_unlimited_et_threshold = 0.8*current_max_soil_water_storage
-        ! Limit from which soil moisture dont limit evapotranspiration !calculate_evapotranspiration
-        ! 0.8
-        wilting_point = 0.1*current_max_soil_water_storage
-        ! Wilting Point
+        z0 = 0.1*z_veg
+        u10 = wind + 0.1
+        u2 = u10/((log(10.0/z0))/log(2.0/z0))
 
-        ! Surface Resistance Variation with Soil moisture (Wigmosta evapotranspiration al. 1994
-        ! - eq. 16)
-        if (current_max_soil_water_storage < 0.1) then
-            ! Open water has no surface resistance
-            current_surface_resistance = 0.0
+        z = min(z_veg, 12.5)
+        r_a = ((log((10.-z*0.67)/(z*0.123)))*(log((10.-z*0.67)/(z*0.0123))))/(0.41*0.41*u10)
+        r_aw = (4.72*(log(2./0.00137))**2.)/(1.+0.536*u2)
+
+        w_u = 0.8*wm
+        w_w = 0.1*wm
+        if (wm < 0.1) then
+            rs = 0.0
         else
-            if (current_soil_water_storage .le. wilting_point) then
-                current_surface_resistance = 999999999.0
-                ! Dry soil, assume superhigh surface resistance
-            elseif (current_soil_water_storage .lt. soil_moisture_unlimited_et_threshold) then
-                surface_resistance_factor = (current_soil_water_storage - wilting_point)/ &
-                    & (soil_moisture_unlimited_et_threshold - wilting_point)
-                surface_resistance_factor = 1./surface_resistance_factor
-                ! Moisture deficit
+            if (w .le. w_w) then
+                rs = 999999999.0
+            elseif (w .lt. w_u) then
+                f_rs = (w - w_w)/(w_u - w_w)
+                f_rs = 1./f_rs
             else
-                surface_resistance_factor = 1.0
+                f_rs = 1.0
             end if
-            current_surface_resistance = surface_resistance_factor*current_surface_resistance
-            !if surface_resistance_factor>1 increases surface resistance
+            rs = f_rs*rs
         end if
 
-        ! Calculates evaporation from intercepted water
-        ! Maximum Interception
-        ! Maximum interception storage varies with leaf area and timestep length.
-        max_interception_storage = 0.4*current_leaf_area_index*(model_timestep/86400.)
-        ! max_interception_storage=0.2*current_leaf_area_index !According to Wigmosta
-        ! evapotranspiration
-        ! al.
-        ! 1994, also used by Bremicker
+        si_m = 0.4*lai*(model_timestep/86400.)
+        si_a = min(si + p, si_m)
+        p = p - (si_a - si)
 
-        ! Adds Rainfall to water that can be evaporated.
-        available_interception_storage = min(current_interception_storage + current_precipitation, &
-            & max_interception_storage)
-        ! Updates Rainfall
-        current_precipitation = &
-            & current_precipitation - (available_interception_storage - &
-            & current_interception_storage)
+        et_int_pot = ((s_e*r_net + rho_a*c_p*e_d/r_a)/ &
+            & (s_e + gamma*(1.0 + 0.0/r_a)))*((1000.0*model_timestep)/(lambda_e*rho_w))
+        et_water_pot = ((s_e*r_net + rho_a*c_p*e_d/r_aw)/ &
+            & (s_e + gamma*(1.0 + 0.0/r_aw)))*((1000.0*model_timestep)/(lambda_e*rho_w))
 
-        ! Potential Evaporation from interception (note: current_surface_resistance = 0.0)
-        potential_interception_et = ((saturation_vapor_pressure_slope* &
-            & net_radiation + air_density*wet_air_specific_heat*vapor_pressure_deficit/ &
-            & aerodynamic_resistance)/(saturation_vapor_pressure_slope + psychrometric_constant* &
-            & (1.0 + 0.0/aerodynamic_resistance)))*((1000.0*model_timestep)/ &
-            & (latent_heat_vaporization*water_density))
-        ! mm per model timestep.
-        potential_open_water_et_current = ((saturation_vapor_pressure_slope* &
-            & net_radiation + air_density*wet_air_specific_heat* &
-            & vapor_pressure_deficit/open_water_aerodynamic_resistance)/ &
-            & (saturation_vapor_pressure_slope + psychrometric_constant*(1.0 + 0.0/ &
-            & open_water_aerodynamic_resistance)))*((1000.0* &
-            & model_timestep)/(latent_heat_vaporization*water_density))
-        ! mm per model timestep for open water (Shuttleworth).
+        et_int = min(et_int_pot, si_a)
+        si = si_a - et_int
+        f_et = (et_int_pot - et_int)/et_int_pot
 
-        actual_interception_et = min(potential_interception_et, available_interception_storage)
-        ! evaporation of intercepted water
-        ! Takes from interception reservoir
-        current_interception_storage = available_interception_storage - actual_interception_et
+        et_soil = ((s_e*r_net + rho_a*c_p*e_d/r_a)/ &
+            & (s_e + gamma*(1.0 + rs/r_a)))*((1000.0*model_timestep)/(lambda_e*rho_w))
+        et_soil = f_et*et_soil
+        et_total = et_soil + et_int
+        et_soil = et_soil*1.0
+    end subroutine calculate_evapotranspiration
 
-        ! Calculates evaporative demand fraction after evaporation
-        remaining_et_demand_fraction = &
-            & (potential_interception_et - actual_interception_et)/potential_interception_et
-
-        ! Calculates Penman in mm per model timestep.
-        soil_vegetation_et = ((saturation_vapor_pressure_slope* &
-            & net_radiation + air_density*wet_air_specific_heat*vapor_pressure_deficit/ &
-            & aerodynamic_resistance)/(saturation_vapor_pressure_slope + psychrometric_constant* &
-            & (1.0 + current_surface_resistance/aerodynamic_resistance)))*((1000.0* &
-            & model_timestep)/(latent_heat_vaporization*water_density))
-        ! mm per model timestep.
-        soil_vegetation_et = remaining_et_demand_fraction*soil_vegetation_et
-        ! evaporation through soil+plant
-        current_total_et = soil_vegetation_et + actual_interception_et
-        ! total evaporation (interception+ soil/plant)
-
-        soil_vegetation_et = soil_vegetation_et*1.0
-
-        return
-    end
-
-    subroutine calculate_net_radiation
-        use simulation_state, only: day, day_of_year, hour
-        use evapotranspiration_state, only: actual_vapor_pressure, current_albedo, &
-            & current_relative_humidity, current_solar_input, current_temperature, &
-            & day_of_year_real, earth_sun_distance_factor, ground_heat_flux, &
-            & incoming_shortwave_radiation, latent_heat_vaporization, latitude, &
-            & longwave_radiation, &
-            & max_sunshine_duration, monthly_radiation_option, net_radiation, &
-            & net_shortwave_radiation, pi, previous_temperature, saturation_vapor_pressure, &
-            & solar_declination, stefan_boltzmann_constant, sunset_hour_angle, &
-            & top_atmosphere_radiation, use_radiation_timeseries, water_density
+    subroutine calculate_net_radiation(solar, ta, t_prev, rh, alb, lat, lambda_e, r_net, r_top, &
+        & r_short, e_a, e_s)
+        use simulation_state, only: day_of_year
+        use evapotranspiration_state, only: monthly_radiation_option, use_radiation_timeseries
 
         implicit none
 
-        !internal variables
+        ! Symbols:
+        ! solar          solar forcing [hours, percent, or MJ/m2/day by option]
+        ! ta, rh         air temperature and relative humidity [deg C, percent]
+        ! lat             catchment latitude [degrees]
+        ! lambda_e        latent heat of vaporization [MJ/kg]
+        ! t_prev, alb     previous temperature and albedo [deg C, 1]
+        ! r_net, r_top, r_short net, top-of-atmosphere, and surface radiation [MJ/m2/day]
+        ! e_a, e_s        actual and saturation vapor pressures [kPa]
+        ! d, delta, omega, n_sun, d_r day, declination, sunset angle, sunshine duration,
+        !                 and Earth-Sun distance factor [day, rad, rad, h, 1]
+        ! pi, sigma, rho_w radiation constants [1, MJ/m2/day/K4, kg/m3]
+        ! r_sn, r_l, g   net shortwave, longwave, and ground-heat terms [MJ/m2/day]
 
-        ! latent heat of vaporization (MJ/Kg) - ch4. Handbook of Hydrology
-        latent_heat_vaporization = (2.501 - 0.002361*current_temperature)
-        ! Temperature is in degrees C.
+        real, intent(in) :: solar, ta, t_prev, rh, alb, lat
+        real, intent(out) :: lambda_e, r_net, r_top, r_short, e_a, e_s
 
-        ! Saturation Vapor pressure
-        saturation_vapor_pressure = 0.6108*exp((17.27*current_temperature)/ &
-            & (237.3 + current_temperature))
-        !in KPa  !calculate_evapotranspiration ATUALIZADO
+        real, parameter :: pi = 3.141592
+        real, parameter :: rho_w = 1000.0
+        real, parameter :: sigma = 4.903e-9
+        real, volatile :: d, delta, omega, n_sun, d_r
+        real, volatile :: r_sn, r_l, g
 
-        actual_vapor_pressure = saturation_vapor_pressure*current_relative_humidity/100.0
-        !in KPa
+        lambda_e = 2.501 - 0.002361*ta
+        e_s = 0.6108*exp((17.27*ta)/(237.3 + ta))
+        e_a = e_s*rh/100.0
 
-        ! - ch4. - Handbook of Hydrology
-        ! Solar Declination (rad)
-        day_of_year_real = day_of_year
-        solar_declination = 0.4093*sin((2*pi/365.0)*day_of_year_real - 1.405)
+        d = day_of_year
+        delta = 0.4093*sin((2*pi/365.0)*d - 1.405)
+        omega = acos(-tand(lat)*tan(delta))
+        n_sun = 24*omega/pi
+        d_r = 1.0 + 0.033*cos(2*pi*d/365.0)
 
-        ! Sunset hour angle (rad)
-        sunset_hour_angle = acos(-tand(latitude)*tan(solar_declination))
-        !intrinsic function TAND is for degree arguments
+        r_top = 15.392*d_r*(omega*sind(lat)*sin(delta) + cosd(lat)*cos(delta)*sin(omega))
+        r_top = r_top/1000.0
+        r_top = r_top*rho_w*lambda_e
 
-        ! maximum insolation (hours)
-        max_sunshine_duration = 24*sunset_hour_angle/pi
-        ! - ch4. - !
-
-        ! Distance Earth-Sun
-        earth_sun_distance_factor = 1.0 + 0.033*cos(2*pi*day_of_year_real/365.0)
-
-        ! Top-of-atmosphere Radiation (mm/day)
-        top_atmosphere_radiation = 15.392*earth_sun_distance_factor* &
-            & (sunset_hour_angle*sind(latitude)* &
-            & sin(solar_declination) + cosd(latitude)*cos(solar_declination)* &
-            & sin(sunset_hour_angle))
-
-        ! Convert to MJ/m2.day
-        top_atmosphere_radiation = top_atmosphere_radiation/1000.0
-        ! to meters/day
-        top_atmosphere_radiation = top_atmosphere_radiation*water_density*latent_heat_vaporization
-        ! to MJ/m2.day
-
-        !Calculates incoming radiation to terr. surface
         if (use_radiation_timeseries == 0) then
-            !Options for monthly radiation data (flag rad = 0)
-
             if (monthly_radiation_option == 0) then
-                !INMET
-                incoming_shortwave_radiation = top_atmosphere_radiation*(0.25 + 0.5* &
-                    & current_solar_input/max_sunshine_duration)
-                !from insolation (eq. 4.2.6 from Handbook Hydrology)
-
+                r_short = r_top*(0.25 + 0.5*solar/n_sun)
             elseif (monthly_radiation_option == 1) then
-                !CRU
-                incoming_shortwave_radiation = top_atmosphere_radiation*(0.25 + 0.5* &
-                    & (current_solar_input)/100.)
-                ! Sunshine data in % for CRU data
-
+                r_short = r_top*(0.25 + 0.5*solar/100.)
             elseif (monthly_radiation_option == 2) then
-                !WorldClim v2.1
-                incoming_shortwave_radiation = current_solar_input
-                ! Sunshine data already in radiation (MJ/m².day) for WorldClim data
+                r_short = solar
             end if
         else
-            !from incident shortwave on terr surface data
-            incoming_shortwave_radiation = current_solar_input
+            r_short = solar
         end if
 
-        ! Discount reflection (albedo)
-        net_shortwave_radiation = incoming_shortwave_radiation*(1 - current_albedo)
-
-        ! Long-wave losses
-        longwave_radiation = stefan_boltzmann_constant*(current_temperature + 273.2)**4.0
-        ! Temperature is converted to Kelvin
-        longwave_radiation = longwave_radiation*(0.34 - 0.14*(actual_vapor_pressure)**0.5)
-        ! Emissivity correction
-
-        ! Cloudness
-        ! current_solar_input is in terms of solar radiation, then uses Handbook of Hydrology
-        ! eq.
-        ! Parameters from wetlands to address Amazon basin
-        longwave_radiation = longwave_radiation*(1.0* &
-            & incoming_shortwave_radiation/top_atmosphere_radiation + 0.0)
-        ! Cloudness correction
-
-        ! Ground heat flux !MJ/m2.dia
-        ground_heat_flux = 0.38*(current_temperature - previous_temperature)
-        ! eq. 4.2.18 (Handbook of Hydrology)
-
-        ! Net Radiation (Energy Available) (MJ/m2.dia) - discount longwave and groun heatflux
-        net_radiation = net_shortwave_radiation - longwave_radiation - ground_heat_flux
-
-        return
-    end
+        r_sn = r_short*(1 - alb)
+        r_l = sigma*(ta + 273.2)**4.0
+        r_l = r_l*(0.34 - 0.14*(e_a)**0.5)
+        r_l = r_l*(1.0*r_short/r_top + 0.0)
+        g = 0.38*(ta - t_prev)
+        r_net = r_sn - r_l - g
+    end subroutine calculate_net_radiation
 
 end module evapotranspiration_processing

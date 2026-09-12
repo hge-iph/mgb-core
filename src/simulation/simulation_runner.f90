@@ -19,6 +19,7 @@ contains
         use output_state, only: read_hotstart_mode, write_hotstart_mode
 
         implicit none
+        integer :: i_step
 
         call open_model_outputs
 
@@ -54,7 +55,7 @@ contains
 
         ! Time loop for water balance and routing simulation
         write (log_unit, *) 'Running main model routine...'
-        call run_timestep_loop
+        call run_timestep_loop(i_step)
 
         ! Hotstart output is available only with inertial routing.
         if (write_hotstart_mode == 1 .or. write_hotstart_mode == 3) then
@@ -69,7 +70,7 @@ contains
 
     end
 
-    subroutine run_timestep_loop
+    subroutine run_timestep_loop(i_step)
         use date_time, only: calculate_julian_day, convert_julian_day_to_calendar
         use runoff_processing, only: update_runoff
         use hotstart_io, only: write_hotstart
@@ -78,8 +79,8 @@ contains
         use muskingum_routing, only: route_muskingum_cunge_network
         use output_io, only: write_model_outputs
         use simulation_state, only: day, hour, julian_day, minute, model_timestep, month, &
-            & timestep_count, timestep_index, year
-        use runoff_state, only: catchment_count, catchment_index
+            & timestep_count, year
+        use runoff_state, only: catchment_count
         use evapotranspiration_state, only: air_temperature, previous_air_temperature
         use evapotranspiration_state, only: potential_open_water_et
         use runoff_state, only: catchment_q_current, groundwater_q, subsurface_q, surface_q, &
@@ -94,18 +95,20 @@ contains
         implicit none
 
         integer, parameter :: real_kind = 8
+        integer, intent(out) :: i_step
+        integer :: i_catch
         real maximum_domain_q, completion_percentage
         ! Current statistics
 
         write (*, *) ' IT         Date       Max flow (m3/s)   % Complete'
 
         ! Initialize model time step
-        timestep_index = 0
+        i_step = 0
 
-        do while (timestep_index < timestep_count)
+        do while (i_step < timestep_count)
 
             ! Advance time
-            timestep_index = timestep_index + 1
+            i_step = i_step + 1
 
             if (write_hotstart_mode == 2 .or. write_hotstart_mode == 3) then
                 call write_hotstart
@@ -117,53 +120,53 @@ contains
             ! Get simulation statistics
             maximum_domain_q = maxval(outgoing_q_current)
             ! Maximum flow for the entire model domain
-            completion_percentage = (100.*real(timestep_index)/real(timestep_count))
+            completion_percentage = (100.*real(i_step)/real(timestep_count))
             !% of simulation completion
             write (*, &
             & '(i5,"    ",i4,"-",i2.2,"-",i2.2," ",i2.2,":",i2.2,"  ",f10.1,"      ",f6.2," %")') &
-                & timestep_index, year, month, day, hour, minute, &
+                & i_step, year, month, day, hour, minute, &
                 & maximum_domain_q, completion_percentage
 
             ! Reads climate data
             previous_air_temperature = air_temperature
-            call read_meteorological_forcing(month, timestep_index)
+            call read_meteorological_forcing(month, i_step)
             ! Read rainfall and other met variables
 
             ! Perform vertical water balance
             call update_runoff
 
             if (routing_method(1) == 0) then
-                call route_muskingum_cunge_network
+                call route_muskingum_cunge_network(i_step)
             end if
 
             ! Calculates lateral inflow
-            do catchment_index = 1, catchment_count
-                catchment_q_current(catchment_index) = &
-                    & groundwater_q(catchment_index) + subsurface_q(catchment_index) &
-                    & + surface_q(catchment_index)
+            do i_catch = 1, catchment_count
+                catchment_q_current(i_catch) = &
+                    & groundwater_q(i_catch) + subsurface_q(i_catch) &
+                    & + surface_q(i_catch)
                 !sums surface, subsurface and
             end do
 
             if (inertial_catchment_count > 0) then
-                call route_inertial_flow
+                call route_inertial_flow(i_step)
             end if
 
             ! Store single-precision output records for this timestep.
-            do catchment_index = 1, catchment_count
-                q_river_output(catchment_index) = inertial_q(catchment_index)
-                water_surface_elevation_output(catchment_index) = &
-                    & water_surface_elevation(catchment_index)
-                total_water_storage_output(catchment_index) = total_water_storage(catchment_index)
-                flooded_area_output(catchment_index) = current_flooded_area(catchment_index)
-                catchment_q_output(catchment_index) = catchment_q_current(catchment_index)
-                hand_output(catchment_index) = &
-                    & water_surface_elevation(catchment_index) - real(stage_table(1, &
-                    & catchment_index)) - real(bankfull_depth(catchment_index))
-                potential_open_water_et_output(catchment_index) = &
-                    & potential_open_water_et(catchment_index)
+            do i_catch = 1, catchment_count
+                q_river_output(i_catch) = inertial_q(i_catch)
+                water_surface_elevation_output(i_catch) = &
+                    & water_surface_elevation(i_catch)
+                total_water_storage_output(i_catch) = total_water_storage(i_catch)
+                flooded_area_output(i_catch) = current_flooded_area(i_catch)
+                catchment_q_output(i_catch) = catchment_q_current(i_catch)
+                hand_output(i_catch) = &
+                    & water_surface_elevation(i_catch) - real(stage_table(1, &
+                    & i_catch)) - real(bankfull_depth(i_catch))
+                potential_open_water_et_output(i_catch) = &
+                    & potential_open_water_et(i_catch)
             end do
 
-            call write_model_outputs
+            call write_model_outputs(i_step)
 
             ! Advance Julian date for next time step
             julian_day = calculate_julian_day(year, month, day, hour, &

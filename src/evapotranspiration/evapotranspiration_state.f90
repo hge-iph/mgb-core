@@ -9,25 +9,10 @@ module evapotranspiration_state
         & monthly_radiation_option, monthly_relative_humidity, monthly_solar_input, &
         & monthly_wind_speed, previous_air_temperature, relative_humidity, solar_input, &
         & use_humidity_timeseries, use_pressure_timeseries, use_radiation_timeseries, &
-        & use_temperature_timeseries, use_wind_timeseries, wind_speed, actual_interception_et, &
-        & actual_vapor_pressure, aerodynamic_resistance, air_density, albedo, &
-        & available_interception_storage, current_air_pressure, current_air_temperature, &
-        & current_albedo, current_interception_storage, current_leaf_area_index, &
-        & current_relative_humidity, current_solar_input, current_surface_resistance, &
-        & current_temperature, current_total_et, current_vegetation_height, current_wind_speed, &
-        & day_of_year_real, earth_sun_distance_factor, evapotranspiration, ground_heat_flux, &
-        & incoming_shortwave_radiation, interception_storage, latent_heat_vaporization, latitude, &
-        & leaf_area_index, longwave_radiation, max_interception_storage, max_sunshine_duration, &
-        & net_radiation, net_shortwave_radiation, open_water_aerodynamic_resistance, &
-        & open_water_evaporation_q, pi, potential_interception_et, potential_open_water_et, &
-        & potential_open_water_et_current, potential_surface_radiation_et, &
-        & potential_top_radiation_et, previous_temperature, psychrometric_constant, &
-        & remaining_et_demand_fraction, saturation_vapor_pressure, &
-        & saturation_vapor_pressure_slope, soil_moisture_unlimited_et_threshold, &
-        & soil_vegetation_et, solar_declination, stefan_boltzmann_constant, sunset_hour_angle, &
-        & surface_resistance, surface_resistance_factor, surface_roughness, &
-        & top_atmosphere_radiation, vapor_pressure_deficit, vegetation_height, water_density, &
-        & wet_air_specific_heat, wilting_point, wind_speed_reference, &
+        & use_temperature_timeseries, use_wind_timeseries, wind_speed, albedo, &
+        & evapotranspiration, interception_storage, leaf_area_index, open_water_evaporation_q, &
+        & potential_open_water_et, potential_surface_radiation_et, potential_top_radiation_et, &
+        & surface_resistance, vegetation_height, &
         & allocate_evapotranspiration_state, deallocate_evapotranspiration_state
 
     integer climate_cell_count
@@ -45,29 +30,7 @@ module evapotranspiration_state
     real, allocatable :: albedo(:, :, :), leaf_area_index(:, :, :), vegetation_height(:, :, :)
     real, allocatable :: surface_resistance(:, :, :)
     real, allocatable :: interception_storage(:, :), evapotranspiration(:, :)
-    real latitude
-    real current_solar_input, previous_temperature, current_albedo, net_radiation
-    real day_of_year_real, current_relative_humidity
-    real, parameter :: water_density = 1000.0
-    real, parameter :: pi = 3.141592
-    real, parameter :: stefan_boltzmann_constant = 4.903e-9
-    real latent_heat_vaporization
-    real solar_declination, sunset_hour_angle, max_sunshine_duration, earth_sun_distance_factor
-    real ground_heat_flux, top_atmosphere_radiation
-    real incoming_shortwave_radiation, net_shortwave_radiation
-    real actual_vapor_pressure, saturation_vapor_pressure, longwave_radiation
-    real current_air_pressure, current_air_temperature, current_wind_speed
-    real current_leaf_area_index, current_vegetation_height, soil_vegetation_et
-    real current_interception_storage, wind_speed_reference
-    real current_temperature, current_surface_resistance, current_total_et
-    real vapor_pressure_deficit, saturation_vapor_pressure_slope, psychrometric_constant
-    real air_density, surface_roughness, available_interception_storage, max_interception_storage
-    real potential_interception_et, potential_open_water_et_current
     real, allocatable :: open_water_evaporation_q(:)
-    real actual_interception_et, remaining_et_demand_fraction
-    real, parameter :: wet_air_specific_heat = 0.001013
-    real aerodynamic_resistance, open_water_aerodynamic_resistance
-    real soil_moisture_unlimited_et_threshold, wilting_point, surface_resistance_factor
     real, allocatable :: potential_open_water_et(:), potential_top_radiation_et(:)
     real, allocatable :: potential_surface_radiation_et(:)
 

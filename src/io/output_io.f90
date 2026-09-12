@@ -35,16 +35,12 @@ contains
         call manage_output_files(0)
     end subroutine close_model_outputs
 
-    subroutine write_model_outputs
-        use simulation_state, only: timestep_index
-        use runoff_state, only: catchment_count, catchment_index
-        use evapotranspiration_state, only: evapotranspiration, interception_storage
-        use runoff_state, only: groundwater_storage, subsurface_storage, surface_storage, &
-            & total_water_storage
+    subroutine write_model_outputs(i_step)
+        use runoff_state, only: catchment_count
         use io_state, only: discharge_output_unit, et_output_unit, flooded_area_output_unit, &
             & groundwater_flux_output_unit, groundwater_storage_output_unit, hand_output_unit, &
             & interception_et_output_unit, interception_storage_output_unit, &
-            & open_water_et_output_unit, output_directory, potential_open_water_et_output_unit, &
+            & open_water_et_output_unit, potential_open_water_et_output_unit, &
             & runoff_output_unit, soil_saturation_output_unit, soil_vegetation_et_output_unit, &
             & soil_water_output_unit, subsurface_flux_output_unit, subsurface_storage_output_unit, &
             & surface_flux_output_unit, surface_storage_output_unit, surface_water_output_unit, &
@@ -71,70 +67,60 @@ contains
 
         implicit none
 
+        integer, intent(in) :: i_step
+        integer :: i_catch
+
         !Writing outputs for selected variables in configuration file
-        if (write_discharge_output == 1) write (discharge_output_unit, rec= &
-            & timestep_index) (q_river_output(catchment_index), catchment_index=1, catchment_count)
+        if (write_discharge_output == 1) write (discharge_output_unit, rec=i_step) &
+            & (q_river_output(i_catch), i_catch=1, catchment_count)
         if (write_water_surface_elevation_output == 1) write (water_surface_elevation_output_unit, &
-            & rec=timestep_index) (water_surface_elevation_output(catchment_index), &
-            & catchment_index=1, catchment_count)
-        if (write_runoff_output == 1) write (runoff_output_unit, rec= &
-            & timestep_index) (catchment_q_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_soil_moisture_output == 1) write (soil_water_output_unit, rec= &
-            & timestep_index) (soil_water_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_soil_saturation_output == 1) write (soil_saturation_output_unit, rec= &
-            & timestep_index) (soil_saturation_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_total_water_storage_output == 1) write (total_water_storage_output_unit, rec= &
-            & timestep_index) (total_water_storage_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_hand_output == 1) write (hand_output_unit, rec= &
-            & timestep_index) (hand_output(catchment_index), catchment_index=1, catchment_count)
-        if (write_et_output == 1) write (et_output_unit, rec= &
-            & timestep_index) (et_output(catchment_index), catchment_index=1, catchment_count)
-        if (write_interception_et_output == 1) write (interception_et_output_unit, rec= &
-            & timestep_index) (interception_et_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_soil_vegetation_et_output == 1) write (soil_vegetation_et_output_unit, rec= &
-            & timestep_index) (soil_vegetation_et_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_open_water_et_output == 1) write (open_water_et_output_unit, rec= &
-            & timestep_index) (open_water_et_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_water_hru_et_output == 1) write (water_hru_et_output_unit, rec= &
-            & timestep_index) (water_hru_et_output(catchment_index), catchment_index=1, &
-            & catchment_count)
+            & rec=i_step) (water_surface_elevation_output(i_catch), &
+            & i_catch=1, catchment_count)
+        if (write_runoff_output == 1) write (runoff_output_unit, rec=i_step) &
+            & (catchment_q_output(i_catch), i_catch=1, catchment_count)
+        if (write_soil_moisture_output == 1) write (soil_water_output_unit, rec=i_step) &
+            & (soil_water_output(i_catch), i_catch=1, catchment_count)
+        if (write_soil_saturation_output == 1) write (soil_saturation_output_unit, rec=i_step) &
+            & (soil_saturation_output(i_catch), i_catch=1, catchment_count)
+        if (write_total_water_storage_output == 1) write (total_water_storage_output_unit, &
+            & rec=i_step) &
+            & (total_water_storage_output(i_catch), i_catch=1, catchment_count)
+        if (write_hand_output == 1) write (hand_output_unit, rec=i_step) &
+            & (hand_output(i_catch), i_catch=1, catchment_count)
+        if (write_et_output == 1) write (et_output_unit, rec=i_step) &
+            & (et_output(i_catch), i_catch=1, catchment_count)
+        if (write_interception_et_output == 1) write (interception_et_output_unit, rec=i_step) &
+            & (interception_et_output(i_catch), i_catch=1, catchment_count)
+        if (write_soil_vegetation_et_output == 1) write (soil_vegetation_et_output_unit, &
+            & rec=i_step) &
+            & (soil_vegetation_et_output(i_catch), i_catch=1, catchment_count)
+        if (write_open_water_et_output == 1) write (open_water_et_output_unit, rec=i_step) &
+            & (open_water_et_output(i_catch), i_catch=1, catchment_count)
+        if (write_water_hru_et_output == 1) write (water_hru_et_output_unit, rec=i_step) &
+            & (water_hru_et_output(i_catch), i_catch=1, catchment_count)
         if (write_potential_open_water_et_output == 1) write (potential_open_water_et_output_unit, &
-            & rec=timestep_index) (potential_open_water_et_output(catchment_index), &
-            & catchment_index=1, catchment_count)
-        if (write_surface_water_output == 1) write (surface_water_output_unit, rec= &
-            & timestep_index) (surface_water_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_groundwater_storage_output == 1) write (groundwater_storage_output_unit, rec= &
-            & timestep_index) (groundwater_storage_depth_output(catchment_index), catchment_index= &
-            & 1, catchment_count)
-        if (write_subsurface_storage_output == 1) write (subsurface_storage_output_unit, rec= &
-            & timestep_index) (subsurface_storage_depth_output(catchment_index), catchment_index= &
-            & 1, catchment_count)
-        if (write_surface_storage_output == 1) write (surface_storage_output_unit, rec= &
-            & timestep_index) (surface_storage_depth_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_interception_storage_output == 1) write (interception_storage_output_unit, rec= &
-            & timestep_index) (interception_storage_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_groundwater_flux_output == 1) write (groundwater_flux_output_unit, rec= &
-            & timestep_index) (groundwater_runoff_depth_output(catchment_index), catchment_index= &
-            & 1, catchment_count)
-        if (write_subsurface_flux_output == 1) write (subsurface_flux_output_unit, rec= &
-            & timestep_index) (subsurface_runoff_depth_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_surface_flux_output == 1) write (surface_flux_output_unit, rec= &
-            & timestep_index) (surface_runoff_depth_output(catchment_index), catchment_index=1, &
-            & catchment_count)
-        if (write_flooded_area_output == 1) write (flooded_area_output_unit, rec= &
-            & timestep_index) (flooded_area_output(catchment_index), catchment_index=1, &
-            & catchment_count)
+            & rec=i_step) (potential_open_water_et_output(i_catch), i_catch=1, catchment_count)
+        if (write_surface_water_output == 1) write (surface_water_output_unit, rec=i_step) &
+            & (surface_water_output(i_catch), i_catch=1, catchment_count)
+        if (write_groundwater_storage_output == 1) write (groundwater_storage_output_unit, &
+            & rec=i_step) &
+            & (groundwater_storage_depth_output(i_catch), i_catch=1, catchment_count)
+        if (write_subsurface_storage_output == 1) write (subsurface_storage_output_unit, &
+            & rec=i_step) &
+            & (subsurface_storage_depth_output(i_catch), i_catch=1, catchment_count)
+        if (write_surface_storage_output == 1) write (surface_storage_output_unit, rec=i_step) &
+            & (surface_storage_depth_output(i_catch), i_catch=1, catchment_count)
+        if (write_interception_storage_output == 1) write (interception_storage_output_unit, &
+            & rec=i_step) &
+            & (interception_storage_output(i_catch), i_catch=1, catchment_count)
+        if (write_groundwater_flux_output == 1) write (groundwater_flux_output_unit, rec=i_step) &
+            & (groundwater_runoff_depth_output(i_catch), i_catch=1, catchment_count)
+        if (write_subsurface_flux_output == 1) write (subsurface_flux_output_unit, rec=i_step) &
+            & (subsurface_runoff_depth_output(i_catch), i_catch=1, catchment_count)
+        if (write_surface_flux_output == 1) write (surface_flux_output_unit, rec=i_step) &
+            & (surface_runoff_depth_output(i_catch), i_catch=1, catchment_count)
+        if (write_flooded_area_output == 1) write (flooded_area_output_unit, rec=i_step) &
+            & (flooded_area_output(i_catch), i_catch=1, catchment_count)
 
     end subroutine
 

@@ -89,7 +89,7 @@ them.
 | `date_time` | Parse and format dates, convert Julian dates, and count timesteps | `format_date_string`, `parse_date_string`, `calculate_integer_julian_day`, `calculate_julian_day`, `convert_julian_day_to_calendar`, `calculate_timestep_count` |
 | `interpolation` | Generic linear interpolation | `linear_interpolate` |
 | `runtime_support` | Retained random-seed and legacy timer helpers | `initialize_random_seed`, `update_legacy_timer` |
-| `simulation_state` | Calendar, timestep, run range, and simulation index | Public state declarations; no behavioral API |
+| `simulation_state` | Calendar, timestep, and simulation run range | Public state declarations; no behavioral API |
 | `simulation_runner` | Simulation initialization/finalization and the timestep loop | `run_simulation` |
 
 ### Evapotranspiration, runoff, and reservoir modules
@@ -108,7 +108,7 @@ them.
 | --- | --- | --- |
 | `muskingum_state` | Muskingum-Cunge parameters, boundary arrays, component fractions, and river-route state | `allocate_muskingum_state`, `deallocate_muskingum_state` |
 | `muskingum_routing` | Parameter preparation, initial river state, and network routing | `calculate_muskingum_cunge_parameters`, `initialize_muskingum_cunge_routing`, `route_muskingum_cunge_network` |
-| `inertial_state` | Routing configuration, floodplain topology and tables, hydraulic state, and OpenMP work state | `allocate_inertial_state`, `deallocate_inertial_state` |
+| `inertial_state` | Routing configuration, floodplain topology and tables, and hydraulic state | `allocate_inertial_state`, `deallocate_inertial_state` |
 | `inertial_routing` | Inertial topology/table preparation, initialization, and routing | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
 
 ### I/O modules
@@ -127,12 +127,12 @@ them.
 
 | Owner | State groups |
 | --- | --- |
-| `simulation_state` | Timestep count/index and duration; calendar fields and Julian day; first and last simulated subbasins |
+| `simulation_state` | Timestep count and duration; calendar fields and Julian day; first and last simulated subbasins |
 | `evapotranspiration_state` | Forcing-selection flags; climatology and station coordinates; temperature, humidity, wind, pressure, and radiation; vegetation parameters; interception storage; ET and radiation work/results; open-water evaporation |
 | `runoff_state` | Entity counts; catchment/subbasin topology and geometry; HRU identity and percentages; climate-region assignment; precipitation; soil and runoff parameters; soil, surface, subsurface, and groundwater stores and fluxes; capillary and floodplain exchange; terrestrial storage |
 | `reservoir_state` | Prescribed-flow series and locations; reservoir configuration, catchment maps, start timesteps, outflows, and downstream overrides |
 | `muskingum_state` | Routing inputs and reach counts; celerity and concentration time; boundary and reach flows; component fractions, routing volumes, and velocity |
-| `inertial_state` | Routing selection and configuration; upstream and lateral-face topology; source and derived floodplain tables; discharge, stage, depth, volume, and area; interpolation and OpenMP work state |
+| `inertial_state` | Routing selection and configuration; upstream and lateral-face topology; source and derived floodplain tables; discharge, stage, depth, volume, area, and interpolation state |
 | `io_state` | Input, output, and hotstart directories; configuration, input, output, log, and hotstart units; retained fixed-format header fields |
 | `output_state` | Output-selection flags; single-precision output and diagnostic buffers; hotstart modes and write schedule |
 

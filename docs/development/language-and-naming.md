@@ -10,12 +10,28 @@ or changing runtime interfaces.
 - Use descriptive `lower_snake_case` names for modules, routines, variables,
   and source files.
 - Use nouns for state and data, and verb-led names for routines.
-- Add `_count` to collection sizes and `_index` to loop or lookup indices.
+- Add `_count` to collection sizes and `_index` to general lookup indices;
+  equation kernels use role-qualified local indices such as `i_catch`,
+  `i_hru`, `i_sub`, `i_step`, `i_reach`, and `i_face`.
 - Add `_unit` to Fortran file-unit constants.
 - Conventional scientific terms such as `q`, `v`, `et`, `dt`, `hru`, `x`, and
   `y` may remain as components of a descriptive name.
 - Do not encode physical units in names; document units in declaration or
   interface comments instead. Keep `_unit` for Fortran file-unit constants.
+
+Scientific equation kernels use a deliberately narrower vocabulary than
+persistent model state. Compact, lower-case notation is encouraged when it
+makes an established equation recognizable, provided that a short symbol block
+at the start of the routine records the meaning and units of every compact
+symbol. For example, a soil-water kernel may use `p`, `w`, `wm`, `b_arno`,
+`k_int`, `d_sup`, and `dt`, while the arrays that supply those values retain
+descriptive names such as `precipitation` and `soil_water_storage`.
+
+Compact names are local variables or dummy arguments, not public state or
+assignment-only aliases. Use semantic qualifiers such as `_prev`, `_curr`,
+`_in`, `_out`, `_up`, and `_down` instead of numbered state names. A symbol
+must not silently change physical quantity: use separate names such as `d_sup`
+for runoff depth and `q_sup` for the corresponding discharge after conversion.
 
 ## Comments
 

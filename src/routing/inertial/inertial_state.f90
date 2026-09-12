@@ -4,21 +4,16 @@ module inertial_state
     private
     save
 
-    public :: area_table, bankfull_depth, courant_alpha, current_bankfull_depth, &
-        & current_flooded_area, current_water_volume, downstream_catchment_index, &
-        & downstream_water_surface_slope, face_catchment_1, face_catchment_2, face_count, &
-        & face_distance, face_index, face_q, first_bed_elevation, first_face_catchment_index, &
-        & first_face_elevation, first_water_surface_elevation, floodplain_area, &
-        & floodplain_bottom_elevation, floodplain_elevation, floodplain_point_count, flow_depth, &
-        & flow_length, flow_manning_n, flow_slope, flow_width, grace_total_water_storage, gravity, &
-        & inertial_catchment_count, inertial_elapsed_time, inertial_manning_n, inertial_q, &
-        & inertial_routing_enabled, inertial_timestep, interpolated_area, interpolated_stage, &
-        & max_inertial_timestep, max_water_depth, neighbor_q, overland_flow_width, &
-        & overland_manning_n, previous_unit_width_q, previous_water_volume, pseudo_two_d_enabled, &
-        & q, remaining_model_timestep, routing_method, second_bed_elevation, &
-        & second_face_catchment_index, second_face_elevation, second_water_surface_elevation, &
-        & stage_table, stage_table_index, sum_upstream_q, thread_count, &
-        & updated_water_surface_elevation, upstream_count, upstream_q, upstream_topology, &
+    public :: area_table, bankfull_depth, courant_alpha, current_flooded_area, &
+        & current_water_volume, downstream_water_surface_slope, face_catchment_1, &
+        & face_catchment_2, face_count, face_distance, face_q, first_face_elevation, &
+        & floodplain_area, floodplain_bottom_elevation, floodplain_elevation, &
+        & floodplain_point_count, grace_total_water_storage, gravity, &
+        & inertial_catchment_count, inertial_manning_n, inertial_q, inertial_routing_enabled, &
+        & neighbor_q, &
+        & overland_flow_width, overland_manning_n, previous_water_volume, pseudo_two_d_enabled, &
+        & routing_method, second_face_elevation, stage_table, stage_table_index, thread_count, &
+        & upstream_q, upstream_topology, &
         & volume_table, water_depth, water_surface_elevation, allocate_inertial_state, &
         & deallocate_inertial_state
 
@@ -36,32 +31,20 @@ module inertial_state
     integer, allocatable :: floodplain_elevation(:, :)
     real*8, allocatable :: floodplain_area(:, :)
     real*8, allocatable :: bankfull_depth(:)
-    real*8 current_bankfull_depth
     real*8, allocatable :: stage_table(:, :)
     real*8, allocatable :: volume_table(:, :)
     real*8, allocatable :: area_table(:, :)
-    real*8 max_inertial_timestep, inertial_timestep
-    real*8 remaining_model_timestep, inertial_elapsed_time
-    real*8 max_water_depth
     real*8, allocatable :: inertial_q(:)
     real*8, allocatable :: upstream_q(:), current_water_volume(:), previous_water_volume(:)
-    real*8 :: sum_upstream_q
     real*8, allocatable :: current_flooded_area(:)
     real*8, allocatable :: water_depth(:), water_surface_elevation(:)
-    real*8 first_bed_elevation, first_water_surface_elevation
-    real*8 second_bed_elevation, second_water_surface_elevation, flow_slope, flow_depth
-    real*8 flow_length, flow_width, previous_unit_width_q, q, flow_manning_n
-    real*8 overland_flow_width, overland_manning_n
     real*8 downstream_water_surface_slope
-    integer downstream_catchment_index
-    integer upstream_count
-    real*8 updated_water_surface_elevation
-    integer :: face_count, face_index, first_face_catchment_index, second_face_catchment_index
+    real*8 overland_flow_width, overland_manning_n
+    integer :: face_count
     real*8, allocatable :: face_catchment_1(:), face_catchment_2(:), face_q(:)
     real*8, allocatable :: first_face_elevation(:), second_face_elevation(:), face_distance(:)
     real*8, allocatable :: neighbor_q(:)
     integer, allocatable :: stage_table_index(:)
-    real*8 interpolated_area, interpolated_stage
     real*8, allocatable :: grace_total_water_storage(:)
 
 contains
