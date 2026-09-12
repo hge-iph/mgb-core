@@ -6,9 +6,6 @@ Make the numerical code concise and recognizable while applying one consistent
 Fortran layout across the repository. This task must not change scientific
 behavior or regression outputs.
 
-Complete this task before the state-ownership and dependency restructuring in
-Task 2.
-
 ## Naming conventions
 
 Rename the persistent parameter arrays as follows:
