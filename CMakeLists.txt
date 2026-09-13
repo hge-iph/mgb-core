@@ -30,6 +30,7 @@ set(MGB_SIMULATION_SOURCES
 )
 
 set(MGB_VARIABLE_SOURCES
+    src/vars/attributes.f90
     src/vars/config.f90
     src/vars/forcing.f90
     src/vars/parameters.f90

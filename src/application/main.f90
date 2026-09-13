@@ -2,6 +2,7 @@
 
 program mgb_model
 
+    use attributes, only: allocate_attributes, deallocate_attributes
     use config, only: allocate_config, catchment_count, climate_cell_count, climate_region_count, &
         & courant_alpha, deallocate_config, downstream_water_surface_slope, first_subbasin, &
         & hotstart_input_directory, hru_count, inertial_catchment_count, inertial_routing_enabled, &
@@ -62,6 +63,7 @@ program mgb_model
     write (log_unit, *) 'Allocating variables...'
     call allocate_config(catchment_count, timestep_count)
     call allocate_forcing(catchment_count, climate_cell_count, substitution_count, timestep_count)
+    call allocate_attributes(catchment_count, hru_count)
     call allocate_parameters(catchment_count, subbasin_count, hru_count, climate_region_count, &
         & max_hru_count, max_subbasin_count, max_muskingum_reach_count)
     call allocate_state(catchment_count, hru_count, max_muskingum_reach_count)
@@ -196,6 +198,7 @@ program mgb_model
     call close_meteorological_inputs
     call deallocate_state
     call deallocate_parameters
+    call deallocate_attributes
     call deallocate_forcing
     call deallocate_config
 

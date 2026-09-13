@@ -10,7 +10,8 @@ contains
     subroutine initialize_muskingum_cunge_routing
         use config, only: catchment_count, substitution_count
         use forcing, only: substituted_q
-        use parameters, only: downstream_catchment, muskingum_reach_count, substitution_catchment
+        use attributes, only: downstream_catchment
+        use parameters, only: muskingum_reach_count, substitution_catchment
         use state, only: catchment_q_current, catchment_q_previous, groundwater_q, &
             & incoming_q_boundary, incoming_q_current, incoming_q_previous, &
             & incoming_groundwater_fraction_current, incoming_subsurface_fraction_current, &
@@ -72,9 +73,8 @@ contains
 
     subroutine calculate_muskingum_cunge_parameters
         use config, only: catchment_count, max_muskingum_reach_count, model_timestep
-        use parameters, only: catchment_order, manning_n, &
-            & muskingum_reach_count, muskingum_timestep, reference_q, wave_celerity
-        use parameters, only: river_length, river_slope, river_width
+        use attributes, only: catchment_order, manning_n, river_length, river_slope, river_width
+        use parameters, only: muskingum_reach_count, muskingum_timestep, reference_q, wave_celerity
 
         implicit none
         ! Symbols:
@@ -134,9 +134,10 @@ contains
         use config, only: catchment_count, first_subbasin, last_subbasin, model_timestep, &
             & routing_method, substitution_count, substitution_enabled
         use forcing, only: substituted_q
-        use parameters, only: catchment_subbasin, downstream_catchment, manning_n, &
-            & muskingum_reach_count, muskingum_timestep, reference_q, river_length, river_slope, &
-            & river_width, substitution_catchment, wave_celerity
+        use attributes, only: catchment_subbasin, downstream_catchment, manning_n, river_length, &
+            & river_slope, river_width
+        use parameters, only: muskingum_reach_count, muskingum_timestep, reference_q, &
+            & substitution_catchment, wave_celerity
         use state, only: catchment_q_current, catchment_q_previous, flow_velocity, groundwater_q, &
             & groundwater_q_output, groundwater_routing_volume, incremental_q_output, inertial_q, &
             & incoming_groundwater_fraction_current, incoming_groundwater_fraction_previous, &

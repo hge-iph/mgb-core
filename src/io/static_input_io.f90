@@ -43,7 +43,8 @@ contains
     subroutine read_fixed_parameters
         use config, only: catchment_count, climate_region_count, climate_region_unit, &
             & fixed_parameter_unit, hru_count, input_directory
-        use parameters, only: albedo, climate_region, hru_name, leaf_area_index, &
+        use attributes, only: climate_region
+        use parameters, only: albedo, hru_name, leaf_area_index, &
             & surface_resistance, vegetation_height
         ! File with monthly fixed parameters for each HRU.
 
@@ -173,11 +174,11 @@ contains
     subroutine read_catchment_data
         use config, only: catchment_count, catchment_data_unit, first_subbasin, hru_count, &
             & inertial_routing_enabled, input_directory, last_subbasin, routing_method
-        use parameters, only: bankfull_depth, catchment_area, catchment_order, &
+        use attributes, only: bankfull_depth, catchment_area, catchment_order, &
             & catchment_subbasin, catchment_x, catchment_y, downstream_catchment, drainage_area, &
-            & hru_percentage, inertial_manning_n, longest_reach_length, longest_reach_slope, &
-            & manning_n, max_soil_water_storage, reference_q, river_length, river_slope, &
-            & river_width, subbasin_outlet_catchment
+            & hru_percentage, longest_reach_length, longest_reach_slope, manning_n, river_length, &
+            & river_slope, river_width
+        use parameters, only: max_soil_water_storage, reference_q, subbasin_outlet_catchment
 
         implicit none
         integer :: catchment_id(catchment_count)
@@ -206,9 +207,6 @@ contains
 
             reference_q(catchment_record_index) = 0.333*drainage_area(catchment_record_index)**0.7
             !Calculates reference initial discharge
-
-            inertial_manning_n(catchment_record_index) = manning_n(catchment_record_index)
-            !Reads inertial model subroutines manning
 
             ! Check errors in HRU fractions:
             if (sum(hru_percentage(catchment_record_index, :)) > 100.01 .or. &
@@ -391,9 +389,10 @@ contains
     subroutine read_floodplain_binary_data
         use config, only: catchment_count, face_connection_unit, face_count, flood_area_unit, &
             & flood_stage_unit, input_directory, pseudo_two_d_enabled
-        use parameters, only: catchment_x, face_catchment_1, face_catchment_2, face_distance, &
+        use attributes, only: catchment_x, face_catchment_1, face_catchment_2, face_distance, &
             & floodplain_area, floodplain_bottom_elevation, floodplain_elevation, &
-            & floodplain_point_count, vegetation_height
+            & floodplain_point_count
+        use parameters, only: vegetation_height
 
         implicit none
         integer data_index, direct_access_record, i_catch, io_status
@@ -473,7 +472,7 @@ contains
 
     subroutine read_floodplain_text_data
         use config, only: face_connection_unit, face_count, input_directory, stage_area_unit
-        use parameters, only: catchment_x, face_catchment_1, face_catchment_2, face_distance, &
+        use attributes, only: catchment_x, face_catchment_1, face_catchment_2, face_distance, &
             & first_face_elevation, floodplain_area, floodplain_bottom_elevation, &
             & floodplain_elevation, floodplain_point_count, second_face_elevation
 
@@ -523,8 +522,8 @@ contains
         use date_time, only: calculate_integer_julian_day
         use config, only: catchment_count, input_directory, reservoir_count, timestep_count
         use forcing, only: allocate_reservoir_forcing, reservoir_outflow
-        use parameters, only: area_table, floodplain_elevation, floodplain_point_count, &
-            & reservoir_index_by_catchment, reservoir_start_timestep, &
+        use attributes, only: floodplain_elevation, floodplain_point_count
+        use parameters, only: area_table, reservoir_index_by_catchment, reservoir_start_timestep, &
             & routing_downstream_catchment, stage_table, upstream_topology, volume_table
         use state, only: day, month, year
 

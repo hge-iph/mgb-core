@@ -16,6 +16,7 @@ src/
 │   ├── interpolation.f90
 │   └── runtime_support.f90
 ├── vars/
+│   ├── attributes.f90
 │   ├── config.f90
 │   ├── forcing.f90
 │   ├── parameters.f90
@@ -39,14 +40,15 @@ src/
 
 ### Shared variables
 
-The four modules under `src/vars` contain flat module variables. They do not
+The five modules under `src/vars` contain flat module variables. They do not
 define derived types or additional storage aggregates.
 
 | Module | Responsibility |
 | --- | --- |
+| `attributes` | Fixed catchment geometry, classifications, connectivity, HRU composition, channel roughness, and raw floodplain geometry |
 | `config` | Dimensions, fixed capacities, simulation and routing options, output and hotstart options, paths, file units, and schedules |
 | `forcing` | Current and historical meteorology, climatology, prescribed-flow series, and reservoir outflow forcing |
-| `parameters` | Catchment and HRU attributes, scientific coefficients, river parameters, prepared routing tables and topology, and reservoir mappings |
+| `parameters` | Scientific coefficients, derived river parameters, prepared routing tables and topology, and reservoir mappings |
 | `state` | Calendar state, evolving terrestrial and river values, routing work arrays, diagnostics, and output serialization buffers |
 
 These modules are default-public by design. Access is controlled at every
@@ -77,7 +79,7 @@ run the simulation, close files, and deallocate variables.
 
 `simulation_runner` preserves the timestep and hotstart sequence. The I/O
 modules retain ownership of all model files and serialize variables from the
-four shared namespaces without changing external formats.
+five shared namespaces without changing external formats.
 
 ## Dependency direction
 

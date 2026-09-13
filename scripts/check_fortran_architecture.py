@@ -21,7 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CLASSIFICATION = {
     "date_time": "common", "interpolation": "common", "runtime_support": "common",
-    "config": "vars", "forcing": "vars", "parameters": "vars", "state": "vars",
+    "attributes": "vars", "config": "vars", "forcing": "vars",
+    "parameters": "vars", "state": "vars",
     "catchment": "hydrology", "river_muskingum": "hydrology",
     "river_inertial": "hydrology", "reservoirs": "hydrology",
     "configuration_io": "io", "static_input_io": "io",

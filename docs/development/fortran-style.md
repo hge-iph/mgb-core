@@ -18,7 +18,7 @@ dependency is pinned in `requirements-dev.txt`.
 - Keep multiplication, division, and exponentiation compact.
 - Use explicit double-colon declarations.
 - Give behavioral, common, I/O, and runner modules default `private` visibility and list their
-  public API. The four modules under `src/vars` are intentionally default-public.
+  public API. The five modules under `src/vars` are intentionally default-public.
 - Use `only` lists for every project-module import.
 - Indent nested blocks in four-space increments.
 - Put `&` at the start of every continuation line and indent it four spaces

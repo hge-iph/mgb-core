@@ -15,24 +15,24 @@ module forcing
 
 contains
 
-    subroutine allocate_forcing(requested_catchment_count, requested_climate_cell_count, &
-        & requested_substitution_count, requested_timestep_count)
-        integer, intent(in) :: requested_catchment_count, requested_climate_cell_count
-        integer, intent(in) :: requested_substitution_count, requested_timestep_count
-        allocate (climate_station_coordinates(requested_climate_cell_count, 2))
-        allocate (monthly_air_temperature(requested_climate_cell_count, 12))
-        allocate (monthly_relative_humidity(requested_climate_cell_count, 12))
-        allocate (monthly_wind_speed(requested_climate_cell_count, 12))
-        allocate (monthly_air_pressure(requested_climate_cell_count, 12))
-        allocate (monthly_solar_input(requested_climate_cell_count, 12))
-        allocate (previous_air_temperature(requested_catchment_count))
-        allocate (air_temperature(requested_catchment_count))
-        allocate (relative_humidity(requested_catchment_count))
-        allocate (wind_speed(requested_catchment_count))
-        allocate (solar_input(requested_catchment_count))
-        allocate (air_pressure(requested_catchment_count))
-        allocate (precipitation(requested_catchment_count))
-        allocate (substituted_q(requested_substitution_count, requested_timestep_count))
+    subroutine allocate_forcing(catchment_count, climate_cell_count, &
+        & substitution_count, timestep_count)
+        integer, intent(in) :: catchment_count, climate_cell_count
+        integer, intent(in) :: substitution_count, timestep_count
+        allocate (climate_station_coordinates(climate_cell_count, 2))
+        allocate (monthly_air_temperature(climate_cell_count, 12))
+        allocate (monthly_relative_humidity(climate_cell_count, 12))
+        allocate (monthly_wind_speed(climate_cell_count, 12))
+        allocate (monthly_air_pressure(climate_cell_count, 12))
+        allocate (monthly_solar_input(climate_cell_count, 12))
+        allocate (previous_air_temperature(catchment_count))
+        allocate (air_temperature(catchment_count))
+        allocate (relative_humidity(catchment_count))
+        allocate (wind_speed(catchment_count))
+        allocate (solar_input(catchment_count))
+        allocate (air_pressure(catchment_count))
+        allocate (precipitation(catchment_count))
+        allocate (substituted_q(substitution_count, timestep_count))
     end subroutine allocate_forcing
 
     subroutine deallocate_forcing
@@ -53,10 +53,10 @@ contains
         if (allocated(climate_station_coordinates)) deallocate (climate_station_coordinates)
     end subroutine deallocate_forcing
 
-    subroutine allocate_reservoir_forcing(requested_timestep_count, requested_reservoir_count)
-        integer, intent(in) :: requested_timestep_count, requested_reservoir_count
+    subroutine allocate_reservoir_forcing(timestep_count, reservoir_count)
+        integer, intent(in) :: timestep_count, reservoir_count
 
-        allocate (reservoir_outflow(requested_timestep_count, requested_reservoir_count))
+        allocate (reservoir_outflow(timestep_count, reservoir_count))
     end subroutine allocate_reservoir_forcing
 
 end module forcing

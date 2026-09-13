@@ -7,7 +7,8 @@ module river_inertial
 contains
 
     subroutine prepare_inertial_routing
-        use parameters, only: downstream_catchment, routing_downstream_catchment
+        use attributes, only: downstream_catchment
+        use parameters, only: routing_downstream_catchment
 
         implicit none
 
@@ -18,7 +19,8 @@ contains
 
     subroutine build_flood_topology
         use config, only: catchment_count
-        use parameters, only: downstream_catchment, upstream_topology
+        use attributes, only: downstream_catchment
+        use parameters, only: upstream_topology
 
         implicit none
 
@@ -43,9 +45,9 @@ contains
 
     subroutine build_floodplain_tables
         use config, only: catchment_count
-        use parameters, only: area_table, bankfull_depth, floodplain_area, &
-            & floodplain_bottom_elevation, floodplain_elevation, floodplain_point_count, &
-            & river_length, river_width, stage_table, volume_table
+        use attributes, only: bankfull_depth, floodplain_area, floodplain_bottom_elevation, &
+            & floodplain_elevation, floodplain_point_count, river_length, river_width
+        use parameters, only: area_table, stage_table, volume_table
 
         implicit none
         ! Symbols:
@@ -93,9 +95,9 @@ contains
     subroutine initialize_inertial_routing
         use interpolation, only: linear_interpolate
         use config, only: catchment_count
-        use parameters, only: area_table, catchment_area, floodplain_point_count, &
-            & inertial_manning_n, reference_q, river_length, river_slope, river_width, &
-            & stage_table, volume_table
+        use attributes, only: catchment_area, floodplain_point_count, manning_n, river_length, &
+            & river_slope, river_width
+        use parameters, only: area_table, reference_q, stage_table, volume_table
         use state, only: current_flooded_area, current_water_volume, face_q, &
             & grace_total_water_storage, inertial_q, neighbor_q, previous_water_volume, &
             & stage_table_index, water_depth, water_surface_elevation
@@ -112,7 +114,7 @@ contains
 
         do i_catch = 1, catchment_count
 
-            c_r = (inertial_manning_n(i_catch)*(dble(river_width(i_catch))**(2.0/3.0)))**0.6/ &
+            c_r = (manning_n(i_catch)*(dble(river_width(i_catch))**(2.0/3.0)))**0.6/ &
                 & ((river_slope(i_catch)**0.5)**0.6)
             e_r = 0.6
             inertial_q(i_catch) = reference_q(i_catch)
@@ -174,7 +176,7 @@ contains
     subroutine calculate_inertial_timestep(dt_route)
         use config, only: catchment_count, courant_alpha, first_subbasin, gravity, last_subbasin, &
             & model_timestep
-        use parameters, only: catchment_subbasin, river_length
+        use attributes, only: catchment_subbasin, river_length
         use state, only: water_depth
 
         implicit none
@@ -220,9 +222,9 @@ contains
             & first_subbasin, gravity, last_subbasin, overland_flow_width, overland_manning_n, &
             & pseudo_two_d_enabled, thread_count
         use forcing, only: reservoir_outflow
-        use parameters, only: bankfull_depth, catchment_subbasin, face_catchment_1, &
-            & face_catchment_2, face_distance, inertial_manning_n, reservoir_index_by_catchment, &
-            & river_length, river_width, routing_downstream_catchment, stage_table
+        use attributes, only: bankfull_depth, catchment_subbasin, face_catchment_1, &
+            & face_catchment_2, face_distance, manning_n, river_length, river_width
+        use parameters, only: reservoir_index_by_catchment, routing_downstream_catchment, stage_table
         use state, only: face_q, flow_velocity, inertial_q, neighbor_q, outgoing_q_current, &
             & q_river_output, water_depth
 
@@ -314,7 +316,7 @@ contains
             end if
 
             !River manning coefficient
-            n_flow = inertial_manning_n(i_catch)
+            n_flow = manning_n(i_catch)
 
             ! Flow in the last time-step
             q_width_prev = inertial_q(i_catch)/b_flow
@@ -442,8 +444,8 @@ contains
         use config, only: catchment_count, first_subbasin, last_subbasin, model_timestep, &
             & thread_count
         use forcing, only: precipitation
-        use parameters, only: area_table, catchment_area, catchment_subbasin, &
-            & floodplain_point_count, reservoir_index_by_catchment, reservoir_start_timestep, &
+        use attributes, only: catchment_area, catchment_subbasin, floodplain_point_count
+        use parameters, only: area_table, reservoir_index_by_catchment, reservoir_start_timestep, &
             & stage_table, upstream_topology, volume_table
         use state, only: catchment_q_current, current_flooded_area, current_water_volume, &
             & et_output, floodplain_infiltration, inertial_q, neighbor_q, open_water_et_output, &

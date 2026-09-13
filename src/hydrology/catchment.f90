@@ -9,8 +9,9 @@ contains
     subroutine initialize_runoff
         use config, only: catchment_count, hru_count
         use forcing, only: air_temperature
-        use parameters, only: catchment_area, catchment_subbasin, concentration_time, &
-            & groundwater_routing_coefficient, max_soil_water_storage, specific_baseflow, &
+        use attributes, only: catchment_area, catchment_subbasin
+        use parameters, only: concentration_time, groundwater_routing_coefficient, &
+            & max_soil_water_storage, specific_baseflow, &
             & subsurface_routing_coefficient, surface_routing_coefficient
         use state, only: groundwater_q, groundwater_storage, interception_storage, &
             & soil_water_storage, subsurface_q, subsurface_storage, surface_q, surface_storage
@@ -51,7 +52,8 @@ contains
 
     subroutine calculate_catchment_time_of_concentration
         use config, only: catchment_count
-        use parameters, only: concentration_time, longest_reach_length, longest_reach_slope
+        use attributes, only: longest_reach_length, longest_reach_slope
+        use parameters, only: concentration_time
 
         implicit none
         ! Symbols:
@@ -77,10 +79,11 @@ contains
             & model_timestep, routing_method, substitution_enabled
         use forcing, only: air_pressure, air_temperature, precipitation, &
             & previous_air_temperature, relative_humidity, solar_input, wind_speed
+        use attributes, only: catchment_area, catchment_subbasin, catchment_y, climate_region, &
+            & hru_percentage
         use parameters, only: albedo, arno_b, brooks_corey_lambda, capillary_threshold_fraction, &
-            & catchment_area, catchment_subbasin, catchment_y, climate_region, concentration_time, &
-            & floodplain_infiltration_rate, groundwater_conductivity, &
-            & groundwater_routing_coefficient, hru_percentage, leaf_area_index, &
+            & concentration_time, floodplain_infiltration_rate, groundwater_conductivity, &
+            & groundwater_routing_coefficient, leaf_area_index, &
             & max_capillary_flux, max_soil_water_storage, subsurface_conductivity, &
             & subsurface_routing_coefficient, surface_resistance, surface_routing_coefficient, &
             & vegetation_height

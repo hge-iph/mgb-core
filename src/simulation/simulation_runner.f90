@@ -80,7 +80,8 @@ contains
         use config, only: catchment_count, inertial_catchment_count, model_timestep, &
             & routing_method, timestep_count, write_hotstart_mode
         use forcing, only: air_temperature, previous_air_temperature
-        use parameters, only: bankfull_depth, stage_table
+        use attributes, only: bankfull_depth
+        use parameters, only: stage_table
         use state, only: catchment_q_current, catchment_q_output, current_flooded_area, day, &
             & flooded_area_output, groundwater_q, hand_output, hour, inertial_q, julian_day, &
             & minute, month, outgoing_q_current, potential_open_water_et, &

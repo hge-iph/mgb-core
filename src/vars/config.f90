@@ -91,11 +91,11 @@ module config
 
 contains
 
-    subroutine allocate_config(requested_catchment_count, requested_timestep_count)
-        integer, intent(in) :: requested_catchment_count, requested_timestep_count
-        allocate (routing_method(requested_catchment_count))
-        allocate (substitution_enabled(requested_catchment_count))
-        allocate (hotstart_write_schedule(requested_timestep_count))
+    subroutine allocate_config(catchment_count, timestep_count)
+        integer, intent(in) :: catchment_count, timestep_count
+        allocate (routing_method(catchment_count))
+        allocate (substitution_enabled(catchment_count))
+        allocate (hotstart_write_schedule(timestep_count))
     end subroutine allocate_config
 
     subroutine deallocate_config

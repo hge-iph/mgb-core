@@ -37,7 +37,7 @@ class ArchitectureCheckerTests(unittest.TestCase):
         self.assertEqual([], check_tree(self.src))
 
     def test_all_vars_modules_are_accepted(self) -> None:
-        for name in ("config", "forcing", "parameters", "state"):
+        for name in ("attributes", "config", "forcing", "parameters", "state"):
             self.write(f"vars/{name}.f90", self.vars_module(name))
         self.assertEqual([], check_tree(self.src))
 
