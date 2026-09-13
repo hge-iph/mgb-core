@@ -642,6 +642,7 @@ contains
         ! c_down_prev previous downstream-flow coefficient [1]
         ! q          reach river-discharge array [m3/s]
         ! q_loss     prescribed upstream loss [m3/s]
+        ! q_next     routed river discharge at the next reach and timestep [m3/s]
         integer, intent(in) :: i_catch
         integer, intent(in) :: n_reach
         integer, intent(in) :: n_step

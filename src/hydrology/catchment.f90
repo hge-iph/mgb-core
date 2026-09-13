@@ -229,7 +229,8 @@ contains
         ! q_int_acc    accumulated subsurface-runoff discharge [m3/s]
         ! q_bas_acc    accumulated groundwater-runoff discharge [m3/s]
         ! q_cap_acc    accumulated capillary-flux discharge [m3/s]
-        ! hru_percent  HRU percentage [%]
+        ! hru_pct      HRU percentage [%]
+        ! a_flood      current flooded area [km2]
         ! w_mean_acc   weighted soil-water storage [mm]
         ! wm_mean_acc  weighted maximum soil-water storage [mm]
         ! tk_bas       groundwater-reservoir delay [s]
@@ -239,6 +240,8 @@ contains
         ! v_int_next   next subsurface-reservoir volume [m3]
         ! v_sup_next   next surface-reservoir volume [m3]
         ! area_catch   catchment area [km2]
+        ! linear_storage_total total terrestrial linear-reservoir volume [m3]
+        ! rho_w        water density [kg/m3]
         integer :: i_catch
         integer :: i_hru
         integer :: i_sub
@@ -283,7 +286,8 @@ contains
         real, volatile :: q_int_acc
         real, volatile :: q_bas_acc
         real, volatile :: q_cap_acc
-        real, volatile :: hru_percent
+        real, volatile :: hru_pct
+        real*8, volatile :: a_flood
         real, volatile :: w_mean_acc
         real, volatile :: wm_mean_acc
         real, volatile :: tk_bas
@@ -294,7 +298,6 @@ contains
         real, volatile :: v_sup_next
         real, volatile :: area_catch
         real, volatile :: linear_storage_total
-        real, volatile :: d_infil_catch
         real, parameter :: rho_w = 1000.0
 
         ! Gets day of the year (day_of_year) for computing radiation
@@ -326,10 +329,10 @@ contains
             if (substitution_enabled(i_catch) == 1) cycle
 
             i_sub = catchment_subbasin(i_catch)
-            
+
             ! Manual controls for specialized calibration
             if ((i_sub < first_subbasin) .or. (i_sub > last_subbasin)) cycle
-            
+
             area_catch = catchment_area(i_catch)
 
             w_mean_acc = 0.0
@@ -346,7 +349,8 @@ contains
                     cycle
                 end if
 
-                hru_percent = hru_percentage(i_catch, i_hru)
+                hru_pct = hru_percentage(i_catch, i_hru)
+                a_flood = current_flooded_area(i_catch)
 
                 !Temporary variables
                 p = precipitation(i_catch)
@@ -433,7 +437,7 @@ contains
                         d_int = 0.0
                         d_bas = 0.0
                         cap = 0.0
-                        open_water_evaporation_q(i_catch) = (et_water_pot*1000.*area_catch*(hru_percent/100.))/model_timestep
+                        open_water_evaporation_q(i_catch) = (et_water_pot*1000.*area_catch*(hru_pct/100.))/model_timestep
                         !Direct evaporation from open waters in m3/s
                     else
                         ! Considers evaporation in floodplain water
@@ -453,15 +457,15 @@ contains
                 capillary_flux(i_catch, i_hru) = cap
 
                 !HRU area  fraction
-                w_mean_acc = w_mean_acc + w*(hru_percent/100.)
+                w_mean_acc = w_mean_acc + w*(hru_pct/100.)
                 !Average Water Soil-Storage in catchment
-                wm_mean_acc = wm_mean_acc + wm*(hru_percent/100.)
+                wm_mean_acc = wm_mean_acc + wm*(hru_pct/100.)
                 !Average max_soil_water_storage in the catchment
 
                 !Flow to linear reservoirs
-                q_sup = ((d_sup*1000.)*area_catch*(hru_percent/100.))/(model_timestep)
-                q_int = ((d_int*1000.)*area_catch*(hru_percent/100.))/(model_timestep)
-                q_bas = ((d_bas*1000.)*area_catch*(hru_percent/100.))/(model_timestep)
+                q_sup = ((d_sup*1000.)*area_catch*(hru_pct/100.))/(model_timestep)
+                q_int = ((d_int*1000.)*area_catch*(hru_pct/100.))/(model_timestep)
+                q_bas = ((d_bas*1000.)*area_catch*(hru_pct/100.))/(model_timestep)
 
                 !Accumulate generated Runoff (m³/s)
                 q_sup_acc = q_sup_acc + q_sup
@@ -469,19 +473,18 @@ contains
                 q_bas_acc = q_bas_acc + q_bas
 
                 !Storing evapotranspiration
-                et_output(i_catch) = et_output(i_catch) + (et_soil + et_int)*(hru_percent/100.)
-                interception_et_output(i_catch) = interception_et_output(i_catch) + et_int*(hru_percent/100.)
-                soil_vegetation_et_output(i_catch) = soil_vegetation_et_output(i_catch) + et_soil*(hru_percent/100.)
+                et_output(i_catch) = et_output(i_catch) + (et_soil + et_int)*(hru_pct/100.)
+                interception_et_output(i_catch) = interception_et_output(i_catch) + et_int*(hru_pct/100.)
+                soil_vegetation_et_output(i_catch) = soil_vegetation_et_output(i_catch) + et_soil*(hru_pct/100.)
 
                 if (routing_method(i_catch) == 1) then
                     !Summing infiltration for continuity equation
-                    d_infil_catch = d_infil*hru_percent/100.*area_catch/current_flooded_area(i_catch)
-                    floodplain_infiltration(i_catch) = floodplain_infiltration(i_catch) + d_infil_catch
+                    floodplain_infiltration(i_catch) = floodplain_infiltration(i_catch) + d_infil*hru_pct/100.*area_catch/a_flood
                     !CEAA infilt
                 end if
 
                 ! Capillary flux converts from mm per model timestep to m3/s.
-                q_cap_acc = q_cap_acc + (hru_percent/100.)*(cap*1000.*area_catch)/(model_timestep)
+                q_cap_acc = q_cap_acc + (hru_pct/100.)*(cap*1000.*area_catch)/(model_timestep)
 
                 ! Updates linear reservoir volumes(m3)
                 groundwater_storage(i_catch) = groundwater_storage(i_catch) + q_bas*model_timestep
@@ -489,12 +492,12 @@ contains
                 surface_storage(i_catch) = surface_storage(i_catch) + q_sup*model_timestep
 
                 ! Updates Terrestrial Water Storage (mm)
-                total_water_storage(i_catch) = total_water_storage(i_catch) + (si + w)*(hru_percent/100.0)
+                total_water_storage(i_catch) = total_water_storage(i_catch) + (si + w)*(hru_pct/100.0)
                 ! VAS - GRACE
 
                 ! Storages
-                soil_water_output(i_catch) = soil_water_output(i_catch) + w*(hru_percent/100.0)
-                interception_storage_output(i_catch) = interception_storage_output(i_catch) + si*(hru_percent/100.0)
+                soil_water_output(i_catch) = soil_water_output(i_catch) + w*(hru_pct/100.0)
+                interception_storage_output(i_catch) = interception_storage_output(i_catch) + si*(hru_pct/100.0)
 
             end do
             ! end HRU loop
@@ -899,7 +902,7 @@ contains
         & i_catch, &
         & area_catch, &
         & k_inf)
-        
+
         use config, only: routing_method
         use state, only: current_flooded_area
 

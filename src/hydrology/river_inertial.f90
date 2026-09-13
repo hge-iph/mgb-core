@@ -70,6 +70,8 @@ contains
         ! dv       volume increment [m3]
         ! a_prev   preceding floodplain area [km2]
         ! a_curr   current floodplain area [km2]
+        ! first_level_depth first floodplain elevation interval [m]
+        ! first_level_volume first floodplain volume increment [m3]
         integer :: i_catch
         integer :: i_point
         real :: dz
@@ -91,9 +93,9 @@ contains
             stage_table(3, i_catch) = floodplain_elevation(1, i_catch)
             area_table(3, i_catch) = max(area_table(2, i_catch), floodplain_area(1, i_catch))
 
-            volume_table(3, i_catch) = volume_table(2, i_catch) + &
-                & 0.5*(floodplain_area(1, i_catch) + 0.0)* &
-                & (stage_table(3, i_catch) - stage_table(2, i_catch))*1000000.0
+            first_level_depth = stage_table(3, i_catch) - stage_table(2, i_catch)
+            first_level_volume = 0.5*(floodplain_area(1, i_catch) + 0.0)*first_level_depth*1000000.0
+            volume_table(3, i_catch) = volume_table(2, i_catch) + first_level_volume
 
             ! Integrate later levels with the trapezoidal rule.
             do i_point = 1, floodplain_point_count(i_catch) - 1
@@ -162,15 +164,17 @@ contains
 
             c_r = (n_manning(i_catch)*(dble(river_width(i_catch))**(2.0/3.0)))**0.6/((river_slope(i_catch)**0.5)**0.6)
             e_r = 0.6
-            inertial_q(i_catch) = reference_q(i_catch)
+            q = reference_q(i_catch)
+            n_points = floodplain_point_count(i_catch) + 2
+            inertial_q(i_catch) = q
             face_q = reference_q(i_catch)
-            water_depth(i_catch) = c_r*(inertial_q(i_catch)**e_r)/dble(river_width(i_catch)) + 0.00001
+            water_depth(i_catch) = c_r*(q**e_r)/dble(river_width(i_catch)) + 0.00001
             water_surface_elevation(i_catch) = stage_table(1, i_catch) + water_depth(i_catch)
             previous_water_volume(i_catch) = water_depth(i_catch)*dble(river_width(i_catch))*(river_length(i_catch)*1000.)
-            current_water_volume(i_catch) = previous_water_volume(i_catch)
-            current_flooded_area(i_catch) = linear_interpolate( &
-                & volume_table(:, i_catch), area_table(:, i_catch), floodplain_point_count(i_catch) + 2, current_water_volume(i_catch))
-            current_flooded_area(i_catch) = max(current_flooded_area(i_catch), catchment_area(i_catch))
+            v = previous_water_volume(i_catch)
+            a = linear_interpolate(volume_table(:, i_catch), area_table(:, i_catch), n_points, v)
+            current_water_volume(i_catch) = v
+            current_flooded_area(i_catch) = max(a, catchment_area(i_catch))
             stage_table_index(i_catch) = 1
 
         end do
@@ -807,8 +811,8 @@ contains
                 & (v(i_catch) <= vt(j_stage(i_catch) + 1, i_catch))) then
 
                 !Finds the % over the actual index of stage-area-volume table:
-                f = (v(i_catch) - vt(j_stage(i_catch), i_catch))/ &
-                    & (vt(j_stage(i_catch) + 1, i_catch) - vt(j_stage(i_catch), i_catch))
+                dv = vt(j_stage(i_catch) + 1, i_catch) - vt(j_stage(i_catch), i_catch)
+                f = (v(i_catch) - vt(j_stage(i_catch), i_catch))/dv
                 !Interpolates values based on % above:
                 y = st(j_stage(i_catch), i_catch) + (st(j_stage(i_catch) + 1, i_catch) - st(j_stage(i_catch), i_catch))*f
                 a = at(j_stage(i_catch), i_catch) + (at(j_stage(i_catch) + 1, i_catch) - at(j_stage(i_catch), i_catch))*f
@@ -830,8 +834,8 @@ contains
                     ! Level is computed as Zmax + dV/Amax, where A is assumed to be constant in this
                     ! interval.
 
-                    y = st(j_stage(i_catch), i_catch) + (v(i_catch) - &
-                        & vt(j_stage(i_catch), i_catch))/(at(j_stage(i_catch), i_catch)*1000000.0)
+                    v_excess = v(i_catch) - vt(j_stage(i_catch), i_catch)
+                    y = st(j_stage(i_catch), i_catch) + v_excess/(at(j_stage(i_catch), i_catch)*1000000.0)
                     !a remains unchanged
                     a = at(j_stage(i_catch), i_catch)
 
