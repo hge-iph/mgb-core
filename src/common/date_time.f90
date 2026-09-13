@@ -9,10 +9,17 @@ module date_time
 
 contains
 
-    function format_date_string(year, month, day, hour) result(date_text)
+    function format_date_string( &
+        & year, &
+        & month, &
+        & day, &
+        & hour) result(date_text)
         implicit none
 
-        integer, intent(in) :: year, month, day, hour
+        integer, intent(in) :: year
+        integer, intent(in) :: month
+        integer, intent(in) :: day
+        integer, intent(in) :: hour
         character(10) :: date_text
 
         write (date_text, "(I4,I2.2,I2.2,I2.2)") year, month, day, hour
@@ -20,11 +27,21 @@ contains
     end function format_date_string
 
     ! Subroutine to parse date string in the format "YYYY-MM-DD HH:mm" and return integers
-    subroutine parse_date_string(date_str, year, month, day, hour, minute)
+    subroutine parse_date_string( &
+        & date_str, &
+        & year, &
+        & month, &
+        & day, &
+        & hour, &
+        & minute)
 
         implicit none
         character(len=40), intent(in) :: date_str
-        integer, intent(out) :: year, month, day, hour, minute
+        integer, intent(out) :: year
+        integer, intent(out) :: month
+        integer, intent(out) :: day
+        integer, intent(out) :: hour
+        integer, intent(out) :: minute
 
         ! Read date in format "YYYY-MM-DD HH:mm"
         read (date_str, '(I4,1X,I2,1X,I2,1X,I2,1X,I2)') year, month, day, hour, minute
@@ -36,40 +53,74 @@ contains
 
     end subroutine
 
-    integer function calculate_integer_julian_day(year, month, day)
+    integer function calculate_integer_julian_day( &
+        & year, &
+        & month, &
+        & day)
         implicit none
 
-        integer, intent(in) :: year, month, day
+        integer, intent(in) :: year
+        integer, intent(in) :: month
+        integer, intent(in) :: day
+        integer :: month_shift
+        integer :: year_term
+        integer :: month_term
+        integer :: century_term
 
-        calculate_integer_julian_day = day - 32075 + 1461*(year + 4800 + (month - 14)/12)/4 + 367* &
-            & (month - 2 - (month - 14)/12*12)/12 - 3*((year + 4900 + (month - 14)/12)/100)/4
+        month_shift = (month - 14)/12
+        year_term = 1461*(year + 4800 + month_shift)/4
+        month_term = 367*(month - 2 - month_shift*12)/12
+        century_term = 3*((year + 4900 + month_shift)/100)/4
+        calculate_integer_julian_day = day - 32075 + year_term + month_term - century_term
 
     end function calculate_integer_julian_day
 
     ! function to compute julian date (real)
-    function calculate_julian_day(year, month, day, hour, minute) result(julian_day_result)
+    function calculate_julian_day( &
+        & year, &
+        & month, &
+        & day, &
+        & hour, &
+        & minute) result(julian_day_result)
         implicit none
 
-        integer, intent(in) :: year, month, day, hour, minute
+        integer, intent(in) :: year
+        integer, intent(in) :: month
+        integer, intent(in) :: day
+        integer, intent(in) :: hour
+        integer, intent(in) :: minute
         integer :: julian_day_number
         real(real_kind) :: julian_day_result
+        real(real_kind) :: julian_with_hour
 
         julian_day_number = calculate_integer_julian_day(year, month, day)
-
-        julian_day_result = real(julian_day_number, real_kind) + real(hour, real_kind)/ &
-            & 24.0_real_kind + real(minute, real_kind)/1440.0_real_kind
+        julian_with_hour = real(julian_day_number, real_kind) + real(hour, real_kind)/24.0_real_kind
+        julian_day_result = julian_with_hour + real(minute, real_kind)/1440.0_real_kind
 
     end function calculate_julian_day
 
     ! Subroutine to compute calendar yyyy-mm-dd HH:MM from julian
-    subroutine convert_julian_day_to_calendar(julian, year, month, day, hour, minute)
+    subroutine convert_julian_day_to_calendar( &
+        & julian, &
+        & year, &
+        & month, &
+        & day, &
+        & hour, &
+        & minute)
         implicit none
 
         real(real_kind), intent(in) :: julian
-        integer, intent(out) :: year, month, day, hour, minute
+        integer, intent(out) :: year
+        integer, intent(out) :: month
+        integer, intent(out) :: day
+        integer, intent(out) :: hour
+        integer, intent(out) :: minute
 
         real(real_kind) :: fractional_day
-        integer :: year_cycle_index, month_index, intermediate_l, century_index
+        integer :: year_cycle_index
+        integer :: month_index
+        integer :: intermediate_l
+        integer :: century_index
         integer :: int_julian
 
         int_julian = int(julian)
@@ -105,15 +156,19 @@ contains
     end subroutine convert_julian_day_to_calendar
 
     ! Function to compute the number of time steps between two Julian dates.
-    integer function calculate_timestep_count(julian_end, julian_start, model_timestep)
+    integer function calculate_timestep_count( &
+        & julian_end, &
+        & julian_start, &
+        & model_timestep)
         implicit none
 
-        real(real_kind), intent(in) :: julian_end, julian_start, model_timestep
+        real(real_kind), intent(in) :: julian_end
+        real(real_kind), intent(in) :: julian_start
+        real(real_kind), intent(in) :: model_timestep
         ! model_timestep is expressed in seconds.
 
         ! Avoiding rounding errors
-        calculate_timestep_count = int(real(((julian_end - julian_start)* &
-            & 86400.0_real_kind/model_timestep), 4))
+        calculate_timestep_count = int(real(((julian_end - julian_start)*86400.0_real_kind/model_timestep), 4))
 
     end function calculate_timestep_count
 

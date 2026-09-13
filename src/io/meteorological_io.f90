@@ -9,21 +9,38 @@ contains
     subroutine open_meteorological_inputs
         implicit none
 
-        call manage_meteorological_input_files(1)
+        call manage_meteorological_input_files( &
+            & 1)
     end subroutine open_meteorological_inputs
 
     subroutine close_meteorological_inputs
         implicit none
 
-        call manage_meteorological_input_files(0)
+        call manage_meteorological_input_files( &
+            & 0)
     end subroutine close_meteorological_inputs
 
-    subroutine manage_meteorological_input_files(file_action)
-        use config, only: catchment_count, input_directory, precipitation_unit, pressure_unit, &
-            & radiation_unit, relative_humidity_unit, temperature_unit, use_humidity_timeseries, &
-            & use_pressure_timeseries, use_radiation_timeseries, use_temperature_timeseries, &
-            & use_wind_timeseries, wind_unit
-        use forcing, only: air_pressure, air_temperature, precipitation, relative_humidity, &
+    subroutine manage_meteorological_input_files( &
+        & file_action)
+        use config, only: &
+            & catchment_count, &
+            & input_directory, &
+            & precipitation_unit, &
+            & pressure_unit, &
+            & radiation_unit, &
+            & relative_humidity_unit, &
+            & temperature_unit, &
+            & use_humidity_timeseries, &
+            & use_pressure_timeseries, &
+            & use_radiation_timeseries, &
+            & use_temperature_timeseries, &
+            & use_wind_timeseries, &
+            & wind_unit
+        use forcing, only: &
+            & air_pressure, &
+            & air_temperature, &
+            & precipitation, &
+            & relative_humidity, &
             & wind_speed
 
         implicit none
@@ -36,8 +53,8 @@ contains
             inquire (iolength=record_length) precipitation(1:catchment_count)
 
             !input binary file with interpolated rainfall data
-            open (precipitation_unit, file=input_directory//'precipitation.bin', status='old', &
-                & recl=record_length, form='UNFORMATTED', access='DIRECT')
+            open (precipitation_unit, file=input_directory//'precipitation.bin', status='old', recl=record_length, &
+                & form='UNFORMATTED', access='DIRECT')
 
             if (use_temperature_timeseries == 1) open (temperature_unit, file= &
                 & input_directory//'air_temperature.bin', status='old', recl=record_length, form= &
@@ -71,14 +88,34 @@ contains
 
     end subroutine
 
-    subroutine read_meteorological_forcing(month_number, forcing_record_index)
-        use config, only: catchment_count, precipitation_unit, pressure_unit, radiation_unit, &
-            & relative_humidity_unit, temperature_unit, use_humidity_timeseries, &
-            & use_pressure_timeseries, use_radiation_timeseries, use_temperature_timeseries, &
-            & use_wind_timeseries, wind_unit
-        use forcing, only: air_pressure, air_temperature, monthly_air_pressure, &
-            & monthly_air_temperature, monthly_relative_humidity, monthly_solar_input, &
-            & monthly_wind_speed, precipitation, relative_humidity, solar_input, wind_speed
+    subroutine read_meteorological_forcing( &
+        & month_number, &
+        & forcing_record_index)
+        use config, only: &
+            & catchment_count, &
+            & precipitation_unit, &
+            & pressure_unit, &
+            & radiation_unit, &
+            & relative_humidity_unit, &
+            & temperature_unit, &
+            & use_humidity_timeseries, &
+            & use_pressure_timeseries, &
+            & use_radiation_timeseries, &
+            & use_temperature_timeseries, &
+            & use_wind_timeseries, &
+            & wind_unit
+        use forcing, only: &
+            & air_pressure, &
+            & air_temperature, &
+            & monthly_air_pressure, &
+            & monthly_air_temperature, &
+            & monthly_relative_humidity, &
+            & monthly_solar_input, &
+            & monthly_wind_speed, &
+            & precipitation, &
+            & relative_humidity, &
+            & solar_input, &
+            & wind_speed
 
         implicit none
 
@@ -98,8 +135,8 @@ contains
         if (use_pressure_timeseries == 0) air_pressure(:) = monthly_air_pressure(:, month_number)
 
         ! Reads precipitation data
-        read (precipitation_unit, rec=forcing_record_index) (precipitation(climate_cell_index), &
-            & climate_cell_index=1, catchment_count)
+        read (precipitation_unit, rec=forcing_record_index) (precipitation(climate_cell_index), climate_cell_index=1, &
+            & catchment_count)
 
         ! Reads meteorological data at the same time interval of precipitation
         if (use_temperature_timeseries == 1) read (temperature_unit, rec= &

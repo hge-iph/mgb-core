@@ -6,7 +6,8 @@ module runtime_support
 
 contains
 
-    subroutine initialize_random_seed(seed_value)
+    subroutine initialize_random_seed( &
+        & seed_value)
 
         implicit none
         integer, intent(out) :: seed_value
@@ -16,11 +17,13 @@ contains
         return
     end subroutine initialize_random_seed
 
-    subroutine update_legacy_timer(timer_action, seed_value)
+    subroutine update_legacy_timer( &
+        & timer_action, &
+        & seed_value)
         implicit none
-        integer timer_action
-        integer clock_value
-        integer seed_value
+        integer :: timer_action
+        integer :: clock_value
+        integer :: seed_value
 
         timer_actions:select case(timer_action)
         case (0)

@@ -3,31 +3,50 @@ module state
     implicit none
     save
 
-    integer :: day, month, year, hour, minute, day_of_year
+    integer :: day
+    integer :: month
+    integer :: year
+    integer :: hour
+    integer :: minute
+    integer :: day_of_year
     real(8) :: julian_day
 
-    real, allocatable :: catchment_q_previous(:), catchment_q_current(:)
-    real, allocatable :: capillary_flux(:, :), soil_water_storage(:, :)
-    real, allocatable :: groundwater_q(:), subsurface_q(:), surface_q(:)
-    real, allocatable :: groundwater_storage(:), subsurface_storage(:), surface_storage(:)
-    real, allocatable :: total_water_storage(:), floodplain_infiltration(:)
-    real, allocatable :: interception_storage(:, :), evapotranspiration(:, :)
+    real, allocatable :: catchment_q_previous(:)
+    real, allocatable :: catchment_q_current(:)
+    real, allocatable :: capillary_flux(:, :)
+    real, allocatable :: soil_water_storage(:, :)
+    real, allocatable :: groundwater_q(:)
+    real, allocatable :: subsurface_q(:)
+    real, allocatable :: surface_q(:)
+    real, allocatable :: groundwater_storage(:)
+    real, allocatable :: subsurface_storage(:)
+    real, allocatable :: surface_storage(:)
+    real, allocatable :: total_water_storage(:)
+    real, allocatable :: floodplain_infiltration(:)
+    real, allocatable :: interception_storage(:, :)
+    real, allocatable :: evapotranspiration(:, :)
     real, allocatable :: open_water_evaporation_q(:)
-    real, allocatable :: potential_open_water_et(:), potential_top_radiation_et(:)
+    real, allocatable :: potential_open_water_et(:)
+    real, allocatable :: potential_top_radiation_et(:)
     real, allocatable :: potential_surface_radiation_et(:)
 
-    real, allocatable :: incoming_q_previous(:), outgoing_q_previous(:)
-    real, allocatable :: incoming_q_current(:), outgoing_q_current(:)
+    real, allocatable :: incoming_q_previous(:)
+    real, allocatable :: outgoing_q_previous(:)
+    real, allocatable :: incoming_q_current(:)
+    real, allocatable :: outgoing_q_current(:)
     real, allocatable :: incoming_groundwater_fraction_current(:)
     real, allocatable :: incoming_subsurface_fraction_current(:)
     real, allocatable :: incoming_surface_fraction_current(:)
     real, allocatable :: outgoing_groundwater_fraction_current(:)
     real, allocatable :: outgoing_subsurface_fraction_current(:)
     real, allocatable :: outgoing_surface_fraction_current(:)
-    real, allocatable :: groundwater_routing_volume(:), subsurface_routing_volume(:)
+    real, allocatable :: groundwater_routing_volume(:)
+    real, allocatable :: subsurface_routing_volume(:)
     real, allocatable :: surface_routing_volume(:)
-    real, allocatable :: incoming_q_boundary(:, :), outgoing_q_boundary(:, :)
-    real, allocatable :: initial_river_q(:, :), flow_velocity(:)
+    real, allocatable :: incoming_q_boundary(:, :)
+    real, allocatable :: outgoing_q_boundary(:, :)
+    real, allocatable :: initial_river_q(:, :)
+    real, allocatable :: flow_velocity(:)
     real, allocatable :: incoming_groundwater_fraction_previous(:)
     real, allocatable :: incoming_subsurface_fraction_previous(:)
     real, allocatable :: incoming_surface_fraction_previous(:)
@@ -35,33 +54,52 @@ module state
     real, allocatable :: outgoing_subsurface_fraction_previous(:)
     real, allocatable :: outgoing_surface_fraction_previous(:)
 
-    real*8, allocatable :: inertial_q(:), upstream_q(:)
-    real*8, allocatable :: current_water_volume(:), previous_water_volume(:)
+    real*8, allocatable :: inertial_q(:)
+    real*8, allocatable :: upstream_q(:)
+    real*8, allocatable :: current_water_volume(:)
+    real*8, allocatable :: previous_water_volume(:)
     real*8, allocatable :: current_flooded_area(:)
-    real*8, allocatable :: water_depth(:), water_surface_elevation(:)
-    real*8, allocatable :: face_q(:), neighbor_q(:)
+    real*8, allocatable :: water_depth(:)
+    real*8, allocatable :: water_surface_elevation(:)
+    real*8, allocatable :: face_q(:)
+    real*8, allocatable :: neighbor_q(:)
     integer, allocatable :: stage_table_index(:)
     real*8, allocatable :: grace_total_water_storage(:)
 
-    real(4), allocatable :: q_river_output(:), water_surface_elevation_output(:)
-    real(4), allocatable :: total_water_storage_output(:), flooded_area_output(:), hand_output(:)
-    real(4), allocatable :: incremental_q_output(:), et_output(:), groundwater_q_output(:)
+    real(4), allocatable :: q_river_output(:)
+    real(4), allocatable :: water_surface_elevation_output(:)
+    real(4), allocatable :: total_water_storage_output(:)
+    real(4), allocatable :: flooded_area_output(:)
+    real(4), allocatable :: hand_output(:)
+    real(4), allocatable :: incremental_q_output(:)
+    real(4), allocatable :: et_output(:)
+    real(4), allocatable :: groundwater_q_output(:)
     real(4), allocatable :: soil_saturation_output(:)
-    real(4), allocatable :: interception_et_output(:), soil_vegetation_et_output(:)
-    real(4), allocatable :: open_water_et_output(:), water_hru_et_output(:)
+    real(4), allocatable :: interception_et_output(:)
+    real(4), allocatable :: soil_vegetation_et_output(:)
+    real(4), allocatable :: open_water_et_output(:)
+    real(4), allocatable :: water_hru_et_output(:)
     real(4), allocatable :: potential_open_water_et_output(:)
-    real(4), allocatable :: soil_water_output(:), capillary_water_output(:)
+    real(4), allocatable :: soil_water_output(:)
+    real(4), allocatable :: capillary_water_output(:)
     real(4), allocatable :: interception_storage_output(:)
-    real(4), allocatable :: surface_storage_depth_output(:), subsurface_storage_depth_output(:)
+    real(4), allocatable :: surface_storage_depth_output(:)
+    real(4), allocatable :: subsurface_storage_depth_output(:)
     real(4), allocatable :: groundwater_storage_depth_output(:)
-    real(4), allocatable :: surface_runoff_depth_output(:), subsurface_runoff_depth_output(:)
+    real(4), allocatable :: surface_runoff_depth_output(:)
+    real(4), allocatable :: subsurface_runoff_depth_output(:)
     real(4), allocatable :: groundwater_runoff_depth_output(:)
-    real(4), allocatable :: surface_water_output(:), catchment_q_output(:)
+    real(4), allocatable :: surface_water_output(:)
+    real(4), allocatable :: catchment_q_output(:)
 
 contains
 
-    subroutine allocate_state(catchment_count, hru_count, max_muskingum_reach_count)
-        integer, intent(in) :: catchment_count, hru_count
+    subroutine allocate_state( &
+        & catchment_count, &
+        & hru_count, &
+        & max_muskingum_reach_count)
+        integer, intent(in) :: catchment_count
+        integer, intent(in) :: hru_count
         integer, intent(in) :: max_muskingum_reach_count
 
         allocate (catchment_q_previous(catchment_count))

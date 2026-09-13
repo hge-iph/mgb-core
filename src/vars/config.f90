@@ -8,37 +8,61 @@ module config
     integer, parameter :: max_muskingum_reach_count = 150
     real*8, parameter :: gravity = 9.81
 
-    integer :: catchment_count, hru_count, subbasin_count
-    integer :: climate_cell_count, climate_region_count
-    integer :: substitution_count, reservoir_count
+    integer :: catchment_count
+    integer :: hru_count
+    integer :: subbasin_count
+    integer :: climate_cell_count
+    integer :: climate_region_count
+    integer :: substitution_count
+    integer :: reservoir_count
     integer :: timestep_count
     real :: model_timestep
-    integer :: first_subbasin, last_subbasin
+    integer :: first_subbasin
+    integer :: last_subbasin
 
-    integer :: use_temperature_timeseries, use_radiation_timeseries
-    integer :: use_humidity_timeseries, use_wind_timeseries, use_pressure_timeseries
+    integer :: use_temperature_timeseries
+    integer :: use_radiation_timeseries
+    integer :: use_humidity_timeseries
+    integer :: use_wind_timeseries
+    integer :: use_pressure_timeseries
     integer :: monthly_radiation_option
-    integer :: inertial_routing_enabled, pseudo_two_d_enabled, thread_count
+    integer :: inertial_routing_enabled
+    integer :: pseudo_two_d_enabled
+    integer :: thread_count
     integer :: inertial_catchment_count
-    real*8 :: courant_alpha, downstream_water_surface_slope
-    real*8 :: overland_flow_width, overland_manning_n
+    real*8 :: courant_alpha
+    real*8 :: downstream_water_surface_slope
+    real*8 :: overland_flow_width
+    real*8 :: overland_manning_n
     integer :: face_count
     integer :: reservoir_substitution_enabled
-    integer, allocatable :: routing_method(:), substitution_enabled(:)
+    integer, allocatable :: routing_method(:)
+    integer, allocatable :: substitution_enabled(:)
 
-    integer :: write_discharge_output, write_soil_moisture_output
-    integer :: write_water_surface_elevation_output, write_hand_output
-    integer :: write_total_water_storage_output, write_runoff_output, write_surface_water_output
-    integer :: write_soil_saturation_output, write_et_output, write_interception_et_output
-    integer :: write_soil_vegetation_et_output, write_open_water_et_output
+    integer :: write_discharge_output
+    integer :: write_soil_moisture_output
+    integer :: write_water_surface_elevation_output
+    integer :: write_hand_output
+    integer :: write_total_water_storage_output
+    integer :: write_runoff_output
+    integer :: write_surface_water_output
+    integer :: write_soil_saturation_output
+    integer :: write_et_output
+    integer :: write_interception_et_output
+    integer :: write_soil_vegetation_et_output
+    integer :: write_open_water_et_output
     integer :: write_water_hru_et_output
-    integer :: write_groundwater_storage_output, write_subsurface_storage_output
-    integer :: write_surface_storage_output, write_interception_storage_output
+    integer :: write_groundwater_storage_output
+    integer :: write_subsurface_storage_output
+    integer :: write_surface_storage_output
+    integer :: write_interception_storage_output
     integer :: write_flooded_area_output
-    integer :: write_groundwater_flux_output, write_subsurface_flux_output
+    integer :: write_groundwater_flux_output
+    integer :: write_subsurface_flux_output
     integer :: write_surface_flux_output
     integer :: write_potential_open_water_et_output
-    integer :: write_hotstart_mode, read_hotstart_mode
+    integer :: write_hotstart_mode
+    integer :: read_hotstart_mode
     integer, allocatable :: hotstart_write_schedule(:)
 
     character(8) :: input_directory
@@ -91,8 +115,11 @@ module config
 
 contains
 
-    subroutine allocate_config(catchment_count, timestep_count)
-        integer, intent(in) :: catchment_count, timestep_count
+    subroutine allocate_config( &
+        & catchment_count, &
+        & timestep_count)
+        integer, intent(in) :: catchment_count
+        integer, intent(in) :: timestep_count
         allocate (routing_method(catchment_count))
         allocate (substitution_enabled(catchment_count))
         allocate (hotstart_write_schedule(timestep_count))

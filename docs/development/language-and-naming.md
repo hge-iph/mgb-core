@@ -25,15 +25,21 @@ Scientific equation kernels use a deliberately narrower vocabulary than
 persistent model state. Compact, lower-case notation is encouraged when it
 makes an established equation recognizable, provided that a short symbol block
 at the start of the routine records the meaning and units of every compact
-symbol. For example, a soil-water kernel may use `p`, `w`, `wm`, `b_arno`,
-`k_int`, `d_sup`, and `dt`, while the arrays that supply those values retain
-descriptive names such as `precipitation` and `soil_water_storage`.
+symbol. Give each compact symbol its own clarification-comment line with its
+physical meaning and units where applicable. For example, a soil-water kernel
+may use `p`, `w`, `wm`, `b`, `lambda`, `k_int`, `d_sup`, and `dt`, while the
+arrays that supply those values retain descriptive names such as
+`precipitation`, `soil_water_storage`, `b_arno`, and
+`lambda_brooks_corey`.
 
 Compact names are local variables or dummy arguments, not public state or
 assignment-only aliases. Use semantic qualifiers such as `_prev`, `_curr`,
 `_in`, `_out`, `_up`, and `_down` instead of numbered state names. A symbol
 must not silently change physical quantity: use separate names such as `d_sup`
 for runoff depth and `q_sup` for the corresponding discharge after conversion.
+In routing kernels, `r` is catchment runoff entering the river and `q` is
+routed river discharge. Persistent state retains descriptive names such as
+`catchment_q_current` and `inertial_q`.
 
 ## Comments
 

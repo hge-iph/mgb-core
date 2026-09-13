@@ -25,8 +25,12 @@ contains
         implicit none
 
         ! Symbols:
-        ! i_catch, i_down, i_up_slot catchment, downstream, and upstream-slot indices [1]
-        integer :: i_catch, i_down, i_up_slot
+        ! i_catch   catchment index [1]
+        ! i_down    downstream-catchment index [1]
+        ! i_up_slot upstream-topology slot index [1]
+        integer :: i_catch
+        integer :: i_down
+        integer :: i_up_slot
 
         upstream_topology = 0
 
@@ -45,18 +49,35 @@ contains
 
     subroutine build_floodplain_tables
         use config, only: catchment_count
-        use attributes, only: bankfull_depth, floodplain_area, floodplain_bottom_elevation, &
-            & floodplain_elevation, floodplain_point_count, river_length, river_width
-        use parameters, only: area_table, stage_table, volume_table
+        use attributes, only: &
+            & bankfull_depth, &
+            & floodplain_area, &
+            & floodplain_bottom_elevation, &
+            & floodplain_elevation, &
+            & floodplain_point_count, &
+            & river_length, &
+            & river_width
+        use parameters, only: &
+            & area_table, &
+            & stage_table, &
+            & volume_table
 
         implicit none
         ! Symbols:
-        ! i_catch, i_point catchment and floodplain-point indices [1]
-        ! dz, dv          elevation increment and volume increment [m, m3]
-        ! a_prev, a_curr adjacent floodplain areas [km2]
-        integer :: i_catch, i_point
-        real :: dz, dv
-        real*8 :: a_prev, a_curr
+        ! i_catch  catchment index [1]
+        ! i_point  floodplain-point index [1]
+        ! dz       elevation increment [m]
+        ! dv       volume increment [m3]
+        ! a_prev   preceding floodplain area [km2]
+        ! a_curr   current floodplain area [km2]
+        integer :: i_catch
+        integer :: i_point
+        real :: dz
+        real :: dv
+        real*8 :: a_prev
+        real*8 :: a_curr
+        real*8 :: first_level_volume
+        real*8 :: first_level_depth
 
         do i_catch = 1, catchment_count
 
@@ -65,8 +86,7 @@ contains
             volume_table(1, i_catch) = 0.0
             area_table(1, i_catch) = dble(river_width(i_catch))*dble(river_length(i_catch))/1000.0
             stage_table(2, i_catch) = floodplain_bottom_elevation(i_catch)
-            volume_table(2, i_catch) = dble(river_width(i_catch))*bankfull_depth(i_catch)* &
-                & dble(river_length(i_catch))*1000.0
+            volume_table(2, i_catch) = dble(river_width(i_catch))*bankfull_depth(i_catch)*dble(river_length(i_catch))*1000.0
             area_table(2, i_catch) = area_table(1, i_catch)
             stage_table(3, i_catch) = floodplain_elevation(1, i_catch)
             area_table(3, i_catch) = max(area_table(2, i_catch), floodplain_area(1, i_catch))
@@ -79,8 +99,7 @@ contains
             do i_point = 1, floodplain_point_count(i_catch) - 1
                 stage_table(i_point + 3, i_catch) = floodplain_elevation(i_point + 1, i_catch)
                 area_table(i_point + 3, i_catch) = floodplain_area(i_point + 1, i_catch)
-                dz = floodplain_elevation(i_point + 1, i_catch) - &
-                    & floodplain_elevation(i_point, i_catch)
+                dz = floodplain_elevation(i_point + 1, i_catch) - floodplain_elevation(i_point, i_catch)
                 a_prev = floodplain_area(i_point, i_catch)
                 a_curr = floodplain_area(i_point + 1, i_catch)
                 dv = dz*1000000.0*((a_prev + a_curr)*0.5)
@@ -95,48 +114,71 @@ contains
     subroutine initialize_inertial_routing
         use interpolation, only: linear_interpolate
         use config, only: catchment_count
-        use attributes, only: catchment_area, floodplain_point_count, manning_n, river_length, &
-            & river_slope, river_width
-        use parameters, only: area_table, reference_q, stage_table, volume_table
-        use state, only: current_flooded_area, current_water_volume, face_q, &
-            & grace_total_water_storage, inertial_q, neighbor_q, previous_water_volume, &
-            & stage_table_index, water_depth, water_surface_elevation
+        use attributes, only: &
+            & catchment_area, &
+            & floodplain_point_count, &
+            & n_manning, &
+            & river_length, &
+            & river_slope, &
+            & river_width
+        use parameters, only: &
+            & area_table, &
+            & reference_q, &
+            & stage_table, &
+            & volume_table
+        use state, only: &
+            & current_flooded_area, &
+            & current_water_volume, &
+            & face_q, &
+            & grace_total_water_storage, &
+            & inertial_q, &
+            & neighbor_q, &
+            & previous_water_volume, &
+            & stage_table_index, &
+            & water_depth, &
+            & water_surface_elevation
 
         implicit none
 
         ! Symbols:
         ! i_catch catchment index [1]
-        ! c_r, e_r hydraulic rating-curve scale and exponent [m^0.2 s^0.6, 1]
+        ! c_r       hydraulic rating-curve scale [m^0.2 s^0.6]
+        ! e_r       hydraulic rating-curve exponent [1]
+        ! q         routed river discharge [m3/s]
+        ! v         river-water volume [m3]
+        ! a         flooded area [km2]
+        ! n_points  stage-area table point count [1]
         integer :: i_catch
-        real*8 c_r, e_r
+        integer :: n_points
+        real*8 :: c_r
+        real*8 :: e_r
+        real*8 :: q
+        real*8 :: v
+        real*8 :: a
         neighbor_q = 0.0
         grace_total_water_storage = 0.0
 
         do i_catch = 1, catchment_count
 
-            c_r = (manning_n(i_catch)*(dble(river_width(i_catch))**(2.0/3.0)))**0.6/ &
-                & ((river_slope(i_catch)**0.5)**0.6)
+            c_r = (n_manning(i_catch)*(dble(river_width(i_catch))**(2.0/3.0)))**0.6/((river_slope(i_catch)**0.5)**0.6)
             e_r = 0.6
             inertial_q(i_catch) = reference_q(i_catch)
             face_q = reference_q(i_catch)
-            water_depth(i_catch) = c_r*(inertial_q(i_catch)**e_r)/ &
-                & dble(river_width(i_catch)) + 0.00001
+            water_depth(i_catch) = c_r*(inertial_q(i_catch)**e_r)/dble(river_width(i_catch)) + 0.00001
             water_surface_elevation(i_catch) = stage_table(1, i_catch) + water_depth(i_catch)
-            previous_water_volume(i_catch) = water_depth(i_catch)*dble(river_width(i_catch))* &
-                & (river_length(i_catch)*1000.)
+            previous_water_volume(i_catch) = water_depth(i_catch)*dble(river_width(i_catch))*(river_length(i_catch)*1000.)
             current_water_volume(i_catch) = previous_water_volume(i_catch)
-            current_flooded_area(i_catch) = linear_interpolate(volume_table(:, i_catch), &
-                & area_table(:, i_catch), floodplain_point_count(i_catch) + 2, &
-                & current_water_volume(i_catch))
-            current_flooded_area(i_catch) = max(current_flooded_area(i_catch), &
-                & catchment_area(i_catch))
+            current_flooded_area(i_catch) = linear_interpolate( &
+                & volume_table(:, i_catch), area_table(:, i_catch), floodplain_point_count(i_catch) + 2, current_water_volume(i_catch))
+            current_flooded_area(i_catch) = max(current_flooded_area(i_catch), catchment_area(i_catch))
             stage_table_index(i_catch) = 1
 
         end do
 
     end subroutine
 
-    subroutine route_inertial_flow(i_step)
+    subroutine route_inertial_flow( &
+        & i_step)
         use config, only: model_timestep
 
         implicit none
@@ -147,7 +189,9 @@ contains
         ! dt_elapsed    elapsed time in the current model step [s]
         ! dt_remaining  model timestep duration [s]
         integer, intent(in) :: i_step
-        real*8, volatile :: dt_elapsed, dt_route, dt_remaining
+        real*8, volatile :: dt_elapsed
+        real*8, volatile :: dt_route
+        real*8, volatile :: dt_remaining
 
         !Initializes aggregating time step loop variable
         dt_elapsed = 0.0
@@ -156,7 +200,8 @@ contains
         !Intertial Routing loop
         do while (dt_elapsed < dt_remaining)
 
-            call calculate_inertial_timestep(dt_route)
+            call calculate_inertial_timestep( &
+                & dt_route)
 
             ! Needed to adjust routing time step at last loop interval (i.e. in order to not exceed
             ! Water balance timestep in seconds.
@@ -165,31 +210,55 @@ contains
             !Updates the loop variable
             dt_elapsed = dt_elapsed + dt_route
 
-            call calculate_inertial_discharge(i_step, dt_route, dt_elapsed, dt_remaining)
-            call update_inertial_continuity(i_step, dt_route, dt_elapsed, dt_remaining)
+            call calculate_inertial_discharge( &
+                & i_step, &
+                & dt_route, &
+                & dt_elapsed, &
+                & dt_remaining)
+            call update_inertial_continuity( &
+                & i_step, &
+                & dt_route, &
+                & dt_elapsed, &
+                & dt_remaining)
 
         end do
 
         return
     end subroutine
 
-    subroutine calculate_inertial_timestep(dt_route)
-        use config, only: catchment_count, courant_alpha, first_subbasin, gravity, last_subbasin, &
+    subroutine calculate_inertial_timestep( &
+        & dt_route)
+        use config, only: &
+            & catchment_count, &
+            & courant_alpha, &
+            & first_subbasin, &
+            & gravity, &
+            & last_subbasin, &
             & model_timestep
-        use attributes, only: catchment_subbasin, river_length
+        use attributes, only: &
+            & catchment_subbasin, &
+            & river_length
         use state, only: water_depth
 
         implicit none
 
         ! Symbols:
-        ! i_catch, i_sub catchment and subbasin indices [1]
+        ! i_catch      catchment index [1]
+        ! i_sub        subbasin index [1]
         ! h_max        flow depth used by the CFL condition [m]
         ! dt_route     selected inertial timestep [s]
         ! dt_cand      candidate inertial timestep [s]
-        ! dt_min, dt_cfl, dt_max timestep bounds and CFL candidate [s]
+        ! dt_min       minimum timestep bound [s]
+        ! dt_cfl       CFL timestep candidate [s]
+        ! dt_max       maximum timestep bound [s]
         real*8, intent(out) :: dt_route
-        integer :: i_catch, i_sub
-        real*8, volatile :: h_max, dt_min, dt_cand, dt_cfl, dt_max
+        integer :: i_catch
+        integer :: i_sub
+        real*8, volatile :: h_max
+        real*8, volatile :: dt_min
+        real*8, volatile :: dt_cand
+        real*8, volatile :: dt_cfl
+        real*8, volatile :: dt_max
 
         dt_cand = dble(model_timestep)
 
@@ -205,8 +274,7 @@ contains
             ! Correct if equal to zero:
             h_max = max(h_max, 0.001)
             ! Compute time interval:
-            dt_cfl = courant_alpha*river_length(i_catch)*1000./ &
-                & (gravity*h_max)**0.5
+            dt_cfl = courant_alpha*river_length(i_catch)*1000./(gravity*h_max)**0.5
             if (dt_cfl < dt_cand) dt_cand = dt_cfl
         end do
 
@@ -217,45 +285,112 @@ contains
 
     end subroutine
 
-    subroutine calculate_inertial_discharge(i_step, dt_route, dt_elapsed, dt_remaining)
-        use config, only: catchment_count, downstream_water_surface_slope, face_count, &
-            & first_subbasin, gravity, last_subbasin, overland_flow_width, overland_manning_n, &
-            & pseudo_two_d_enabled, thread_count
+    subroutine calculate_inertial_discharge( &
+        & i_step, &
+        & dt_route, &
+        & dt_elapsed, &
+        & dt_remaining)
+        use config, only: &
+            & catchment_count, &
+            & downstream_water_surface_slope, &
+            & face_count, &
+            & first_subbasin, &
+            & gravity, &
+            & last_subbasin, &
+            & overland_flow_width, &
+            & overland_manning_n, &
+            & pseudo_two_d_enabled, &
+            & thread_count
         use forcing, only: reservoir_outflow
-        use attributes, only: bankfull_depth, catchment_subbasin, face_catchment_1, &
-            & face_catchment_2, face_distance, manning_n, river_length, river_width
-        use parameters, only: reservoir_index_by_catchment, routing_downstream_catchment, stage_table
-        use state, only: face_q, flow_velocity, inertial_q, neighbor_q, outgoing_q_current, &
-            & q_river_output, water_depth
+        use attributes, only: &
+            & bankfull_depth, &
+            & catchment_subbasin, &
+            & face_catchment_1, &
+            & face_catchment_2, &
+            & face_distance, &
+            & n_manning, &
+            & river_length, &
+            & river_width
+        use parameters, only: &
+            & reservoir_index_by_catchment, &
+            & routing_downstream_catchment, &
+            & stage_table
+        use state, only: &
+            & face_q, &
+            & flow_velocity, &
+            & inertial_q, &
+            & neighbor_q, &
+            & outgoing_q_current, &
+            & q_river_output, &
+            & water_depth
 
         use omp_lib
 
         implicit none
 
         integer, intent(in) :: i_step
-        real*8, intent(in) :: dt_route, dt_elapsed, dt_remaining
+        real*8, intent(in) :: dt_route
+        real*8, intent(in) :: dt_elapsed
+        real*8, intent(in) :: dt_remaining
 
         ! Symbols:
-        ! i_catch, i_sub, i_down, i_face, i_face_up, i_face_down, i_res indices [1]
-        ! z_up, z_down   bed elevations [m]
-        ! y_up, y_down   water-surface elevations [m]
-        ! h_flow, dx, b_flow flow depth, length, and width [m]
+        ! i_catch       catchment index [1]
+        ! i_sub         subbasin index [1]
+        ! i_down        downstream-catchment index [1]
+        ! i_face        lateral-face index [1]
+        ! i_face_up     first face-catchment index [1]
+        ! i_face_down   second face-catchment index [1]
+        ! i_res         reservoir index [1]
+        ! z_up          upstream bed elevation [m]
+        ! z_down        downstream bed elevation [m]
+        ! y_up          upstream water-surface elevation [m]
+        ! y_down        downstream water-surface elevation [m]
+        ! h_flow        flow depth [m]
+        ! dx            flow-path length [m]
+        ! b_flow        river-flow width [m]
         ! n_flow         Manning roughness [s/m^(1/3)]
         ! q_width_prev   previous discharge per unit width [m2/s]
         ! s_flow         water-surface slope [1]
         ! q              updated discharge [m3/s]
-        ! b_face, n_face lateral-face width and roughness [m, s/m^(1/3)]
-        ! dt_route, dt_elapsed, dt_remaining inertial and elapsed timesteps [s]
-        integer :: i_catch, i_sub, i_down, i_face, i_face_up, i_face_down, i_res
-        real*8, volatile :: z_up, z_down, y_up, y_down, h_flow, dx, b_flow, n_flow
-        real*8, volatile :: q_width_prev, s_flow, q, b_face, n_face
+        ! b_face        lateral-face width [m]
+        ! n_face        lateral-face Manning roughness [s/m^(1/3)]
+        ! q_numerator   inertial-equation momentum numerator [m2/s]
+        ! q_denominator inertial-equation friction denominator [1]
+        ! q_previous    previous routed river discharge [m3/s]
+        ! q_target      prescribed reservoir discharge [m3/s]
+        integer :: i_catch
+        integer :: i_sub
+        integer :: i_down
+        integer :: i_face
+        integer :: i_face_up
+        integer :: i_face_down
+        integer :: i_res
+        real*8, volatile :: z_up
+        real*8, volatile :: z_down
+        real*8, volatile :: y_up
+        real*8, volatile :: y_down
+        real*8, volatile :: h_flow
+        real*8, volatile :: dx
+        real*8, volatile :: b_flow
+        real*8, volatile :: n_flow
+        real*8, volatile :: q_width_prev
+        real*8, volatile :: s_flow
+        real*8, volatile :: q
+        real*8, volatile :: b_face
+        real*8, volatile :: n_face
+        real*8 :: q_numerator
+        real*8 :: q_denominator
+        real*8 :: q_previous
+        real*8 :: q_target
 
         b_face = overland_flow_width
         n_face = overland_manning_n
         !Start catchment loop
         !$omp parallel num_threads(thread_count)
 
-        !$omp do private(i_sub,y_up,y_down,z_up,z_down,i_down,i_res,h_flow,dx,b_flow,n_flow,q_width_prev,s_flow,q)
+        !$omp do &
+        !$omp& private(i_sub,y_up,y_down,z_up,z_down,i_down,i_res,h_flow,dx,b_flow,n_flow,q_width_prev,s_flow,q, &
+        !$omp& q_numerator,q_denominator,q_previous,q_target)
         do i_catch = 1, catchment_count
 
             ! Manual controls for specialized calibration
@@ -316,7 +451,7 @@ contains
             end if
 
             !River manning coefficient
-            n_flow = manning_n(i_catch)
+            n_flow = n_manning(i_catch)
 
             ! Flow in the last time-step
             q_width_prev = inertial_q(i_catch)/b_flow
@@ -327,9 +462,9 @@ contains
 
             ! Calculates flow from Inertial equation (m2/s) for each i_catch:
             if (h_flow > 0.0) then
-                q = (q_width_prev - gravity*dt_route*h_flow*s_flow)/ &
-                    & (1.+gravity*dt_route*h_flow*n_flow*n_flow*abs(q_width_prev)/ &
-                    & (h_flow**(10.0/3.0)))
+                q_numerator = q_width_prev - gravity*dt_route*h_flow*s_flow
+                q_denominator = 1. + gravity*dt_route*h_flow*n_flow*n_flow*abs(q_width_prev)/(h_flow**(10.0/3.0))
+                q = q_numerator/q_denominator
                 q = q*b_flow
                 !(m3/s)
 
@@ -352,8 +487,9 @@ contains
             i_res = reservoir_index_by_catchment(i_catch)
             if (i_res > 0) then
                 if (reservoir_outflow(i_step, i_res) > -0.01) then
-                    q = q_river_output(i_catch) + dt_elapsed/dt_remaining* &
-                        & (reservoir_outflow(i_step, i_res) - q_river_output(i_catch))
+                    q_previous = q_river_output(i_catch)
+                    q_target = reservoir_outflow(i_step, i_res)
+                    q = q_previous + dt_elapsed/dt_remaining*(q_target - q_previous)
                 end if
             end if
             !! SIN_RESERV
@@ -420,9 +556,9 @@ contains
 
                 ! Inertial discharge per unit width at the downstream face.
                 if (h_flow > 0.0) then
-                    q = (q_width_prev - gravity*dt_route*h_flow*s_flow)/ &
-                        & (1.+gravity*dt_route*h_flow*n_face*n_face*abs(q_width_prev)/ &
-                        & (h_flow**(10.0/3.0)))
+                    q_numerator = q_width_prev - gravity*dt_route*h_flow*s_flow
+                    q_denominator = 1. + gravity*dt_route*h_flow*n_face*n_face*abs(q_width_prev)/(h_flow**(10.0/3.0))
+                    q = q_numerator/q_denominator
                     q = q*b_face
                 else
                     q = 0.0
@@ -440,43 +576,118 @@ contains
 
     end subroutine calculate_inertial_discharge
 
-    subroutine update_inertial_continuity(i_step, dt_route, dt_elapsed, dt_remaining)
-        use config, only: catchment_count, first_subbasin, last_subbasin, model_timestep, &
+    subroutine update_inertial_continuity( &
+        & i_step, &
+        & dt_route, &
+        & dt_elapsed, &
+        & dt_remaining)
+        use config, only: &
+            & catchment_count, &
+            & first_subbasin, &
+            & last_subbasin, &
+            & model_timestep, &
             & thread_count
         use forcing, only: precipitation
-        use attributes, only: catchment_area, catchment_subbasin, floodplain_point_count
-        use parameters, only: area_table, reservoir_index_by_catchment, reservoir_start_timestep, &
-            & stage_table, upstream_topology, volume_table
-        use state, only: catchment_q_current, current_flooded_area, current_water_volume, &
-            & et_output, floodplain_infiltration, inertial_q, neighbor_q, open_water_et_output, &
-            & potential_open_water_et, previous_water_volume, stage_table_index, &
-            & surface_water_output, total_water_storage, water_depth, water_surface_elevation
+        use attributes, only: &
+            & catchment_area, &
+            & catchment_subbasin, &
+            & floodplain_point_count
+        use parameters, only: &
+            & area_table, &
+            & reservoir_index_by_catchment, &
+            & reservoir_start_timestep, &
+            & stage_table, &
+            & upstream_topology, &
+            & volume_table
+        use state, only: &
+            & catchment_q_current, &
+            & current_flooded_area, &
+            & current_water_volume, &
+            & et_output, &
+            & floodplain_infiltration, &
+            & inertial_q, &
+            & neighbor_q, &
+            & open_water_et_output, &
+            & potential_open_water_et, &
+            & previous_water_volume, &
+            & stage_table_index, &
+            & surface_water_output, &
+            & total_water_storage, &
+            & water_depth, &
+            & water_surface_elevation
 
         use omp_lib
 
         implicit none
 
         integer, intent(in) :: i_step
-        real*8, intent(in) :: dt_route, dt_elapsed, dt_remaining
+        real*8, intent(in) :: dt_route
+        real*8, intent(in) :: dt_elapsed
+        real*8, intent(in) :: dt_remaining
 
         ! Symbols:
-        ! i_catch, i_sub catchment and subbasin indices [1]
+        ! i_catch       catchment index [1]
+        ! i_sub         subbasin index [1]
         ! n_up          upstream-catchment count [1]
-        ! q_up          total upstream discharge [m3/s]
-        ! y, a          interpolated water-surface elevation and flooded area [m, km2]
-        ! dt_route, dt_elapsed, dt_remaining inertial and elapsed timesteps [s]
-        integer :: i_catch, i_sub, n_up
-        real*8, volatile :: q_up, y, a
+        ! r             catchment runoff entering the river [m3/s]
+        ! q             routed river discharge [m3/s]
+        ! q_up          total upstream river discharge [m3/s]
+        ! q_neighbor    net lateral river discharge [m3/s]
+        ! q_net         net horizontal discharge into river storage [m3/s]
+        ! p             precipitation [mm per model timestep]
+        ! d_et          potential open-water evaporation [mm per model timestep]
+        ! d_infil       floodplain infiltration [mm per model timestep]
+        ! d_vertical    net vertical water-loss depth [mm per model timestep]
+        ! a_flood       flooded area [km2]
+        ! a_catch       catchment area [km2]
+        ! v_prev        previous river-water volume [m3]
+        ! v             updated river-water volume [m3]
+        ! d_et_output   open-water evaporation output depth [mm per model timestep]
+        ! d_storage     river-storage output depth [mm]
+        ! y             interpolated water-surface elevation [m]
+        ! a             interpolated flooded area [km2]
+        integer :: i_catch
+        integer :: i_sub
+        integer :: n_up
+        real*8, volatile :: q_up
+        real*8, volatile :: q_net
+        real*8, volatile :: y
+        real*8, volatile :: a
+        real, volatile :: r
+        real*8, volatile :: q
+        real*8, volatile :: q_neighbor
+        real, volatile :: p
+        real, volatile :: d_et
+        real, volatile :: d_infil
+        real, volatile :: d_vertical
+        real*8, volatile :: a_flood
+        real, volatile :: a_catch
+        real*8, volatile :: v_prev
+        real*8, volatile :: v
+        real*8, volatile :: d_et_output
+        real, volatile :: d_storage
 
         surface_water_output = 0.0
 
         !$omp parallel num_threads(thread_count)
-        !$omp do private(i_sub,n_up,q_up,a,y)
+        !$omp do &
+        !$omp& private(i_sub,n_up,r,q,q_up,q_neighbor,q_net,p,d_et,d_infil,d_vertical,a_flood,a_catch,v_prev,v, &
+        !$omp& d_et_output,d_storage,a,y)
         do i_catch = 1, catchment_count
 
             i_sub = catchment_subbasin(i_catch)
             if ((i_sub < first_subbasin) .or. (i_sub > last_subbasin)) cycle
             ! Manual controls for specialized calibration
+
+            r = catchment_q_current(i_catch)
+            q = inertial_q(i_catch)
+            q_neighbor = neighbor_q(i_catch)
+            p = precipitation(i_catch)
+            d_et = potential_open_water_et(i_catch)
+            d_infil = floodplain_infiltration(i_catch)
+            a_flood = current_flooded_area(i_catch)
+            a_catch = catchment_area(i_catch)
+            v_prev = previous_water_volume(i_catch)
 
             !Number of upstream catchments of i_catch
             n_up = upstream_topology(i_catch, 1)
@@ -489,39 +700,41 @@ contains
             end if
 
             !to use lateral connections
-            current_water_volume(i_catch) = previous_water_volume(i_catch) + dt_route* &
-                & (q_up + catchment_q_current(i_catch) - inertial_q(i_catch) + &
-                & neighbor_q(i_catch)) - (potential_open_water_et(i_catch) + &
-                & floodplain_infiltration(i_catch) - precipitation(i_catch))*dt_route* &
-                & current_flooded_area(i_catch)*1000000.0/(model_timestep*1000.)
-            current_water_volume(i_catch) = max(current_water_volume(i_catch), 0.0)
+            d_vertical = d_et + d_infil - p
+            q_net = q_up + r - q + q_neighbor
+            v = v_prev + dt_route*q_net - d_vertical*dt_route*a_flood*1000000.0/(model_timestep*1000.)
+            v = max(v, 0.0)
+            current_water_volume(i_catch) = v
 
             !! SIN_RESERV
             if (reservoir_index_by_catchment(i_catch) > 0 .and. &
                 & reservoir_start_timestep(i_catch) <= i_step) then
-                current_water_volume(i_catch) = min(current_water_volume(i_catch), &
-                    & volume_table(2, i_catch))
+                current_water_volume(i_catch) = min(current_water_volume(i_catch), volume_table(2, i_catch))
                 ! max vol calha cheia
             end if
             !! SIN_RESERV
 
             !!Added to include evaporation of open waters from floodplain dynamics
-            et_output(i_catch) = et_output(i_catch) + &
-                & ((potential_open_water_et(i_catch)*dt_route*current_flooded_area(i_catch)* &
-                & 1000000.0/(model_timestep*1000.))/(catchment_area(i_catch)*1000))
+            d_et_output = ((d_et*dt_route*a_flood*1000000.0/(model_timestep*1000.))/(a_catch*1000))
+            et_output(i_catch) = et_output(i_catch) + d_et_output
             ! mm per model timestep
-            open_water_et_output(i_catch) = open_water_et_output(i_catch) + &
-                & ((potential_open_water_et(i_catch)*dt_route*current_flooded_area(i_catch)* &
-                & 1000000.0/(model_timestep*1000.))/(catchment_area(i_catch)*1000))
+            open_water_et_output(i_catch) = open_water_et_output(i_catch) + d_et_output
             ! mm per model timestep
 
             !Interpolates the Area and Level from Volume
-            call interpolate_stage_area(current_water_volume, volume_table, stage_table_index, &
-                & i_catch, stage_table, area_table, floodplain_point_count, &
-                & catchment_count, y, a)
+            call interpolate_stage_area( &
+                & current_water_volume, &
+                & volume_table, &
+                & stage_table_index, &
+                & i_catch, &
+                & stage_table, &
+                & area_table, &
+                & floodplain_point_count, &
+                & catchment_count, &
+                & y, &
+                & a)
 
-            current_flooded_area(i_catch) = min(a, &
-                & catchment_area(i_catch))
+            current_flooded_area(i_catch) = min(a, catchment_area(i_catch))
 
             !Updates variables:
             water_surface_elevation(i_catch) = max(y, stage_table(1, i_catch) + 0.001)
@@ -535,10 +748,9 @@ contains
             if (dt_elapsed/dt_remaining == 1) then
 
                 !Update Terrestrial Water Storage at the end of inertial loop
-                total_water_storage(i_catch) = total_water_storage(i_catch) + &
-                    & real(current_water_volume(i_catch)/dble(catchment_area(i_catch)*1000.0))
-                surface_water_output(i_catch) = surface_water_output(i_catch) + &
-                    & real(current_water_volume(i_catch)/dble(catchment_area(i_catch)*1000.0))
+                d_storage = real(current_water_volume(i_catch)/dble(a_catch*1000.0))
+                total_water_storage(i_catch) = total_water_storage(i_catch) + d_storage
+                surface_water_output(i_catch) = surface_water_output(i_catch) + d_storage
 
             end if
 
@@ -548,25 +760,47 @@ contains
 
     end subroutine
 
-    subroutine interpolate_stage_area(v, vt, j_stage, i_catch, st, at, n_pts, n_catch, y, a)
+    subroutine interpolate_stage_area( &
+        & v, &
+        & vt, &
+        & j_stage, &
+        & i_catch, &
+        & st, &
+        & at, &
+        & n_pts, &
+        & n_catch, &
+        & y, &
+        & a)
 
         implicit none
 
         ! Symbols:
-        ! i_catch, n_catch catchment index and table count [1]
-        ! j_stage, n_pts current stage-table index and point count [1]
-        ! v, vt          current and tabulated water volume [m3]
-        ! st, at          tabulated stage and flooded area [m, km2]
-        ! f, y, a         interpolation fraction, stage, and area [1, m, km2]
-        integer, intent(in) :: i_catch, n_catch
+        ! i_catch catchment index [1]
+        ! n_catch catchment table count [1]
+        ! j_stage current stage-table index [1]
+        ! n_pts   stage-table point count [1]
+        ! v       current water volume [m3]
+        ! vt      tabulated water volume [m3]
+        ! st      tabulated stage [m]
+        ! at      tabulated flooded area [km2]
+        ! f       interpolation fraction [1]
+        ! y       interpolated stage [m]
+        ! a       interpolated flooded area [km2]
+        ! dv      tabulated volume interval [m3]
+        ! v_excess volume above the tabulated range [m3]
+        integer, intent(in) :: i_catch
+        integer, intent(in) :: n_catch
         integer, intent(in) :: n_pts(n_catch)
         integer, intent(inout) :: j_stage(n_catch)
         real(kind=8), intent(in) :: v(n_catch)
         real(kind=8), intent(in) :: vt(102, n_catch)
         real(kind=8), intent(in) :: st(102, n_catch)
         real(kind=8), intent(in) :: at(102, n_catch)
-        real(kind=8), intent(out) :: y, a
+        real(kind=8), intent(out) :: y
+        real(kind=8), intent(out) :: a
         real(kind=8) :: f
+        real(kind=8) :: dv
+        real(kind=8) :: v_excess
 
         do
             if ((v(i_catch) >= vt(j_stage(i_catch), i_catch)) .and. &
@@ -576,10 +810,8 @@ contains
                 f = (v(i_catch) - vt(j_stage(i_catch), i_catch))/ &
                     & (vt(j_stage(i_catch) + 1, i_catch) - vt(j_stage(i_catch), i_catch))
                 !Interpolates values based on % above:
-                y = st(j_stage(i_catch), i_catch) + &
-                    & (st(j_stage(i_catch) + 1, i_catch) - st(j_stage(i_catch), i_catch))*f
-                a = at(j_stage(i_catch), i_catch) + &
-                    & (at(j_stage(i_catch) + 1, i_catch) - at(j_stage(i_catch), i_catch))*f
+                y = st(j_stage(i_catch), i_catch) + (st(j_stage(i_catch) + 1, i_catch) - st(j_stage(i_catch), i_catch))*f
+                a = at(j_stage(i_catch), i_catch) + (at(j_stage(i_catch) + 1, i_catch) - at(j_stage(i_catch), i_catch))*f
 
                 exit
 

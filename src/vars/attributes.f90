@@ -4,25 +4,39 @@ module attributes
     save
 
     real, allocatable :: river_width(:)
-    integer, allocatable :: catchment_subbasin(:), downstream_catchment(:)
-    real, allocatable :: longest_reach_slope(:), longest_reach_length(:)
-    real, allocatable :: catchment_x(:), catchment_y(:)
+    integer, allocatable :: catchment_subbasin(:)
+    integer, allocatable :: downstream_catchment(:)
+    real, allocatable :: longest_reach_slope(:)
+    real, allocatable :: longest_reach_length(:)
+    real, allocatable :: catchment_x(:)
+    real, allocatable :: catchment_y(:)
     integer, allocatable :: climate_region(:)
-    real, allocatable :: catchment_area(:), drainage_area(:), river_length(:), river_slope(:)
+    real, allocatable :: catchment_area(:)
+    real, allocatable :: drainage_area(:)
+    real, allocatable :: river_length(:)
+    real, allocatable :: river_slope(:)
     real, allocatable :: hru_percentage(:, :)
     integer, allocatable :: catchment_order(:)
-    real, allocatable :: manning_n(:)
+    real, allocatable :: n_manning(:)
 
-    integer, allocatable :: floodplain_point_count(:), floodplain_bottom_elevation(:)
+    integer, allocatable :: floodplain_point_count(:)
+    integer, allocatable :: floodplain_bottom_elevation(:)
     integer, allocatable :: floodplain_elevation(:, :)
-    real*8, allocatable :: floodplain_area(:, :), bankfull_depth(:)
-    real*8, allocatable :: face_catchment_1(:), face_catchment_2(:)
-    real*8, allocatable :: first_face_elevation(:), second_face_elevation(:), face_distance(:)
+    real*8, allocatable :: floodplain_area(:, :)
+    real*8, allocatable :: bankfull_depth(:)
+    real*8, allocatable :: face_catchment_1(:)
+    real*8, allocatable :: face_catchment_2(:)
+    real*8, allocatable :: first_face_elevation(:)
+    real*8, allocatable :: second_face_elevation(:)
+    real*8, allocatable :: face_distance(:)
 
 contains
 
-    subroutine allocate_attributes(catchment_count, hru_count)
-        integer, intent(in) :: catchment_count, hru_count
+    subroutine allocate_attributes( &
+        & catchment_count, &
+        & hru_count)
+        integer, intent(in) :: catchment_count
+        integer, intent(in) :: hru_count
 
         allocate (river_width(catchment_count))
         allocate (catchment_subbasin(catchment_count))
@@ -38,7 +52,7 @@ contains
         allocate (river_slope(catchment_count))
         allocate (hru_percentage(catchment_count, hru_count))
         allocate (catchment_order(catchment_count))
-        allocate (manning_n(catchment_count))
+        allocate (n_manning(catchment_count))
 
         allocate (floodplain_point_count(catchment_count))
         allocate (floodplain_bottom_elevation(catchment_count))
@@ -64,7 +78,7 @@ contains
         if (allocated(floodplain_bottom_elevation)) deallocate (floodplain_bottom_elevation)
         if (allocated(floodplain_point_count)) deallocate (floodplain_point_count)
 
-        if (allocated(manning_n)) deallocate (manning_n)
+        if (allocated(n_manning)) deallocate (n_manning)
         if (allocated(catchment_order)) deallocate (catchment_order)
         if (allocated(hru_percentage)) deallocate (hru_percentage)
         if (allocated(river_slope)) deallocate (river_slope)

@@ -8,7 +8,9 @@ module output_io
 contains
 
     subroutine open_model_log
-        use config, only: log_unit, output_directory
+        use config, only: &
+            & log_unit, &
+            & output_directory
 
         implicit none
 
@@ -26,44 +28,88 @@ contains
     subroutine open_model_outputs
         implicit none
 
-        call manage_output_files(1)
+        call manage_output_files( &
+            & 1)
     end subroutine open_model_outputs
 
     subroutine close_model_outputs
         implicit none
 
-        call manage_output_files(0)
+        call manage_output_files( &
+            & 0)
     end subroutine close_model_outputs
 
-    subroutine write_model_outputs(i_step)
-        use config, only: catchment_count, discharge_output_unit, et_output_unit, &
+    subroutine write_model_outputs( &
+        & i_step)
+        use config, only: &
+            & catchment_count, &
+            & discharge_output_unit, &
+            & et_output_unit, &
             & flooded_area_output_unit, &
-            & groundwater_flux_output_unit, groundwater_storage_output_unit, hand_output_unit, &
-            & interception_et_output_unit, interception_storage_output_unit, &
-            & open_water_et_output_unit, potential_open_water_et_output_unit, &
-            & runoff_output_unit, soil_saturation_output_unit, soil_vegetation_et_output_unit, &
-            & soil_water_output_unit, subsurface_flux_output_unit, subsurface_storage_output_unit, &
-            & surface_flux_output_unit, surface_storage_output_unit, surface_water_output_unit, &
-            & total_water_storage_output_unit, water_hru_et_output_unit, &
-            & water_surface_elevation_output_unit, write_discharge_output, write_et_output, &
-            & write_flooded_area_output, write_groundwater_flux_output, &
-            & write_groundwater_storage_output, write_hand_output, write_interception_et_output, &
-            & write_interception_storage_output, write_open_water_et_output, &
-            & write_potential_open_water_et_output, write_runoff_output, &
-            & write_soil_moisture_output, write_soil_saturation_output, &
-            & write_soil_vegetation_et_output, write_subsurface_flux_output, &
-            & write_subsurface_storage_output, write_surface_flux_output, &
-            & write_surface_storage_output, write_surface_water_output, &
-            & write_total_water_storage_output, write_water_hru_et_output, &
+            & groundwater_flux_output_unit, &
+            & groundwater_storage_output_unit, &
+            & hand_output_unit, &
+            & interception_et_output_unit, &
+            & interception_storage_output_unit, &
+            & open_water_et_output_unit, &
+            & potential_open_water_et_output_unit, &
+            & runoff_output_unit, &
+            & soil_saturation_output_unit, &
+            & soil_vegetation_et_output_unit, &
+            & soil_water_output_unit, &
+            & subsurface_flux_output_unit, &
+            & subsurface_storage_output_unit, &
+            & surface_flux_output_unit, &
+            & surface_storage_output_unit, &
+            & surface_water_output_unit, &
+            & total_water_storage_output_unit, &
+            & water_hru_et_output_unit, &
+            & water_surface_elevation_output_unit, &
+            & write_discharge_output, &
+            & write_et_output, &
+            & write_flooded_area_output, &
+            & write_groundwater_flux_output, &
+            & write_groundwater_storage_output, &
+            & write_hand_output, &
+            & write_interception_et_output, &
+            & write_interception_storage_output, &
+            & write_open_water_et_output, &
+            & write_potential_open_water_et_output, &
+            & write_runoff_output, &
+            & write_soil_moisture_output, &
+            & write_soil_saturation_output, &
+            & write_soil_vegetation_et_output, &
+            & write_subsurface_flux_output, &
+            & write_subsurface_storage_output, &
+            & write_surface_flux_output, &
+            & write_surface_storage_output, &
+            & write_surface_water_output, &
+            & write_total_water_storage_output, &
+            & write_water_hru_et_output, &
             & write_water_surface_elevation_output
-        use state, only: catchment_q_output, et_output, flooded_area_output, &
-            & groundwater_runoff_depth_output, groundwater_storage_depth_output, hand_output, &
-            & interception_et_output, interception_storage_output, open_water_et_output, &
-            & potential_open_water_et_output, q_river_output, soil_saturation_output, &
-            & soil_vegetation_et_output, soil_water_output, subsurface_runoff_depth_output, &
-            & subsurface_storage_depth_output, surface_runoff_depth_output, &
-            & surface_storage_depth_output, surface_water_output, total_water_storage_output, &
-            & water_hru_et_output, water_surface_elevation_output
+        use state, only: &
+            & catchment_q_output, &
+            & et_output, &
+            & flooded_area_output, &
+            & groundwater_runoff_depth_output, &
+            & groundwater_storage_depth_output, &
+            & hand_output, &
+            & interception_et_output, &
+            & interception_storage_output, &
+            & open_water_et_output, &
+            & potential_open_water_et_output, &
+            & q_river_output, &
+            & soil_saturation_output, &
+            & soil_vegetation_et_output, &
+            & soil_water_output, &
+            & subsurface_runoff_depth_output, &
+            & subsurface_storage_depth_output, &
+            & surface_runoff_depth_output, &
+            & surface_storage_depth_output, &
+            & surface_water_output, &
+            & total_water_storage_output, &
+            & water_hru_et_output, &
+            & water_surface_elevation_output
 
         implicit none
 
@@ -125,27 +171,55 @@ contains
     end subroutine
 
     ! Open or close the configured output streams.
-    subroutine manage_output_files(file_action)
+    subroutine manage_output_files( &
+        & file_action)
 
-        use config, only: catchment_count, discharge_output_unit, et_output_unit, &
+        use config, only: &
+            & catchment_count, &
+            & discharge_output_unit, &
+            & et_output_unit, &
             & flooded_area_output_unit, &
-            & groundwater_flux_output_unit, groundwater_storage_output_unit, hand_output_unit, &
-            & interception_et_output_unit, interception_storage_output_unit, &
-            & open_water_et_output_unit, output_directory, potential_open_water_et_output_unit, &
-            & runoff_output_unit, soil_saturation_output_unit, soil_vegetation_et_output_unit, &
-            & soil_water_output_unit, subsurface_flux_output_unit, subsurface_storage_output_unit, &
-            & surface_flux_output_unit, surface_storage_output_unit, surface_water_output_unit, &
-            & total_water_storage_output_unit, water_hru_et_output_unit, &
-            & water_surface_elevation_output_unit, write_discharge_output, write_et_output, &
-            & write_flooded_area_output, write_groundwater_flux_output, &
-            & write_groundwater_storage_output, write_hand_output, write_interception_et_output, &
-            & write_interception_storage_output, write_open_water_et_output, &
-            & write_potential_open_water_et_output, write_runoff_output, &
-            & write_soil_moisture_output, write_soil_saturation_output, &
-            & write_soil_vegetation_et_output, write_subsurface_flux_output, &
-            & write_subsurface_storage_output, write_surface_flux_output, &
-            & write_surface_storage_output, write_surface_water_output, &
-            & write_total_water_storage_output, write_water_hru_et_output, &
+            & groundwater_flux_output_unit, &
+            & groundwater_storage_output_unit, &
+            & hand_output_unit, &
+            & interception_et_output_unit, &
+            & interception_storage_output_unit, &
+            & open_water_et_output_unit, &
+            & output_directory, &
+            & potential_open_water_et_output_unit, &
+            & runoff_output_unit, &
+            & soil_saturation_output_unit, &
+            & soil_vegetation_et_output_unit, &
+            & soil_water_output_unit, &
+            & subsurface_flux_output_unit, &
+            & subsurface_storage_output_unit, &
+            & surface_flux_output_unit, &
+            & surface_storage_output_unit, &
+            & surface_water_output_unit, &
+            & total_water_storage_output_unit, &
+            & water_hru_et_output_unit, &
+            & water_surface_elevation_output_unit, &
+            & write_discharge_output, &
+            & write_et_output, &
+            & write_flooded_area_output, &
+            & write_groundwater_flux_output, &
+            & write_groundwater_storage_output, &
+            & write_hand_output, &
+            & write_interception_et_output, &
+            & write_interception_storage_output, &
+            & write_open_water_et_output, &
+            & write_potential_open_water_et_output, &
+            & write_runoff_output, &
+            & write_soil_moisture_output, &
+            & write_soil_saturation_output, &
+            & write_soil_vegetation_et_output, &
+            & write_subsurface_flux_output, &
+            & write_subsurface_storage_output, &
+            & write_surface_flux_output, &
+            & write_surface_storage_output, &
+            & write_surface_water_output, &
+            & write_total_water_storage_output, &
+            & write_water_hru_et_output, &
             & write_water_surface_elevation_output
         use state, only: q_river_output
 

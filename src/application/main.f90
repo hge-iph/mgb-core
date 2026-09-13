@@ -2,38 +2,80 @@
 
 program mgb_model
 
-    use attributes, only: allocate_attributes, deallocate_attributes
-    use config, only: allocate_config, catchment_count, climate_cell_count, climate_region_count, &
-        & courant_alpha, deallocate_config, downstream_water_surface_slope, first_subbasin, &
-        & hotstart_input_directory, hru_count, inertial_catchment_count, inertial_routing_enabled, &
-        & input_directory, last_subbasin, log_unit, max_hru_count, max_muskingum_reach_count, &
-        & max_subbasin_count, model_timestep, monthly_radiation_option, output_directory, &
-        & pseudo_two_d_enabled, read_hotstart_mode, reservoir_substitution_enabled, &
-        & routing_method, subbasin_count, substitution_count, thread_count, timestep_count, &
+    use attributes, only: &
+        & allocate_attributes, &
+        & deallocate_attributes
+    use config, only: &
+        & allocate_config, &
+        & catchment_count, &
+        & climate_cell_count, &
+        & climate_region_count, &
+        & courant_alpha, &
+        & deallocate_config, &
+        & downstream_water_surface_slope, &
+        & first_subbasin, &
+        & hotstart_input_directory, &
+        & hru_count, &
+        & inertial_catchment_count, &
+        & inertial_routing_enabled, &
+        & input_directory, &
+        & last_subbasin, &
+        & log_unit, &
+        & max_hru_count, &
+        & max_muskingum_reach_count, &
+        & max_subbasin_count, &
+        & model_timestep, &
+        & monthly_radiation_option, &
+        & output_directory, &
+        & pseudo_two_d_enabled, &
+        & read_hotstart_mode, &
+        & reservoir_substitution_enabled, &
+        & routing_method, &
+        & subbasin_count, &
+        & substitution_count, &
+        & thread_count, &
+        & timestep_count, &
         & write_hotstart_mode
-    use forcing, only: allocate_forcing, deallocate_forcing
-    use parameters, only: allocate_parameters, deallocate_parameters
-    use state, only: allocate_state, day, deallocate_state, hour, minute, month, year
+    use forcing, only: &
+        & allocate_forcing, &
+        & deallocate_forcing
+    use parameters, only: &
+        & allocate_parameters, &
+        & deallocate_parameters
+    use state, only: &
+        & allocate_state, &
+        & day, &
+        & deallocate_state, &
+        & hour, &
+        & minute, &
+        & month, &
+        & year
     use catchment, only: calculate_catchment_time_of_concentration
     use configuration_io, only: read_model_configuration
     use river_inertial, only: prepare_inertial_routing
-    use meteorological_io, only: close_meteorological_inputs, open_meteorological_inputs
+    use meteorological_io, only: &
+        & close_meteorological_inputs, &
+        & open_meteorological_inputs
     use river_muskingum, only: calculate_muskingum_cunge_parameters
-    use output_io, only: close_model_log, open_model_log
+    use output_io, only: &
+        & close_model_log, &
+        & open_model_log
     use simulation_runner, only: run_simulation
-    use static_input_io, only: read_catchment_inputs, read_floodplain_inputs
+    use static_input_io, only: &
+        & read_catchment_inputs, &
+        & read_floodplain_inputs
 
     implicit none
     !States that non declared variables cannot be used
     real(8) elapsed_time
     ! Processing time in seconds.
-    integer clock_start
-    integer clock_end
-    integer clock_rate
-    integer clock_max
-    integer clock_ticks
-    character(8) noninteractive_env
-    logical noninteractive
+    integer :: clock_start
+    integer :: clock_end
+    integer :: clock_rate
+    integer :: clock_max
+    integer :: clock_ticks
+    character(8) :: noninteractive_env
+    logical :: noninteractive
     !  Statements used to calculate the processing time
 
     call system_clock(count=clock_start, count_rate=clock_rate, count_max=clock_max)
@@ -61,12 +103,29 @@ program mgb_model
 
     write (*, *) 'Allocating variables...'
     write (log_unit, *) 'Allocating variables...'
-    call allocate_config(catchment_count, timestep_count)
-    call allocate_forcing(catchment_count, climate_cell_count, substitution_count, timestep_count)
-    call allocate_attributes(catchment_count, hru_count)
-    call allocate_parameters(catchment_count, subbasin_count, hru_count, climate_region_count, &
-        & max_hru_count, max_subbasin_count, max_muskingum_reach_count)
-    call allocate_state(catchment_count, hru_count, max_muskingum_reach_count)
+    call allocate_config( &
+        & catchment_count, &
+        & timestep_count)
+    call allocate_forcing( &
+        & catchment_count, &
+        & climate_cell_count, &
+        & substitution_count, &
+        & timestep_count)
+    call allocate_attributes( &
+        & catchment_count, &
+        & hru_count)
+    call allocate_parameters( &
+        & catchment_count, &
+        & subbasin_count, &
+        & hru_count, &
+        & climate_region_count, &
+        & max_hru_count, &
+        & max_subbasin_count, &
+        & max_muskingum_reach_count)
+    call allocate_state( &
+        & catchment_count, &
+        & hru_count, &
+        & max_muskingum_reach_count)
 
     call read_catchment_inputs
 
@@ -137,8 +196,7 @@ program mgb_model
     write (log_unit, *) ''
     write (log_unit, *), 'monthly_radiation_option (0=sun.hours; 1=sun.perc; 2=radiation):'
     write (log_unit, '(A30,I8)') 'monthly_radiation_option:', monthly_radiation_option
-    write (log_unit, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', &
-        & reservoir_substitution_enabled
+    write (log_unit, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', reservoir_substitution_enabled
     write (log_unit, '(A40,I8)') 'routing_mode (0=Muskingum; 1=inertial):', inertial_routing_enabled
     write (log_unit, '(A40,I8)') 'thread_count:', thread_count
     write (log_unit, '(A40,I8)') 'Pseudo 2D routing Flag (0=no; 1=yes):', pseudo_two_d_enabled
@@ -168,8 +226,7 @@ program mgb_model
     write (*, *), 'monthly_radiation_option (0=sun.hours; 1=sun.perc; 2=radiation):'
     write (*, '(A30,I8)') 'monthly_radiation_option:', monthly_radiation_option
     write (*, *)
-    write (*, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', &
-        & reservoir_substitution_enabled
+    write (*, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', reservoir_substitution_enabled
     write (*, '(A40,I8)') 'routing_mode (0=Muskingum; 1=inertial):', inertial_routing_enabled
     write (*, '(A40,I8)') 'thread_count:', thread_count
     write (*, '(A40,I8)') 'hotstart_read_mode (0=no; 1=yes):', read_hotstart_mode

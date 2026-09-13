@@ -3,22 +3,33 @@ module forcing
     implicit none
     save
 
-    real(4), allocatable :: monthly_air_temperature(:, :), monthly_relative_humidity(:, :)
-    real(4), allocatable :: monthly_wind_speed(:, :), monthly_air_pressure(:, :)
+    real(4), allocatable :: monthly_air_temperature(:, :)
+    real(4), allocatable :: monthly_relative_humidity(:, :)
+    real(4), allocatable :: monthly_wind_speed(:, :)
+    real(4), allocatable :: monthly_air_pressure(:, :)
     real(4), allocatable :: monthly_solar_input(:, :)
     real, allocatable :: climate_station_coordinates(:, :)
     real, allocatable :: previous_air_temperature(:)
-    real(4), allocatable :: air_temperature(:), relative_humidity(:), wind_speed(:)
-    real(4), allocatable :: solar_input(:), air_pressure(:), precipitation(:)
+    real(4), allocatable :: air_temperature(:)
+    real(4), allocatable :: relative_humidity(:)
+    real(4), allocatable :: wind_speed(:)
+    real(4), allocatable :: solar_input(:)
+    real(4), allocatable :: air_pressure(:)
+    real(4), allocatable :: precipitation(:)
     real, allocatable :: substituted_q(:, :)
     real(kind=8), allocatable :: reservoir_outflow(:, :)
 
 contains
 
-    subroutine allocate_forcing(catchment_count, climate_cell_count, &
-        & substitution_count, timestep_count)
-        integer, intent(in) :: catchment_count, climate_cell_count
-        integer, intent(in) :: substitution_count, timestep_count
+    subroutine allocate_forcing( &
+        & catchment_count, &
+        & climate_cell_count, &
+        & substitution_count, &
+        & timestep_count)
+        integer, intent(in) :: catchment_count
+        integer, intent(in) :: climate_cell_count
+        integer, intent(in) :: substitution_count
+        integer, intent(in) :: timestep_count
         allocate (climate_station_coordinates(climate_cell_count, 2))
         allocate (monthly_air_temperature(climate_cell_count, 12))
         allocate (monthly_relative_humidity(climate_cell_count, 12))
@@ -53,8 +64,11 @@ contains
         if (allocated(climate_station_coordinates)) deallocate (climate_station_coordinates)
     end subroutine deallocate_forcing
 
-    subroutine allocate_reservoir_forcing(timestep_count, reservoir_count)
-        integer, intent(in) :: timestep_count, reservoir_count
+    subroutine allocate_reservoir_forcing( &
+        & timestep_count, &
+        & reservoir_count)
+        integer, intent(in) :: timestep_count
+        integer, intent(in) :: reservoir_count
 
         allocate (reservoir_outflow(timestep_count, reservoir_count))
     end subroutine allocate_reservoir_forcing
