@@ -7,9 +7,8 @@ module hotstart_io
 contains
 
     subroutine read_hotstart_schedule
-        use simulation_state, only: timestep_count
-        use io_state, only: hotstart_list_unit, input_directory
-        use output_state, only: hotstart_write_schedule
+        use config, only: hotstart_list_unit, hotstart_write_schedule, input_directory, &
+            & timestep_count
 
         implicit none
 
@@ -26,18 +25,16 @@ contains
 
     subroutine read_hotstart
         use date_time, only: format_date_string
-        use simulation_state, only: day, hour, minute, month, year
-        use runoff_state, only: catchment_count, hru_count
-        use evapotranspiration_state, only: air_temperature, interception_storage
-        use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
-            & subsurface_storage, surface_storage
-        use muskingum_state, only: incoming_q_current, initial_river_q, muskingum_reach_count, &
-            & outgoing_q_current
-        use inertial_state, only: current_flooded_area, current_water_volume, face_q, inertial_q, &
+        use config, only: catchment_count, hotstart_input_directory, hru_count, &
+            & inertial_hotstart_unit, water_balance_hotstart_unit
+        use forcing, only: air_temperature
+        use parameters, only: muskingum_reach_count
+        use state, only: catchment_q_current, current_flooded_area, current_water_volume, day, &
+            & face_q, groundwater_storage, hour, incoming_q_current, inertial_q, initial_river_q, &
+            & interception_storage, minute, month, &
             & neighbor_q, previous_water_volume, stage_table_index, water_depth, &
-            & water_surface_elevation
-        use io_state, only: hotstart_input_directory, inertial_hotstart_unit, &
-            & water_balance_hotstart_unit
+            & water_surface_elevation, outgoing_q_current, soil_water_storage, subsurface_storage, &
+            & surface_storage, year
 
         implicit none
         integer :: i_catch, i_hru, record_length, state_index, state_variable_count, reach_index
@@ -218,19 +215,16 @@ contains
 
     subroutine write_hotstart
         use date_time, only: convert_julian_day_to_calendar, format_date_string
-        use simulation_state, only: day, hour, julian_day, minute, month, year
-        use runoff_state, only: catchment_count, hru_count
-        use evapotranspiration_state, only: air_temperature, interception_storage
-        use runoff_state, only: catchment_q_current, groundwater_storage, soil_water_storage, &
-            & subsurface_storage, surface_storage
-        use muskingum_state, only: incoming_q_current, initial_river_q, muskingum_reach_count, &
-            & outgoing_q_current
-        use inertial_state, only: current_flooded_area, current_water_volume, face_q, inertial_q, &
+        use config, only: catchment_count, hotstart_input_directory, hru_count, &
+            & inertial_hotstart_unit, water_balance_hotstart_unit, write_hotstart_mode
+        use forcing, only: air_temperature
+        use parameters, only: muskingum_reach_count
+        use state, only: catchment_q_current, current_flooded_area, current_water_volume, day, &
+            & face_q, groundwater_storage, hour, incoming_q_current, inertial_q, initial_river_q, &
+            & interception_storage, julian_day, minute, month, &
             & neighbor_q, previous_water_volume, stage_table_index, water_depth, &
-            & water_surface_elevation
-        use io_state, only: hotstart_input_directory, inertial_hotstart_unit, &
-            & water_balance_hotstart_unit
-        use output_state, only: write_hotstart_mode
+            & water_surface_elevation, outgoing_q_current, soil_water_storage, subsurface_storage, &
+            & surface_storage, year
 
         implicit none
         integer :: i_catch, i_hru, record_length, state_index, state_variable_count, reach_index

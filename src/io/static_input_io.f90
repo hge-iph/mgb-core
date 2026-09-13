@@ -7,8 +7,7 @@ module static_input_io
 contains
 
     subroutine read_catchment_inputs
-        use io_state, only: log_unit
-        use reservoir_state, only: substitution_count
+        use config, only: log_unit, substitution_count
 
         implicit none
 
@@ -42,11 +41,10 @@ contains
     end subroutine read_reservoir_inputs
 
     subroutine read_fixed_parameters
-        use runoff_state, only: catchment_count, climate_region, hru_count, hru_name
-        use evapotranspiration_state, only: climate_region_count
-        use evapotranspiration_state, only: albedo, leaf_area_index, surface_resistance, &
-            & vegetation_height
-        use io_state, only: climate_region_unit, fixed_parameter_unit, input_directory
+        use config, only: catchment_count, climate_region_count, climate_region_unit, &
+            & fixed_parameter_unit, hru_count, input_directory
+        use parameters, only: albedo, climate_region, hru_name, leaf_area_index, &
+            & surface_resistance, vegetation_height
         ! File with monthly fixed parameters for each HRU.
 
         implicit none
@@ -115,13 +113,13 @@ contains
     end
 
     subroutine read_calibrated_parameters
-        use runoff_state, only: hru_count, hru_name, subbasin_count
-        use runoff_state, only: arno_b, brooks_corey_lambda, capillary_threshold_fraction, &
+        use config, only: calibrated_parameter_unit, header_fields, hru_count, input_directory, &
+            & subbasin_count
+        use parameters, only: arno_b, brooks_corey_lambda, capillary_threshold_fraction, hru_name, &
             & floodplain_infiltration_rate, groundwater_conductivity, &
             & groundwater_routing_coefficient, max_capillary_flux, max_soil_water_storage, &
             & specific_baseflow, subsurface_conductivity, subsurface_routing_coefficient, &
             & surface_routing_coefficient
-        use io_state, only: calibrated_parameter_unit, header_fields, input_directory
         ! Reads soil and routing calibration parameters.
 
         implicit none
@@ -173,16 +171,13 @@ contains
     end
 
     subroutine read_catchment_data
-        use simulation_state, only: first_subbasin, last_subbasin
-        use runoff_state, only: catchment_area, catchment_count, catchment_order, &
+        use config, only: catchment_count, catchment_data_unit, first_subbasin, hru_count, &
+            & inertial_routing_enabled, input_directory, last_subbasin, routing_method
+        use parameters, only: bankfull_depth, catchment_area, catchment_order, &
             & catchment_subbasin, catchment_x, catchment_y, downstream_catchment, drainage_area, &
-            & hru_count, hru_percentage, longest_reach_length, longest_reach_slope, river_length, &
-            & river_slope, river_width, subbasin_outlet_catchment
-        use runoff_state, only: max_soil_water_storage
-        use muskingum_state, only: manning_n, reference_q
-        use inertial_state, only: bankfull_depth, inertial_manning_n, inertial_routing_enabled, &
-            & routing_method
-        use io_state, only: catchment_data_unit, input_directory
+            & hru_percentage, inertial_manning_n, longest_reach_length, longest_reach_slope, &
+            & manning_n, max_soil_water_storage, reference_q, river_length, river_slope, &
+            & river_width, subbasin_outlet_catchment
 
         implicit none
         integer :: catchment_id(catchment_count)
@@ -309,10 +304,9 @@ contains
     end
 
     subroutine read_climatology
-        use runoff_state, only: catchment_count
-        use evapotranspiration_state, only: monthly_air_pressure, monthly_air_temperature, &
+        use config, only: catchment_count, climatology_unit, input_directory
+        use forcing, only: monthly_air_pressure, monthly_air_temperature, &
             & monthly_relative_humidity, monthly_solar_input, monthly_wind_speed
-        use io_state, only: climatology_unit, input_directory
 
         implicit none
         integer :: climate_cell_index, month_index, record_index, record_length
@@ -375,9 +369,9 @@ contains
     end subroutine read_climatology
 
     subroutine read_substitution_flows
-        use simulation_state, only: timestep_count
-        use reservoir_state, only: substituted_q, substitution_count
-        use io_state, only: header_fields, input_directory, substitution_flow_unit
+        use config, only: header_fields, input_directory, substitution_count, &
+            & substitution_flow_unit, timestep_count
+        use forcing, only: substituted_q
 
         implicit none
         integer :: input_year, input_month, substitution_index, input_day, i_step
@@ -395,12 +389,11 @@ contains
     end subroutine read_substitution_flows
 
     subroutine read_floodplain_binary_data
-        use runoff_state, only: catchment_count, catchment_x
-        use evapotranspiration_state, only: vegetation_height
-        use inertial_state, only: face_catchment_1, face_catchment_2, face_count, face_distance, &
+        use config, only: catchment_count, face_connection_unit, face_count, flood_area_unit, &
+            & flood_stage_unit, input_directory, pseudo_two_d_enabled
+        use parameters, only: catchment_x, face_catchment_1, face_catchment_2, face_distance, &
             & floodplain_area, floodplain_bottom_elevation, floodplain_elevation, &
-            & floodplain_point_count, pseudo_two_d_enabled
-        use io_state, only: face_connection_unit, flood_area_unit, flood_stage_unit, input_directory
+            & floodplain_point_count, vegetation_height
 
         implicit none
         integer data_index, direct_access_record, i_catch, io_status
@@ -479,11 +472,10 @@ contains
     end
 
     subroutine read_floodplain_text_data
-        use runoff_state, only: catchment_x
-        use inertial_state, only: face_catchment_1, face_catchment_2, face_count, face_distance, &
+        use config, only: face_connection_unit, face_count, input_directory, stage_area_unit
+        use parameters, only: catchment_x, face_catchment_1, face_catchment_2, face_distance, &
             & first_face_elevation, floodplain_area, floodplain_bottom_elevation, &
             & floodplain_elevation, floodplain_point_count, second_face_elevation
-        use io_state, only: face_connection_unit, input_directory, stage_area_unit
 
         implicit none
         integer connection_index, i_catch, io_status
@@ -529,13 +521,12 @@ contains
 
     subroutine read_reservoir_data
         use date_time, only: calculate_integer_julian_day
-        use simulation_state, only: day, month, timestep_count, year
-        use runoff_state, only: catchment_count
-        use reservoir_state, only: reservoir_count, reservoir_index_by_catchment, &
-            & reservoir_outflow, reservoir_start_timestep, routing_downstream_catchment
-        use inertial_state, only: area_table, floodplain_elevation, floodplain_point_count, &
-            & stage_table, upstream_topology, volume_table
-        use io_state, only: input_directory
+        use config, only: catchment_count, input_directory, reservoir_count, timestep_count
+        use forcing, only: allocate_reservoir_forcing, reservoir_outflow
+        use parameters, only: area_table, floodplain_elevation, floodplain_point_count, &
+            & reservoir_index_by_catchment, reservoir_start_timestep, &
+            & routing_downstream_catchment, stage_table, upstream_topology, volume_table
+        use state, only: day, month, year
 
         implicit none
 
@@ -550,7 +541,7 @@ contains
         real :: incremental_volume
         character(len=15) :: reservoir_name
 
-        allocate (reservoir_outflow(timestep_count, reservoir_count))
+        call allocate_reservoir_forcing(timestep_count, reservoir_count)
 
         ! The first listed catchment is the dam location. Lake catchments have
         ! floodplain routing disabled, and upstream links terminate at the dam.

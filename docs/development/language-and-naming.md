@@ -10,6 +10,8 @@ or changing runtime interfaces.
 - Use descriptive `lower_snake_case` names for modules, routines, variables,
   and source files.
 - Use nouns for state and data, and verb-led names for routines.
+- Keep shared model variables in the role-based `config`, `forcing`, `parameters`, and `state`
+  modules. Do not introduce `*_state` modules or derived-type subdivisions for these variables.
 - Add `_count` to collection sizes and `_index` to general lookup indices;
   equation kernels use role-qualified local indices such as `i_catch`,
   `i_hru`, `i_sub`, `i_step`, `i_reach`, and `i_face`.

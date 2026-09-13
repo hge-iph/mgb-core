@@ -21,18 +21,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CLASSIFICATION = {
     "date_time": "common", "interpolation": "common", "runtime_support": "common",
-    "simulation_state": "state", "evapotranspiration_state": "state", "runoff_state": "state",
-    "reservoir_state": "state", "muskingum_state": "state", "inertial_state": "state",
-    "io_state": "state", "output_state": "state",
-    "evapotranspiration_processing": "facade", "runoff_processing": "facade",
-    "muskingum_routing": "facade",
-    "inertial_routing": "facade", "configuration_io": "io", "static_input_io": "io",
+    "config": "vars", "forcing": "vars", "parameters": "vars", "state": "vars",
+    "catchment": "hydrology", "river_muskingum": "hydrology",
+    "river_inertial": "hydrology", "reservoirs": "hydrology",
+    "configuration_io": "io", "static_input_io": "io",
     "meteorological_io": "io", "hotstart_io": "io", "output_io": "io",
     "simulation_runner": "runner",
 }
 
 EXPECTED_PATHS = {
-    "common": "common/", "state": None, "facade": None, "io": "io/",
+    "common": "common/", "vars": "vars/", "hydrology": "hydrology/", "io": "io/",
     "runner": "simulation/",
 }
 
@@ -101,19 +99,7 @@ def external_procedures(items: list[Statement]) -> list[Statement]:
 
 
 def expected_location(name: str, category: str) -> str:
-    if category == "state":
-        return {
-            "simulation_state": "simulation/",
-            "evapotranspiration_state": "evapotranspiration/", "runoff_state": "runoff/",
-            "reservoir_state": "reservoirs/", "muskingum_state": "routing/muskingum/",
-            "inertial_state": "routing/inertial/", "io_state": "io/", "output_state": "io/",
-        }[name]
-    if category == "facade":
-        return {"evapotranspiration_processing": "evapotranspiration/",
-                "runoff_processing": "runoff/",
-                "muskingum_routing": "routing/muskingum/",
-                "inertial_routing": "routing/inertial/"}[name]
-    return EXPECTED_PATHS[category] or ""
+    return EXPECTED_PATHS[category]
 
 
 def edge_allowed(consumer: str, dependency: str) -> bool:
@@ -121,14 +107,10 @@ def edge_allowed(consumer: str, dependency: str) -> bool:
     dependency_category = CLASSIFICATION[dependency]
     if category == "common":
         return dependency_category == "common"
-    if category == "state":
-        return dependency_category == "common" or (
-            consumer in {"reservoir_state", "io_state"} and dependency == "runoff_state"
-        )
-    if category in {"facade", "io"}:
-        return dependency_category in {"state", "common"} or (
-            consumer == "runoff_processing" and dependency == "evapotranspiration_processing"
-        )
+    if category == "vars":
+        return False
+    if category in {"hydrology", "io"}:
+        return dependency_category in {"vars", "common"}
     if category == "runner":
         return True
     return False
@@ -155,10 +137,16 @@ def check_tree(source_root: Path) -> list[str]:
                 errors.append(f"{relative}:1: module '{name}' must be below src/{prefix}")
             if not any(item.text == "implicit none" for item in items):
                 errors.append(f"{relative}:1: module '{name}' requires implicit none")
-            if not any(item.text == "private" for item in items):
-                errors.append(f"{relative}:1: module '{name}' requires default private visibility")
-            if not any(re.match(r"public\s*::", item.text) for item in items):
-                errors.append(f"{relative}:1: module '{name}' requires an explicit public API")
+            if CLASSIFICATION[name] == "vars":
+                if any(item.text == "private" for item in items):
+                    errors.append(f"{relative}:1: vars module '{name}' requires default public visibility")
+                if any(re.match(r"type\s*(?:,.*)?::\s*[a-z_]\w*", item.text) for item in items):
+                    errors.append(f"{relative}:1: vars module '{name}' may not define named types")
+            else:
+                if not any(item.text == "private" for item in items):
+                    errors.append(f"{relative}:1: module '{name}' requires default private visibility")
+                if not any(re.match(r"public\s*::", item.text) for item in items):
+                    errors.append(f"{relative}:1: module '{name}' requires an explicit public API")
         elif not program_items and not external_procedures(items):
             errors.append(f"{relative}:1: source is not an approved project module or program")
 

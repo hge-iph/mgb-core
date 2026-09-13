@@ -1,4 +1,4 @@
-module runoff_processing
+module catchment
 
     implicit none
     private
@@ -7,13 +7,13 @@ module runoff_processing
 contains
 
     subroutine initialize_runoff
-        use runoff_state, only: catchment_area, catchment_count, catchment_subbasin, hru_count
-        use evapotranspiration_state, only: air_temperature, interception_storage
-        use runoff_state, only: groundwater_q, groundwater_routing_coefficient, &
-            & groundwater_storage, max_soil_water_storage, soil_water_storage, specific_baseflow, &
-            & subsurface_q, subsurface_routing_coefficient, subsurface_storage, surface_q, &
-            & surface_routing_coefficient, surface_storage
-        use muskingum_state, only: concentration_time
+        use config, only: catchment_count, hru_count
+        use forcing, only: air_temperature
+        use parameters, only: catchment_area, catchment_subbasin, concentration_time, &
+            & groundwater_routing_coefficient, max_soil_water_storage, specific_baseflow, &
+            & subsurface_routing_coefficient, surface_routing_coefficient
+        use state, only: groundwater_q, groundwater_storage, interception_storage, &
+            & soil_water_storage, subsurface_q, subsurface_storage, surface_q, surface_storage
 
         implicit none
 
@@ -50,8 +50,8 @@ contains
     end subroutine initialize_runoff
 
     subroutine calculate_catchment_time_of_concentration
-        use runoff_state, only: catchment_count, longest_reach_length, longest_reach_slope
-        use muskingum_state, only: concentration_time
+        use config, only: catchment_count
+        use parameters, only: concentration_time, longest_reach_length, longest_reach_slope
 
         implicit none
         ! Symbols:
@@ -73,28 +73,25 @@ contains
 
     subroutine update_runoff
         use date_time, only: calculate_integer_julian_day
-        use simulation_state, only: day, day_of_year, first_subbasin, last_subbasin, &
-            & model_timestep, month, year
-        use runoff_state, only: catchment_area, catchment_count, catchment_subbasin, catchment_y, &
-            & climate_region, hru_count, hru_percentage
-        use evapotranspiration_processing, only: calculate_evapotranspiration
-        use evapotranspiration_state, only: air_pressure, air_temperature, albedo, &
-            & evapotranspiration, interception_storage, leaf_area_index, open_water_evaporation_q, &
-            & potential_open_water_et, potential_surface_radiation_et, &
-            & potential_top_radiation_et, previous_air_temperature, relative_humidity, &
-            & solar_input, surface_resistance, vegetation_height, wind_speed
-        use runoff_state, only: arno_b, brooks_corey_lambda, capillary_flux, &
-            & capillary_threshold_fraction, precipitation, floodplain_infiltration, &
+        use config, only: catchment_count, first_subbasin, hru_count, last_subbasin, &
+            & model_timestep, routing_method, substitution_enabled
+        use forcing, only: air_pressure, air_temperature, precipitation, &
+            & previous_air_temperature, relative_humidity, solar_input, wind_speed
+        use parameters, only: albedo, arno_b, brooks_corey_lambda, capillary_threshold_fraction, &
+            & catchment_area, catchment_subbasin, catchment_y, climate_region, concentration_time, &
             & floodplain_infiltration_rate, groundwater_conductivity, &
-            & groundwater_q, groundwater_routing_coefficient, groundwater_storage, &
-            & max_capillary_flux, max_soil_water_storage, soil_water_storage, &
-            & subsurface_conductivity, subsurface_q, subsurface_routing_coefficient, &
-            & subsurface_storage, surface_q, surface_routing_coefficient, surface_storage, &
-            & total_water_storage
-        use reservoir_state, only: substitution_enabled
-        use muskingum_state, only: concentration_time
-        use inertial_state, only: current_flooded_area, routing_method
-        use output_state, only: capillary_water_output, catchment_q_output, et_output, &
+            & groundwater_routing_coefficient, hru_percentage, leaf_area_index, &
+            & max_capillary_flux, max_soil_water_storage, subsurface_conductivity, &
+            & subsurface_routing_coefficient, surface_resistance, surface_routing_coefficient, &
+            & vegetation_height
+        use state, only: capillary_flux, capillary_water_output, catchment_q_output, &
+            & current_flooded_area, day, day_of_year, evapotranspiration, interception_storage, &
+            & open_water_evaporation_q, &
+            & potential_open_water_et, potential_surface_radiation_et, &
+            & potential_top_radiation_et, floodplain_infiltration, &
+            & groundwater_q, groundwater_storage, soil_water_storage, subsurface_q, &
+            & subsurface_storage, surface_q, surface_storage, &
+            & total_water_storage, month, year, et_output, &
             & groundwater_runoff_depth_output, groundwater_storage_depth_output, &
             & interception_et_output, interception_storage_output, open_water_et_output, &
             & soil_saturation_output, soil_vegetation_et_output, soil_water_output, &
@@ -447,10 +444,124 @@ contains
         return
     end subroutine update_runoff
 
+    subroutine calculate_evapotranspiration(p, w, wm, pa, ta, wind, rh, solar, t_prev, lai, &
+        & alb, z_veg, rs, si, lat, et_soil, et_int, et_total, et_int_pot, et_water_pot, &
+        & lambda_e, r_top, r_short)
+        use config, only: model_timestep
+
+        implicit none
+
+        real, intent(inout) :: p, si, rs
+        real, intent(in) :: w, wm, pa, ta, wind, rh, solar, t_prev
+        real, intent(in) :: lai, alb, z_veg, lat
+        real, intent(out) :: et_soil, et_int, et_total, et_int_pot, et_water_pot, lambda_e
+        real, intent(out) :: r_top, r_short
+        real, parameter :: rho_w = 1000.0
+        real, parameter :: c_p = 0.001013
+        real, volatile :: r_net
+        real, volatile :: e_a, e_s, e_d, s_e, gamma
+        real, volatile :: rho_a, z0, z, u10, u2
+        real, volatile :: r_a, r_aw
+        real, volatile :: w_u, w_w
+        real, save :: f_rs = 0.0
+        real, volatile :: si_a, si_m, f_et
+
+        call calculate_net_radiation(solar, ta, t_prev, rh, alb, lat, lambda_e, r_net, r_top, &
+            & r_short, e_a, e_s)
+
+        e_d = e_s - e_a
+        gamma = 0.0016286*pa/lambda_e
+        s_e = (4098.0*e_s)/((237.3 + ta)**2.)
+        rho_a = 3.486*(pa/(275.0 + ta))
+        r_net = r_net/(3600.0*24.0)
+        z0 = 0.1*z_veg
+        u10 = wind + 0.1
+        u2 = u10/((log(10.0/z0))/log(2.0/z0))
+        z = min(z_veg, 12.5)
+        r_a = ((log((10.-z*0.67)/(z*0.123)))*(log((10.-z*0.67)/(z*0.0123))))/(0.41*0.41*u10)
+        r_aw = (4.72*(log(2./0.00137))**2.)/(1.+0.536*u2)
+        w_u = 0.8*wm
+        w_w = 0.1*wm
+        if (wm < 0.1) then
+            rs = 0.0
+        else
+            if (w .le. w_w) then
+                rs = 999999999.0
+            elseif (w .lt. w_u) then
+                f_rs = (w - w_w)/(w_u - w_w)
+                f_rs = 1./f_rs
+            else
+                f_rs = 1.0
+            end if
+            rs = f_rs*rs
+        end if
+        si_m = 0.4*lai*(model_timestep/86400.)
+        si_a = min(si + p, si_m)
+        p = p - (si_a - si)
+        et_int_pot = ((s_e*r_net + rho_a*c_p*e_d/r_a)/ &
+            & (s_e + gamma*(1.0 + 0.0/r_a)))*((1000.0*model_timestep)/(lambda_e*rho_w))
+        et_water_pot = ((s_e*r_net + rho_a*c_p*e_d/r_aw)/ &
+            & (s_e + gamma*(1.0 + 0.0/r_aw)))*((1000.0*model_timestep)/(lambda_e*rho_w))
+        et_int = min(et_int_pot, si_a)
+        si = si_a - et_int
+        f_et = (et_int_pot - et_int)/et_int_pot
+        et_soil = ((s_e*r_net + rho_a*c_p*e_d/r_a)/ &
+            & (s_e + gamma*(1.0 + rs/r_a)))*((1000.0*model_timestep)/(lambda_e*rho_w))
+        et_soil = f_et*et_soil
+        et_total = et_soil + et_int
+        et_soil = et_soil*1.0
+    end subroutine calculate_evapotranspiration
+
+    subroutine calculate_net_radiation(solar, ta, t_prev, rh, alb, lat, lambda_e, r_net, r_top, &
+        & r_short, e_a, e_s)
+        use config, only: monthly_radiation_option, use_radiation_timeseries
+        use state, only: day_of_year
+
+        implicit none
+
+        real, intent(in) :: solar, ta, t_prev, rh, alb, lat
+        real, intent(out) :: lambda_e, r_net, r_top, r_short, e_a, e_s
+        real, parameter :: pi = 3.141592
+        real, parameter :: rho_w = 1000.0
+        real, parameter :: sigma = 4.903e-9
+        real, volatile :: d, delta, omega, n_sun, d_r
+        real, volatile :: r_sn, r_l, g
+
+        lambda_e = 2.501 - 0.002361*ta
+        e_s = 0.6108*exp((17.27*ta)/(237.3 + ta))
+        e_a = e_s*rh/100.0
+        d = day_of_year
+        delta = 0.4093*sin((2*pi/365.0)*d - 1.405)
+        omega = acos(-tand(lat)*tan(delta))
+        n_sun = 24*omega/pi
+        d_r = 1.0 + 0.033*cos(2*pi*d/365.0)
+        r_top = 15.392*d_r*(omega*sind(lat)*sin(delta) + cosd(lat)*cos(delta)*sin(omega))
+        r_top = r_top/1000.0
+        r_top = r_top*rho_w*lambda_e
+        if (use_radiation_timeseries == 0) then
+            if (monthly_radiation_option == 0) then
+                r_short = r_top*(0.25 + 0.5*solar/n_sun)
+            elseif (monthly_radiation_option == 1) then
+                r_short = r_top*(0.25 + 0.5*solar/100.)
+            elseif (monthly_radiation_option == 2) then
+                r_short = solar
+            end if
+        else
+            r_short = solar
+        end if
+        r_sn = r_short*(1 - alb)
+        r_l = sigma*(ta + 273.2)**4.0
+        r_l = r_l*(0.34 - 0.14*(e_a)**0.5)
+        r_l = r_l*(1.0*r_short/r_top + 0.0)
+        g = 0.38*(ta - t_prev)
+        r_net = r_sn - r_l - g
+    end subroutine calculate_net_radiation
+
     subroutine update_soil_water_balance(p, et_soil, w, wm, b_arno, k_int, k_bas, &
         & lambda_bc, d_sup, d_int, d_bas, cap, wc, d_infil, dt, i_catch, area_catch, &
         & k_inf)
-        use inertial_state, only: current_flooded_area, routing_method
+        use config, only: routing_method
+        use state, only: current_flooded_area
 
         implicit none
 
@@ -644,4 +755,4 @@ contains
         return
     end subroutine update_soil_water_balance
 
-end module runoff_processing
+end module catchment

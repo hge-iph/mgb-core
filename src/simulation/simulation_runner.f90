@@ -7,16 +7,15 @@ module simulation_runner
 contains
 
     subroutine run_simulation
-        use runoff_processing, only: initialize_runoff
+        use catchment, only: initialize_runoff
         use hotstart_io, only: read_hotstart, read_hotstart_schedule, write_hotstart
-        use inertial_routing, only: initialize_inertial_routing
-        use muskingum_routing, only: initialize_muskingum_cunge_routing
+        use river_inertial, only: initialize_inertial_routing
+        use river_muskingum, only: initialize_muskingum_cunge_routing
         use output_io, only: close_model_outputs, open_model_outputs
         use static_input_io, only: read_reservoir_inputs
-        use reservoir_state, only: initialize_reservoir_state, reservoir_substitution_enabled
-        use inertial_state, only: inertial_catchment_count, routing_method
-        use io_state, only: log_unit
-        use output_state, only: read_hotstart_mode, write_hotstart_mode
+        use reservoirs, only: initialize_reservoir_state
+        use config, only: inertial_catchment_count, log_unit, read_hotstart_mode, &
+            & reservoir_substitution_enabled, routing_method, write_hotstart_mode
 
         implicit none
         integer :: i_step
@@ -72,25 +71,22 @@ contains
 
     subroutine run_timestep_loop(i_step)
         use date_time, only: calculate_julian_day, convert_julian_day_to_calendar
-        use runoff_processing, only: update_runoff
+        use catchment, only: update_runoff
         use hotstart_io, only: write_hotstart
-        use inertial_routing, only: route_inertial_flow
+        use river_inertial, only: route_inertial_flow
         use meteorological_io, only: read_meteorological_forcing
-        use muskingum_routing, only: route_muskingum_cunge_network
+        use river_muskingum, only: route_muskingum_cunge_network
         use output_io, only: write_model_outputs
-        use simulation_state, only: day, hour, julian_day, minute, model_timestep, month, &
-            & timestep_count, year
-        use runoff_state, only: catchment_count
-        use evapotranspiration_state, only: air_temperature, previous_air_temperature
-        use evapotranspiration_state, only: potential_open_water_et
-        use runoff_state, only: catchment_q_current, groundwater_q, subsurface_q, surface_q, &
-            & total_water_storage
-        use muskingum_state, only: outgoing_q_current
-        use inertial_state, only: bankfull_depth, current_flooded_area, inertial_catchment_count, &
-            & inertial_q, routing_method, stage_table, water_surface_elevation
-        use output_state, only: catchment_q_output, flooded_area_output, hand_output, &
+        use config, only: catchment_count, inertial_catchment_count, model_timestep, &
+            & routing_method, timestep_count, write_hotstart_mode
+        use forcing, only: air_temperature, previous_air_temperature
+        use parameters, only: bankfull_depth, stage_table
+        use state, only: catchment_q_current, catchment_q_output, current_flooded_area, day, &
+            & flooded_area_output, groundwater_q, hand_output, hour, inertial_q, julian_day, &
+            & minute, month, outgoing_q_current, potential_open_water_et, &
             & potential_open_water_et_output, q_river_output, total_water_storage_output, &
-            & water_surface_elevation_output, write_hotstart_mode
+            & subsurface_q, surface_q, total_water_storage, water_surface_elevation, &
+            & water_surface_elevation_output, year
 
         implicit none
 

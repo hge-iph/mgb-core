@@ -9,26 +9,26 @@ contains
     subroutine read_model_configuration
         use date_time, only: calculate_julian_day, calculate_timestep_count, &
             & convert_julian_day_to_calendar, parse_date_string
-        use simulation_state, only: day, first_subbasin_state => first_subbasin, hour, julian_day, &
-            & last_subbasin_state => last_subbasin, minute, &
-            & model_timestep_state => model_timestep, month, timestep_count, year
-        use runoff_state, only: catchment_count_state => catchment_count, &
-            & hru_count_state => hru_count, subbasin_count_state => subbasin_count
-        use evapotranspiration_state, only: climate_cell_count_state => climate_cell_count, &
+        use state, only: day, hour, julian_day, minute, month, year
+        use config, only: catchment_count_state => catchment_count, &
+            & climate_cell_count_state => climate_cell_count, &
             & climate_region_count_state => climate_region_count, &
+            & config_unit, downstream_water_surface_slope, &
+            & first_subbasin_state => first_subbasin, hru_count_state => hru_count, &
+            & inertial_routing_enabled, input_directory, &
+            & last_subbasin_state => last_subbasin, model_timestep_state => model_timestep, &
             & monthly_radiation_option_state => monthly_radiation_option, &
+            & overland_flow_width, overland_manning_n, pseudo_two_d_enabled, &
+            & reservoir_count_state => reservoir_count, &
+            & reservoir_substitution_enabled_state => reservoir_substitution_enabled, &
+            & subbasin_count_state => subbasin_count, thread_count_state => thread_count, &
+            & timestep_count, courant_alpha_state => courant_alpha, &
             & use_humidity_timeseries_state => use_humidity_timeseries, &
             & use_pressure_timeseries_state => use_pressure_timeseries, &
             & use_radiation_timeseries_state => use_radiation_timeseries, &
             & use_temperature_timeseries_state => use_temperature_timeseries, &
-            & use_wind_timeseries_state => use_wind_timeseries
-        use reservoir_state, only: reservoir_count_state => reservoir_count, &
-            & reservoir_substitution_enabled_state => reservoir_substitution_enabled
-        use inertial_state, only: downstream_water_surface_slope, inertial_routing_enabled, &
-            & overland_flow_width, overland_manning_n, pseudo_two_d_enabled, &
-            & courant_alpha_state => courant_alpha, thread_count_state => thread_count
-        use io_state, only: config_unit, input_directory
-        use output_state, only: hotstart_read_mode_state => read_hotstart_mode, &
+            & use_wind_timeseries_state => use_wind_timeseries, &
+            & hotstart_read_mode_state => read_hotstart_mode, &
             & hotstart_write_mode_state => write_hotstart_mode, write_discharge_output, &
             & write_et_output, write_flooded_area_output, write_groundwater_flux_output, &
             & write_groundwater_storage_output, write_hand_output, write_interception_et_output, &

@@ -1,4 +1,4 @@
-module muskingum_routing
+module river_muskingum
 
     implicit none
     private
@@ -8,14 +8,14 @@ module muskingum_routing
 contains
 
     subroutine initialize_muskingum_cunge_routing
-        use runoff_state, only: catchment_count, downstream_catchment
-        use runoff_state, only: catchment_q_current, catchment_q_previous, groundwater_q, &
-            & subsurface_q, surface_q
-        use reservoir_state, only: substituted_q, substitution_catchment, substitution_count
-        use muskingum_state, only: incoming_q_boundary, incoming_q_current, incoming_q_previous, &
+        use config, only: catchment_count, substitution_count
+        use forcing, only: substituted_q
+        use parameters, only: downstream_catchment, muskingum_reach_count, substitution_catchment
+        use state, only: catchment_q_current, catchment_q_previous, groundwater_q, &
+            & incoming_q_boundary, incoming_q_current, incoming_q_previous, &
             & incoming_groundwater_fraction_current, incoming_subsurface_fraction_current, &
-            & incoming_surface_fraction_current, initial_river_q, muskingum_reach_count, &
-            & outgoing_q_boundary, outgoing_q_current, outgoing_q_previous
+            & incoming_surface_fraction_current, initial_river_q, &
+            & outgoing_q_boundary, outgoing_q_current, outgoing_q_previous, subsurface_q, surface_q
 
         implicit none
 
@@ -71,11 +71,10 @@ contains
     end subroutine initialize_muskingum_cunge_routing
 
     subroutine calculate_muskingum_cunge_parameters
-        use simulation_state, only: model_timestep
-        use runoff_state, only: catchment_count, catchment_order, river_length, river_slope, &
-            & river_width
-        use muskingum_state, only: manning_n, max_muskingum_reach_count, &
+        use config, only: catchment_count, max_muskingum_reach_count, model_timestep
+        use parameters, only: catchment_order, manning_n, &
             & muskingum_reach_count, muskingum_timestep, reference_q, wave_celerity
+        use parameters, only: river_length, river_slope, river_width
 
         implicit none
         ! Symbols:
@@ -132,26 +131,24 @@ contains
     end
 
     subroutine route_muskingum_cunge_network(i_model_step)
-        use simulation_state, only: first_subbasin, last_subbasin, model_timestep
-        use runoff_state, only: catchment_count, catchment_subbasin, downstream_catchment, &
-            & river_length, river_slope, river_width
-        use runoff_state, only: catchment_q_current, catchment_q_previous, groundwater_q, &
-            & subsurface_q, surface_q
-        use reservoir_state, only: substituted_q, substitution_catchment, substitution_count, &
-            & substitution_enabled
-        use muskingum_state, only: flow_velocity, groundwater_routing_volume, &
+        use config, only: catchment_count, first_subbasin, last_subbasin, model_timestep, &
+            & routing_method, substitution_count, substitution_enabled
+        use forcing, only: substituted_q
+        use parameters, only: catchment_subbasin, downstream_catchment, manning_n, &
+            & muskingum_reach_count, muskingum_timestep, reference_q, river_length, river_slope, &
+            & river_width, substitution_catchment, wave_celerity
+        use state, only: catchment_q_current, catchment_q_previous, flow_velocity, groundwater_q, &
+            & groundwater_q_output, groundwater_routing_volume, incremental_q_output, inertial_q, &
             & incoming_groundwater_fraction_current, incoming_groundwater_fraction_previous, &
             & incoming_q_boundary, incoming_q_current, incoming_q_previous, &
             & incoming_subsurface_fraction_current, incoming_subsurface_fraction_previous, &
-            & incoming_surface_fraction_current, incoming_surface_fraction_previous, manning_n, &
-            & muskingum_reach_count, muskingum_timestep, outgoing_groundwater_fraction_current, &
+            & incoming_surface_fraction_current, incoming_surface_fraction_previous, &
+            & outgoing_groundwater_fraction_current, &
             & outgoing_groundwater_fraction_previous, outgoing_q_boundary, outgoing_q_current, &
             & outgoing_q_previous, outgoing_subsurface_fraction_current, &
             & outgoing_subsurface_fraction_previous, outgoing_surface_fraction_current, &
-            & outgoing_surface_fraction_previous, reference_q, subsurface_routing_volume, &
-            & surface_routing_volume, wave_celerity
-        use inertial_state, only: inertial_q, routing_method
-        use output_state, only: groundwater_q_output, incremental_q_output
+            & outgoing_surface_fraction_previous, subsurface_q, subsurface_routing_volume, &
+            & surface_q, surface_routing_volume
         !This Sub-Routine calculates the flow routing in drainage network .
 
         implicit none
@@ -507,9 +504,9 @@ contains
 
     subroutine route_muskingum_cunge(i_catch, q_in, q_out, n_reach, n_step, c_up_prev, &
         & c_up_curr, c_down_prev)
-        use evapotranspiration_state, only: open_water_evaporation_q
-        use muskingum_state, only: incoming_q_boundary, initial_river_q, &
-            & max_muskingum_reach_count, outgoing_q_boundary
+        use config, only: max_muskingum_reach_count
+        use state, only: incoming_q_boundary, initial_river_q, open_water_evaporation_q, &
+            & outgoing_q_boundary
 
         implicit none
         ! Symbols:
@@ -572,4 +569,4 @@ contains
         return
     end subroutine route_muskingum_cunge
 
-end module muskingum_routing
+end module river_muskingum

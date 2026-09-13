@@ -1,4 +1,4 @@
-module inertial_routing
+module river_inertial
 
     implicit none
     private
@@ -7,8 +7,7 @@ module inertial_routing
 contains
 
     subroutine prepare_inertial_routing
-        use runoff_state, only: downstream_catchment
-        use reservoir_state, only: routing_downstream_catchment
+        use parameters, only: downstream_catchment, routing_downstream_catchment
 
         implicit none
 
@@ -18,8 +17,8 @@ contains
     end subroutine prepare_inertial_routing
 
     subroutine build_flood_topology
-        use runoff_state, only: catchment_count, downstream_catchment
-        use inertial_state, only: upstream_topology
+        use config, only: catchment_count
+        use parameters, only: downstream_catchment, upstream_topology
 
         implicit none
 
@@ -43,10 +42,10 @@ contains
     end subroutine build_flood_topology
 
     subroutine build_floodplain_tables
-        use runoff_state, only: catchment_count, river_length, river_width
-        use inertial_state, only: area_table, bankfull_depth, floodplain_area, &
+        use config, only: catchment_count
+        use parameters, only: area_table, bankfull_depth, floodplain_area, &
             & floodplain_bottom_elevation, floodplain_elevation, floodplain_point_count, &
-            & stage_table, volume_table
+            & river_length, river_width, stage_table, volume_table
 
         implicit none
         ! Symbols:
@@ -93,13 +92,13 @@ contains
 
     subroutine initialize_inertial_routing
         use interpolation, only: linear_interpolate
-        use runoff_state, only: catchment_area, catchment_count, river_length, &
-            & river_slope, river_width
-        use muskingum_state, only: reference_q
-        use inertial_state, only: area_table, current_flooded_area, current_water_volume, face_q, &
-            & floodplain_point_count, grace_total_water_storage, inertial_manning_n, inertial_q, &
-            & neighbor_q, previous_water_volume, stage_table, &
-            & stage_table_index, volume_table, water_depth, water_surface_elevation
+        use config, only: catchment_count
+        use parameters, only: area_table, catchment_area, floodplain_point_count, &
+            & inertial_manning_n, reference_q, river_length, river_slope, river_width, &
+            & stage_table, volume_table
+        use state, only: current_flooded_area, current_water_volume, face_q, &
+            & grace_total_water_storage, inertial_q, neighbor_q, previous_water_volume, &
+            & stage_table_index, water_depth, water_surface_elevation
 
         implicit none
 
@@ -136,7 +135,7 @@ contains
     end subroutine
 
     subroutine route_inertial_flow(i_step)
-        use simulation_state, only: model_timestep
+        use config, only: model_timestep
 
         implicit none
 
@@ -173,9 +172,10 @@ contains
     end subroutine
 
     subroutine calculate_inertial_timestep(dt_route)
-        use simulation_state, only: first_subbasin, last_subbasin, model_timestep
-        use runoff_state, only: catchment_count, catchment_subbasin, river_length
-        use inertial_state, only: courant_alpha, gravity, water_depth
+        use config, only: catchment_count, courant_alpha, first_subbasin, gravity, last_subbasin, &
+            & model_timestep
+        use parameters, only: catchment_subbasin, river_length
+        use state, only: water_depth
 
         implicit none
 
@@ -216,17 +216,15 @@ contains
     end subroutine
 
     subroutine calculate_inertial_discharge(i_step, dt_route, dt_elapsed, dt_remaining)
-        use simulation_state, only: first_subbasin, last_subbasin
-        use runoff_state, only: catchment_count, catchment_subbasin, river_length, river_width
-        use reservoir_state, only: reservoir_index_by_catchment, reservoir_outflow, &
-            & routing_downstream_catchment
-        use muskingum_state, only: flow_velocity, outgoing_q_current
-        use inertial_state, only: bankfull_depth, &
-            & downstream_water_surface_slope, face_catchment_1, face_catchment_2, face_count, &
-            & face_distance, face_q, gravity, inertial_manning_n, inertial_q, neighbor_q, &
-            & overland_flow_width, overland_manning_n, pseudo_two_d_enabled, &
-            & stage_table, thread_count, water_depth
-        use output_state, only: q_river_output
+        use config, only: catchment_count, downstream_water_surface_slope, face_count, &
+            & first_subbasin, gravity, last_subbasin, overland_flow_width, overland_manning_n, &
+            & pseudo_two_d_enabled, thread_count
+        use forcing, only: reservoir_outflow
+        use parameters, only: bankfull_depth, catchment_subbasin, face_catchment_1, &
+            & face_catchment_2, face_distance, inertial_manning_n, reservoir_index_by_catchment, &
+            & river_length, river_width, routing_downstream_catchment, stage_table
+        use state, only: face_q, flow_velocity, inertial_q, neighbor_q, outgoing_q_current, &
+            & q_river_output, water_depth
 
         use omp_lib
 
@@ -441,17 +439,16 @@ contains
     end subroutine calculate_inertial_discharge
 
     subroutine update_inertial_continuity(i_step, dt_route, dt_elapsed, dt_remaining)
-        use simulation_state, only: first_subbasin, last_subbasin, model_timestep
-        use runoff_state, only: catchment_area, catchment_count, catchment_subbasin
-        use evapotranspiration_state, only: potential_open_water_et
-        use runoff_state, only: catchment_q_current, floodplain_infiltration, precipitation, &
-            & total_water_storage
-        use reservoir_state, only: reservoir_index_by_catchment, reservoir_start_timestep
-        use inertial_state, only: area_table, current_flooded_area, current_water_volume, &
-            & floodplain_point_count, inertial_q, neighbor_q, previous_water_volume, stage_table, &
-            & stage_table_index, thread_count, upstream_topology, volume_table, water_depth, &
-            & water_surface_elevation
-        use output_state, only: et_output, open_water_et_output, surface_water_output
+        use config, only: catchment_count, first_subbasin, last_subbasin, model_timestep, &
+            & thread_count
+        use forcing, only: precipitation
+        use parameters, only: area_table, catchment_area, catchment_subbasin, &
+            & floodplain_point_count, reservoir_index_by_catchment, reservoir_start_timestep, &
+            & stage_table, upstream_topology, volume_table
+        use state, only: catchment_q_current, current_flooded_area, current_water_volume, &
+            & et_output, floodplain_infiltration, inertial_q, neighbor_q, open_water_et_output, &
+            & potential_open_water_et, previous_water_volume, stage_table_index, &
+            & surface_water_output, total_water_storage, water_depth, water_surface_elevation
 
         use omp_lib
 
@@ -619,4 +616,4 @@ contains
 
     end subroutine interpolate_stage_area
 
-end module inertial_routing
+end module river_inertial

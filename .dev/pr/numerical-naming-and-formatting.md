@@ -90,23 +90,22 @@ Apply these rules to every Fortran source file in the repository:
   mathematical functions inline.
 - Keep equations inline as specified above.
 
-State modules must remain default-private and place `public` on each exported
-state declaration. Avoid detached, module-wide public lists for state
-variables. Behavioral modules may retain short public lists for their public
-procedures.
+The four vars modules are default-public, and consumers restrict access with
+`use ..., only:`. Behavioral modules remain default-private with explicit
+public procedure lists.
 
 Example state declarations:
 
 ```fortran
-integer, public :: catchment_count
-real, allocatable, public :: catchment_area(:)
-real, allocatable, public :: river_discharge(:)
+integer :: catchment_count
+real, allocatable :: catchment_area(:)
+real, allocatable :: river_discharge(:)
 ```
 
 Example import and procedure layout:
 
 ```fortran
-use runoff_state, only: &
+use parameters, only: &
     b_arno, &
     lambda_brooks_corey
 
@@ -155,4 +154,3 @@ floating-point difference before considering the task complete.
 - Naming documentation matches the source.
 - The project builds successfully.
 - Both Magdalena regressions pass against their existing baselines.
-

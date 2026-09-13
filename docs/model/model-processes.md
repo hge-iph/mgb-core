@@ -18,8 +18,8 @@ For each meteorological timestep, MGB:
 7. stores one output value per catchment for each enabled output stream; and
 8. advances the calendar and Julian date.
 
-The order is part of the numerical behavior. In particular, runoff processing
-calls evapotranspiration processing for each HRU before updating that HRU's
+The order is part of the numerical behavior. In particular, the `catchment`
+module calculates evapotranspiration for each HRU before updating that HRU's
 soil storage and generated flow. The current timestep forcing is used by this
 vertical balance before lateral inflow is handed to routing.
 

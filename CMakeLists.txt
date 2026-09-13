@@ -26,34 +26,24 @@ set(MGB_COMMON_SOURCES
 )
 
 set(MGB_SIMULATION_SOURCES
-    src/simulation/simulation_state.f90
     src/simulation/simulation_runner.f90
 )
 
-set(MGB_EVAPOTRANSPIRATION_SOURCES
-    src/evapotranspiration/evapotranspiration_state.f90
-    src/evapotranspiration/evapotranspiration_processing.f90
+set(MGB_VARIABLE_SOURCES
+    src/vars/config.f90
+    src/vars/forcing.f90
+    src/vars/parameters.f90
+    src/vars/state.f90
 )
 
-set(MGB_RUNOFF_SOURCES
-    src/runoff/runoff_state.f90
-    src/runoff/runoff_processing.f90
-)
-
-set(MGB_RESERVOIR_SOURCES
-    src/reservoirs/reservoir_state.f90
-)
-
-set(MGB_ROUTING_SOURCES
-    src/routing/muskingum/muskingum_state.f90
-    src/routing/muskingum/muskingum_routing.f90
-    src/routing/inertial/inertial_state.f90
-    src/routing/inertial/inertial_routing.f90
+set(MGB_HYDROLOGY_SOURCES
+    src/hydrology/catchment.f90
+    src/hydrology/river_muskingum.f90
+    src/hydrology/river_inertial.f90
+    src/hydrology/reservoirs.f90
 )
 
 set(MGB_IO_SOURCES
-    src/io/io_state.f90
-    src/io/output_state.f90
     src/io/configuration_io.f90
     src/io/static_input_io.f90
     src/io/meteorological_io.f90
@@ -67,11 +57,9 @@ set(MGB_APPLICATION_SOURCES
 
 add_executable(mgb_model
     ${MGB_COMMON_SOURCES}
+    ${MGB_VARIABLE_SOURCES}
     ${MGB_SIMULATION_SOURCES}
-    ${MGB_EVAPOTRANSPIRATION_SOURCES}
-    ${MGB_RUNOFF_SOURCES}
-    ${MGB_RESERVOIR_SOURCES}
-    ${MGB_ROUTING_SOURCES}
+    ${MGB_HYDROLOGY_SOURCES}
     ${MGB_IO_SOURCES}
     ${MGB_APPLICATION_SOURCES}
 )

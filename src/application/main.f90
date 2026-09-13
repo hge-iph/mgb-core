@@ -2,26 +2,22 @@
 
 program mgb_model
 
-    use simulation_state, only: day, first_subbasin, hour, last_subbasin, minute, model_timestep, &
-        & month, timestep_count, year
-    use runoff_state, only: allocate_runoff_state, catchment_count, deallocate_runoff_state, &
-        & hru_count, subbasin_count
-    use evapotranspiration_state, only: allocate_evapotranspiration_state, climate_cell_count, &
-        & climate_region_count, deallocate_evapotranspiration_state, monthly_radiation_option
-    use reservoir_state, only: allocate_reservoir_state, deallocate_reservoir_state, &
-        & reservoir_substitution_enabled, substitution_count
-    use muskingum_state, only: allocate_muskingum_state, deallocate_muskingum_state
-    use inertial_state, only: allocate_inertial_state, courant_alpha, deallocate_inertial_state, &
-        & downstream_water_surface_slope, inertial_catchment_count, inertial_routing_enabled, &
-        & pseudo_two_d_enabled, routing_method, thread_count
-    use io_state, only: hotstart_input_directory, input_directory, log_unit, output_directory
-    use output_state, only: allocate_output_state, deallocate_output_state, read_hotstart_mode, &
+    use config, only: allocate_config, catchment_count, climate_cell_count, climate_region_count, &
+        & courant_alpha, deallocate_config, downstream_water_surface_slope, first_subbasin, &
+        & hotstart_input_directory, hru_count, inertial_catchment_count, inertial_routing_enabled, &
+        & input_directory, last_subbasin, log_unit, max_hru_count, max_muskingum_reach_count, &
+        & max_subbasin_count, model_timestep, monthly_radiation_option, output_directory, &
+        & pseudo_two_d_enabled, read_hotstart_mode, reservoir_substitution_enabled, &
+        & routing_method, subbasin_count, substitution_count, thread_count, timestep_count, &
         & write_hotstart_mode
-    use runoff_processing, only: calculate_catchment_time_of_concentration
+    use forcing, only: allocate_forcing, deallocate_forcing
+    use parameters, only: allocate_parameters, deallocate_parameters
+    use state, only: allocate_state, day, deallocate_state, hour, minute, month, year
+    use catchment, only: calculate_catchment_time_of_concentration
     use configuration_io, only: read_model_configuration
-    use inertial_routing, only: prepare_inertial_routing
+    use river_inertial, only: prepare_inertial_routing
     use meteorological_io, only: close_meteorological_inputs, open_meteorological_inputs
-    use muskingum_routing, only: calculate_muskingum_cunge_parameters
+    use river_muskingum, only: calculate_muskingum_cunge_parameters
     use output_io, only: close_model_log, open_model_log
     use simulation_runner, only: run_simulation
     use static_input_io, only: read_catchment_inputs, read_floodplain_inputs
@@ -64,13 +60,11 @@ program mgb_model
 
     write (*, *) 'Allocating variables...'
     write (log_unit, *) 'Allocating variables...'
-    call allocate_runoff_state
-    call allocate_evapotranspiration_state(catchment_count, hru_count, climate_cell_count, &
-        & climate_region_count)
-    call allocate_reservoir_state(catchment_count, timestep_count)
-    call allocate_muskingum_state(catchment_count)
-    call allocate_inertial_state(catchment_count)
-    call allocate_output_state(catchment_count, timestep_count)
+    call allocate_config(catchment_count, timestep_count)
+    call allocate_forcing(catchment_count, climate_cell_count, substitution_count, timestep_count)
+    call allocate_parameters(catchment_count, subbasin_count, hru_count, climate_region_count, &
+        & max_hru_count, max_subbasin_count, max_muskingum_reach_count)
+    call allocate_state(catchment_count, hru_count, max_muskingum_reach_count)
 
     call read_catchment_inputs
 
@@ -200,12 +194,10 @@ program mgb_model
     !  After running the model, finish the time count, close all files, and clean all variables
 
     call close_meteorological_inputs
-    call deallocate_output_state
-    call deallocate_inertial_state
-    call deallocate_muskingum_state
-    call deallocate_reservoir_state
-    call deallocate_evapotranspiration_state
-    call deallocate_runoff_state
+    call deallocate_state
+    call deallocate_parameters
+    call deallocate_forcing
+    call deallocate_config
 
     ! End of closings and cleanings
 
