@@ -16,7 +16,6 @@ program mgb_model
         & first_subbasin, &
         & hotstart_input_directory, &
         & hru_count, &
-        & inertial_catchment_count, &
         & inertial_routing_enabled, &
         & input_directory, &
         & last_subbasin, &
@@ -30,7 +29,6 @@ program mgb_model
         & pseudo_two_d_enabled, &
         & read_hotstart_mode, &
         & reservoir_substitution_enabled, &
-        & routing_method, &
         & subbasin_count, &
         & substitution_count, &
         & thread_count, &
@@ -50,20 +48,13 @@ program mgb_model
         & minute, &
         & month, &
         & year
-    use catchment, only: calculate_catchment_time_of_concentration
     use configuration_io, only: read_model_configuration
-    use river_inertial, only: prepare_inertial_routing
-    use meteorological_io, only: &
-        & close_meteorological_inputs, &
-        & open_meteorological_inputs
-    use river_muskingum, only: calculate_muskingum_cunge_parameters
-    use output_io, only: &
+    use log_io, only: &
         & close_model_log, &
         & open_model_log
-    use simulation_runner, only: run_simulation
-    use static_input_io, only: &
-        & read_catchment_inputs, &
-        & read_floodplain_inputs
+    use simulation_runner, only: &
+        & prepare_simulation, &
+        & run_simulation
 
     implicit none
     !States that non declared variables cannot be used
@@ -127,56 +118,7 @@ program mgb_model
         & hru_count, &
         & max_muskingum_reach_count)
 
-    call read_catchment_inputs
-
-    ! Hydrodynamic modeling:
-    if (inertial_routing_enabled == 1) then
-        routing_method = 1
-    else
-        routing_method = 0
-    end if
-
-    inertial_catchment_count = sum(routing_method)
-    ! Test
-    if (routing_method(1) == 1) then
-        write (*, *) 'Reading Floodplain data...'
-        write (log_unit, *) 'Reading Floodplain data...'
-
-        ! Read floodplain stage-area data generated during DEM preprocessing.
-        call read_floodplain_inputs
-        write (log_unit, *) 'FLOODPLAIN READ OK'
-    end if
-
-    ! End of subroutines related to input files that are read only once reading and MGB variables
-    ! allocation
-
-    write (*, *) 'Calculating river geometry information...'
-    write (log_unit, *) 'Calculating river geometry information...'
-    call calculate_catchment_time_of_concentration
-    write (*, *) 'Catchment parameters calculated'
-    write (log_unit, *) 'Catchment parameters calculated'
-    call calculate_muskingum_cunge_parameters
-    write (log_unit, *) 'Muskingum-Cunge parameters calculated'
-    write (*, *) 'Muskingum-Cunge parameters calculated'
-
-    if (routing_method(1) == 1) then
-        call prepare_inertial_routing
-        write (log_unit, *) 'Flood topology loaded'
-        write (*, *) 'Flood topology loaded'
-        write (log_unit, *) 'Floodplain tables built'
-        write (*, *) 'Floodplain tables built'
-    end if
-
-    ! End of subroutines that calculates Unit-catchments, rivers channels, and floodplains
-    ! characteristics
-
-    !  Openning of MGB input files that are read during the simulation
-    write (*, *) 'Opening input meteorological files...'
-    write (log_unit, *) 'Opening input meteorological files...'
-    call open_meteorological_inputs
-
-    ! End of openning MGB-IPH main input and output files that are read and written over the
-    ! simulation
+    call prepare_simulation
 
     !  Ask for verification
     !  Informs the model general setup
@@ -252,7 +194,6 @@ program mgb_model
 
     !  After running the model, finish the time count, close all files, and clean all variables
 
-    call close_meteorological_inputs
     call deallocate_state
     call deallocate_parameters
     call deallocate_attributes

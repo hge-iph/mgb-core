@@ -69,6 +69,52 @@ class ArchitectureCheckerTests(unittest.TestCase):
         self.write("hydrology/river_inertial.f90", self.behavior_module("river_inertial", body))
         self.assertTrue(any("forbidden dependency" in error for error in check_tree(self.src)))
 
+    def test_application_approved_dependencies_are_accepted(self) -> None:
+        for name in ("attributes", "config", "forcing", "parameters", "state"):
+            self.write(f"vars/{name}.f90", self.vars_module(name))
+        self.write("io/configuration_io.f90", self.behavior_module("configuration_io"))
+        self.write("io/log_io.f90", self.behavior_module("log_io"))
+        self.write("simulation/simulation_runner.f90", self.behavior_module("simulation_runner"))
+        self.write(
+            "application/main.f90",
+            "program mgb_model\n"
+            "use attributes, only: value\n"
+            "use config, only: value\n"
+            "use forcing, only: value\n"
+            "use parameters, only: value\n"
+            "use state, only: value\n"
+            "use configuration_io, only: value\n"
+            "use log_io, only: value\n"
+            "use simulation_runner, only: value\n"
+            "implicit none\n"
+            "end program\n",
+        )
+        self.assertEqual([], check_tree(self.src))
+
+    def test_application_may_not_depend_on_hydrology(self) -> None:
+        self.write("hydrology/catchment.f90", self.behavior_module("catchment"))
+        self.write(
+            "application/main.f90",
+            "program mgb_model\n"
+            "use catchment, only: value\n"
+            "implicit none\n"
+            "end program\n",
+        )
+        self.assertTrue(any("forbidden dependency application -> catchment" in error
+                            for error in check_tree(self.src)))
+
+    def test_application_may_not_depend_on_runtime_io(self) -> None:
+        self.write("io/meteorological_io.f90", self.behavior_module("meteorological_io"))
+        self.write(
+            "application/main.f90",
+            "program mgb_model\n"
+            "use meteorological_io, only: value\n"
+            "implicit none\n"
+            "end program\n",
+        )
+        self.assertTrue(any("forbidden dependency application -> meteorological_io" in error
+                            for error in check_tree(self.src)))
+
     def test_vars_may_not_depend_on_project_modules(self) -> None:
         self.write("common/date_time.f90", self.behavior_module("date_time"))
         body = "use date_time, only: value\ninteger :: stored_value"

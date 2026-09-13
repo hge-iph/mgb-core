@@ -25,9 +25,14 @@ CLASSIFICATION = {
     "parameters": "vars", "state": "vars",
     "catchment": "hydrology", "river_muskingum": "hydrology",
     "river_inertial": "hydrology", "reservoirs": "hydrology",
-    "configuration_io": "io", "static_input_io": "io",
+    "configuration_io": "io", "log_io": "io", "static_input_io": "io",
     "meteorological_io": "io", "hotstart_io": "io", "output_io": "io",
     "simulation_runner": "runner",
+}
+
+APPLICATION_ALLOWED_DEPENDENCIES = {
+    "attributes", "config", "forcing", "parameters", "state",
+    "configuration_io", "log_io", "simulation_runner",
 }
 
 EXPECTED_PATHS = {
@@ -104,6 +109,9 @@ def expected_location(name: str, category: str) -> str:
 
 
 def edge_allowed(consumer: str, dependency: str) -> bool:
+    if consumer == "application":
+        return dependency in APPLICATION_ALLOWED_DEPENDENCIES
+
     category = CLASSIFICATION[consumer]
     dependency_category = CLASSIFICATION[dependency]
     if category == "common":
@@ -128,6 +136,7 @@ def check_tree(source_root: Path) -> list[str]:
         relative = path.relative_to(source_root).as_posix()
         name = module_name(items)
         program_items = [item for item in items if re.match(r"program\s+\w+", item.text)]
+        consumer = name if name else "application" if program_items else None
         programs.extend((path, item) for item in program_items)
         if name:
             if name not in CLASSIFICATION:
@@ -163,9 +172,9 @@ def check_tree(source_root: Path) -> list[str]:
                 continue
             if "only:" not in suffix:
                 errors.append(f"{relative}:{item.line}: project import '{dependency}' requires an only list")
-            if name and not edge_allowed(name, dependency):
+            if consumer and not edge_allowed(consumer, dependency):
                 errors.append(
-                    f"{relative}:{item.line}: forbidden dependency {name} -> {dependency}"
+                    f"{relative}:{item.line}: forbidden dependency {consumer} -> {dependency}"
                 )
 
     if len(programs) != 1:

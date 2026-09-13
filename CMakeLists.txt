@@ -46,6 +46,7 @@ set(MGB_HYDROLOGY_SOURCES
 
 set(MGB_IO_SOURCES
     src/io/configuration_io.f90
+    src/io/log_io.f90
     src/io/static_input_io.f90
     src/io/meteorological_io.f90
     src/io/hotstart_io.f90

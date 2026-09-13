@@ -2,9 +2,77 @@ module simulation_runner
 
     implicit none
     private
-    public :: run_simulation
+    public :: prepare_simulation, run_simulation
 
 contains
+
+    subroutine prepare_simulation
+        use catchment, only: calculate_catchment_time_of_concentration
+        use meteorological_io, only: open_meteorological_inputs
+        use river_inertial, only: prepare_inertial_routing
+        use river_muskingum, only: calculate_muskingum_cunge_parameters
+        use static_input_io, only: &
+            & read_catchment_inputs, &
+            & read_floodplain_inputs
+        use config, only: &
+            & inertial_catchment_count, &
+            & inertial_routing_enabled, &
+            & log_unit, &
+            & routing_method
+
+        implicit none
+
+        call read_catchment_inputs
+
+        ! Hydrodynamic modeling:
+        if (inertial_routing_enabled == 1) then
+            routing_method = 1
+        else
+            routing_method = 0
+        end if
+
+        inertial_catchment_count = sum(routing_method)
+        ! Test
+        if (routing_method(1) == 1) then
+            write (*, *) 'Reading Floodplain data...'
+            write (log_unit, *) 'Reading Floodplain data...'
+
+            ! Read floodplain stage-area data generated during DEM preprocessing.
+            call read_floodplain_inputs
+            write (log_unit, *) 'FLOODPLAIN READ OK'
+        end if
+
+        ! End of subroutines related to input files that are read only once reading and MGB variables
+        ! allocation
+
+        write (*, *) 'Calculating river geometry information...'
+        write (log_unit, *) 'Calculating river geometry information...'
+        call calculate_catchment_time_of_concentration
+        write (*, *) 'Catchment parameters calculated'
+        write (log_unit, *) 'Catchment parameters calculated'
+        call calculate_muskingum_cunge_parameters
+        write (log_unit, *) 'Muskingum-Cunge parameters calculated'
+        write (*, *) 'Muskingum-Cunge parameters calculated'
+
+        if (routing_method(1) == 1) then
+            call prepare_inertial_routing
+            write (log_unit, *) 'Flood topology loaded'
+            write (*, *) 'Flood topology loaded'
+            write (log_unit, *) 'Floodplain tables built'
+            write (*, *) 'Floodplain tables built'
+        end if
+
+        ! End of subroutines that calculates Unit-catchments, rivers channels, and floodplains
+        ! characteristics
+
+        !  Openning of MGB input files that are read during the simulation
+        write (*, *) 'Opening input meteorological files...'
+        write (log_unit, *) 'Opening input meteorological files...'
+        call open_meteorological_inputs
+
+        ! End of openning MGB-IPH main input and output files that are read and written over the
+        ! simulation
+    end subroutine prepare_simulation
 
     subroutine run_simulation
         use catchment, only: initialize_runoff
@@ -14,6 +82,7 @@ contains
             & write_hotstart
         use river_inertial, only: initialize_inertial_routing
         use river_muskingum, only: initialize_muskingum_cunge_routing
+        use meteorological_io, only: close_meteorological_inputs
         use output_io, only: &
             & close_model_outputs, &
             & open_model_outputs
@@ -75,6 +144,7 @@ contains
         end if
 
         call close_model_outputs
+        call close_meteorological_inputs
 
         return
 

@@ -30,6 +30,7 @@ src/
 │   └── simulation_runner.f90
 └── io/
     ├── configuration_io.f90
+    ├── log_io.f90
     ├── static_input_io.f90
     ├── meteorological_io.f90
     ├── hotstart_io.f90
@@ -74,12 +75,17 @@ application layers coordinate their public entry points.
 ### Composition and I/O
 
 `main.f90` owns the visible application lifecycle: read configuration,
-allocate variables, read static inputs, prepare hydrology, open runtime files,
-run the simulation, close files, and deallocate variables.
+allocate and deallocate variables, report the configuration, handle the
+interactive prompts, measure elapsed time, and report final status. It calls
+`simulation_runner` for hydrology preparation and runtime simulation.
 
-`simulation_runner` preserves the timestep and hotstart sequence. The I/O
-modules retain ownership of all model files and serialize variables from the
-five shared namespaces without changing external formats.
+`simulation_runner` owns catchment and static-input loading, routing and
+hydrology preparation, meteorological-input opening, and the timestep and
+hotstart sequence. It also closes the meteorological and model-output files
+after the run. The I/O modules retain ownership of all model files and
+serialize variables from the five shared namespaces without changing external
+formats. `log_io` owns the model log; `output_io` owns model-output files and
+records.
 
 ## Dependency direction
 
@@ -87,10 +93,11 @@ five shared namespaces without changing external formats.
 application/main
         |
         v
-simulation_runner ------> centralized I/O
+simulation_runner ------> hydrology and centralized runtime I/O
         |
-        v
-hydrology behavior ------> vars + common utilities
+        +-----------------> hydrology behavior ------> vars + common utilities
+
+application/main -------> vars, configuration_io, and log_io
 ```
 
 Allowed project dependencies are:
@@ -102,7 +109,7 @@ Allowed project dependencies are:
 | Hydrology module | Vars modules and common utilities |
 | I/O module | Vars modules and common utilities |
 | `simulation_runner` | Hydrology, I/O, vars, and common modules |
-| `application/main.f90` | Public APIs and variables required to show the complete lifecycle |
+| `application/main.f90` | Vars, `configuration_io`, `log_io`, and `simulation_runner` |
 
 Every project-module import requires an `only:` list. Behavioral, common, I/O,
 and runner modules use default `private` visibility and explicit public APIs.
@@ -110,7 +117,9 @@ The vars modules are the sole default-public exception.
 
 Forbidden dependencies include a vars module importing any project module,
 one hydrology module importing another, scientific behavior importing I/O, and
-I/O importing hydrology behavior.
+I/O importing hydrology behavior. The application is also forbidden from
+depending directly on hydrology or runtime-I/O modules; those dependencies are
+owned by `simulation_runner`.
 
 ## Scientific data flow
 
