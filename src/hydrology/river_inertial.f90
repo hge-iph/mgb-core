@@ -303,7 +303,7 @@ contains
             & last_subbasin, &
             & overland_flow_width, &
             & overland_manning_n, &
-            & pseudo_two_d_enabled, &
+            & pseudo_2d_enabled, &
             & thread_count
         use forcing, only: reservoir_outflow
         use attributes, only: &
@@ -510,7 +510,7 @@ contains
         !$omp end parallel
 
         ! Route lateral flow through pseudo-two-dimensional face connections.
-        if (pseudo_two_d_enabled == 1) then
+        if (pseudo_2d_enabled == 1) then
             !turn on lateral connections
 
             !PLEASE, BE CAREFUL CLEARING THESE VARIABLES! (neighbor_q and face_q)

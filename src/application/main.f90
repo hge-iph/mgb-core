@@ -26,7 +26,7 @@ program mgb_model
         & model_timestep, &
         & monthly_radiation_option, &
         & output_directory, &
-        & pseudo_two_d_enabled, &
+        & pseudo_2d_enabled, &
         & read_hotstart_mode, &
         & reservoir_substitution_enabled, &
         & subbasin_count, &
@@ -141,7 +141,7 @@ program mgb_model
     write (log_unit, '(A40,I8)') 'reservoir_substitution_enabled (0=no; 1=yes):', reservoir_substitution_enabled
     write (log_unit, '(A40,I8)') 'routing_mode (0=Muskingum; 1=inertial):', inertial_routing_enabled
     write (log_unit, '(A40,I8)') 'thread_count:', thread_count
-    write (log_unit, '(A40,I8)') 'Pseudo 2D routing Flag (0=no; 1=yes):', pseudo_two_d_enabled
+    write (log_unit, '(A40,I8)') 'Pseudo 2D routing Flag (0=no; 1=yes):', pseudo_2d_enabled
     write (log_unit, '(A40,I8)') 'hotstart_read_mode (0=no; 1=yes):', read_hotstart_mode
     write (log_unit, '(A40,I8)') 'hotstart_write_mode (0=no; 1=yes):', write_hotstart_mode
     write (log_unit, '(A40,F10.2)') 'courant_alpha:', courant_alpha

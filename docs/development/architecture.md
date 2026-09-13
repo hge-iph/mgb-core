@@ -62,7 +62,7 @@ the variable modules do not depend on one another.
 
 | Module | Responsibility | Public API |
 | --- | --- | --- |
-| `catchment` | Evapotranspiration, interception, HRU water balance, catchment aggregation, and terrestrial linear reservoirs | `calculate_catchment_time_of_concentration`, `initialize_runoff`, `update_runoff` |
+| `catchment` | Evapotranspiration, interception, HRU water balance, catchment aggregation, and terrestrial linear reservoirs | `calculate_catchment_time_of_concentration`, `initialize_catchment`, `update_catchment` |
 | `river_muskingum` | Muskingum-Cunge parameter preparation, initialization, and network routing | `calculate_muskingum_cunge_parameters`, `initialize_muskingum_cunge_routing`, `route_muskingum_cunge_network` |
 | `river_inertial` | Inertial topology/table preparation, initialization, and routing | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
 | `reservoirs` | Initialization required by the existing reservoir and substitution behavior | `initialize_reservoir_state` |

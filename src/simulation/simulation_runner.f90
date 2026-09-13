@@ -75,7 +75,7 @@ contains
     end subroutine prepare_simulation
 
     subroutine run_simulation
-        use catchment, only: initialize_runoff
+        use catchment, only: initialize_catchment
         use hotstart_io, only: &
             & read_hotstart, &
             & read_hotstart_schedule, &
@@ -116,7 +116,7 @@ contains
 
         ! Model initial conditions
         write (log_unit, *) 'Calling initial conditions...'
-        call initialize_runoff
+        call initialize_catchment
         call initialize_muskingum_cunge_routing
         if (inertial_catchment_count > 0) call initialize_inertial_routing
 
@@ -155,7 +155,7 @@ contains
         use date_time, only: &
             & calculate_julian_day, &
             & convert_julian_day_to_calendar
-        use catchment, only: update_runoff
+        use catchment, only: update_catchment
         use hotstart_io, only: write_hotstart
         use river_inertial, only: route_inertial_flow
         use meteorological_io, only: read_meteorological_forcing
@@ -249,7 +249,7 @@ contains
             ! Read rainfall and other met variables
 
             ! Perform vertical water balance
-            call update_runoff
+            call update_catchment
 
             if (routing_method(1) == 0) then
                 call route_muskingum_cunge_network( &

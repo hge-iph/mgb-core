@@ -209,8 +209,8 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
             & catchment_area, &
             & catchment_order, &
             & catchment_subbasin, &
-            & catchment_x, &
-            & catchment_y, &
+            & catchment_lon, &
+            & catchment_lat, &
             & downstream_catchment, &
             & drainage_area, &
             & hru_percentage, &
@@ -247,7 +247,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         subbasin_outlet_catchment = -999999
         do catchment_record_index = 1, catchment_count
             read (catchment_data_unit, *) input_catchment_sequence, catchment_id(catchment_record_index), &
-                & catchment_x(catchment_record_index), catchment_y(catchment_record_index), &
+                & catchment_lon(catchment_record_index), catchment_lat(catchment_record_index), &
                 & catchment_subbasin(catchment_record_index), catchment_area(catchment_record_index), &
                 & drainage_area(catchment_record_index), river_length(catchment_record_index), &
                 & river_slope(catchment_record_index), longest_reach_length(catchment_record_index), &
@@ -456,9 +456,9 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
             & flood_area_unit, &
             & flood_stage_unit, &
             & input_directory, &
-            & pseudo_two_d_enabled
+            & pseudo_2d_enabled
         use attributes, only: &
-            & catchment_x, &
+            & catchment_lon, &
             & face_catchment_1, &
             & face_catchment_2, &
             & face_distance, &
@@ -484,7 +484,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         floodplain_point_count = standard_floodplain_point_count
         !Setting the number of floodplain elevations
 
-        !Opening the level catchment_x flooded area files
+        ! Opening the flood-stage data.
         inquire (iolength=flood_stage_record_length) floodplain_bottom_elevation
         open (flood_stage_unit, file=input_directory//'flood_stage.bin', status='old', recl= flood_stage_record_length, &
             & form='UNFORMATTED', access='DIRECT')
@@ -527,7 +527,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         !Close floodplain area binary file
 
         ! Read lateral face connections when pseudo-2D routing is enabled.
-        if (pseudo_two_d_enabled == 1) then
+        if (pseudo_2d_enabled == 1) then
             open (face_connection_unit, file=input_directory//'floodplain_connections.txt', status='OLD', action='READ')
 
             ! Records contain the two catchment indices and their separation in metres.
@@ -552,7 +552,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
             & input_directory, &
             & stage_area_unit
         use attributes, only: &
-            & catchment_x, &
+            & catchment_lon, &
             & face_catchment_1, &
             & face_catchment_2, &
             & face_distance, &
@@ -568,7 +568,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         integer :: i_catch
         integer :: io_status
 
-        !Opening the level catchment_x flooded area file
+        ! Opening the floodplain stage-area data.
         open (stage_area_unit, file=input_directory//'floodplain_stage_area.txt', status='OLD', action='READ')
 
         ! Reading data:

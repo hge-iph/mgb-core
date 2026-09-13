@@ -27,7 +27,7 @@ module config
     integer :: use_pressure_timeseries
     integer :: monthly_radiation_option
     integer :: inertial_routing_enabled
-    integer :: pseudo_two_d_enabled
+    integer :: pseudo_2d_enabled
     integer :: thread_count
     integer :: inertial_catchment_count
     real*8 :: courant_alpha

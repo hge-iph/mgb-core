@@ -2,11 +2,11 @@ module catchment
 
     implicit none
     private
-    public :: calculate_catchment_time_of_concentration, initialize_runoff, update_runoff
+    public :: calculate_catchment_time_of_concentration, initialize_catchment, update_catchment
 
 contains
 
-    subroutine initialize_runoff
+    subroutine initialize_catchment
         use config, only: &
             & catchment_count, &
             & hru_count
@@ -74,7 +74,7 @@ contains
             surface_q(i_catch) = surface_storage(i_catch)/tk_sup
         end do
         air_temperature = 20.0
-    end subroutine initialize_runoff
+    end subroutine initialize_catchment
 
     subroutine calculate_catchment_time_of_concentration
         use config, only: catchment_count
@@ -102,7 +102,7 @@ contains
         return
     end
 
-    subroutine update_runoff
+    subroutine update_catchment
         use date_time, only: calculate_integer_julian_day
         use config, only: &
             & catchment_count, &
@@ -123,7 +123,7 @@ contains
         use attributes, only: &
             & catchment_area, &
             & catchment_subbasin, &
-            & catchment_y, &
+            & catchment_lat, &
             & climate_region, &
             & hru_percentage
         use parameters, only: &
@@ -357,7 +357,7 @@ contains
                 w = soil_water_storage(i_catch, i_hru)
                 si = interception_storage(i_catch, i_hru)
                 wm = max_soil_water_storage(i_sub, i_hru)
-                lat = catchment_y(i_catch)
+                lat = catchment_lat(i_catch)
                 pa = air_pressure(i_catch)
                 ta = air_temperature(i_catch)
                 wind = wind_speed(i_catch)
@@ -381,8 +381,8 @@ contains
                 if (wind .lt. 0.0 .or. wind .gt. 100.) stop 'ERROR WIND SUB CELULA'
                 if (rh .lt. 0.0 .or. rh .gt. 100.01) stop 'ERROR UMIDITY SUB CELULA'
 
-                ! Calculates radiation, evapotranspiration, and interception (updates p)
-                call calculate_evapotranspiration( &
+                ! Calculates radiation, ET demand, and interception (updates p)
+                call calculate_et_demand( &
                     & p, &
                     & w, &
                     & wm, &
@@ -604,9 +604,9 @@ contains
 
 79      format(i5, 12f6.1)
         return
-    end subroutine update_runoff
+    end subroutine update_catchment
 
-    subroutine calculate_evapotranspiration( &
+    subroutine calculate_et_demand( &
         & p, &
         & w, &
         & wm, &
@@ -779,7 +779,7 @@ contains
         et_total = et_soil + et_int
         et_soil = et_soil*1.0
 
-    end subroutine calculate_evapotranspiration
+    end subroutine calculate_et_demand
 
     subroutine calculate_net_radiation( &
         & solar, &

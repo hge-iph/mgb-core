@@ -34,7 +34,7 @@ contains
             & monthly_radiation_option_state => monthly_radiation_option, &
             & overland_flow_width, &
             & overland_manning_n, &
-            & pseudo_two_d_enabled, &
+            & pseudo_2d_enabled, &
             & reservoir_count_state => reservoir_count, &
             & reservoir_substitution_enabled_state => reservoir_substitution_enabled, &
             & subbasin_count_state => subbasin_count, &
@@ -194,7 +194,7 @@ contains
         monthly_radiation_option_state = monthly_radiation_option
 
         ! Pseudo-2D routing remains disabled by the current runtime interface.
-        pseudo_two_d_enabled = 0
+        pseudo_2d_enabled = 0
         overland_flow_width = 10.0
         overland_manning_n = 0.1
 
