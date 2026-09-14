@@ -1,5 +1,57 @@
 # References
 
+## Source manuals and core methods
+
+- Brêda, J. P. F., Sorribas, M. V., Gama, C. H. A., and Paiva, R. C. D.
+  *Guia Prático de Código-Fonte: Rotinas do MGB*. Technical Manual, Large
+  Scale Hydrology Research Group, IPH/UFRGS, 2020.
+- Collischonn, W., Gama, C. H. A., Siqueira, V. A., Paiva, R. C. D., and
+  Fleischmann, A. S. *Manual de Referência Teórica do MGB*. Large Scale
+  Hydrology Research Group, IPH/UFRGS, 2020.
+- Almeida, G. A. M. de and Bates, P. D. “Applicability of the local inertial
+  approximation of the shallow water equations to flood modeling.” *Water
+  Resources Research* 49, 4833–4844, 2013.
+- Almeida, G. A. M. de, Bates, P. D., Freer, J. E., and Souvignet, M.
+  “Improving the stability of a simple formulation of the shallow water
+  equations for 2-D flood modeling.” *Water Resources Research* 48, 2012.
+- Bates, P. D., Horritt, M. S., and Fewtrell, T. J. “A simple inertial
+  formulation of the shallow water equations for efficient two-dimensional
+  flood inundation modelling.” *Journal of Hydrology* 387, 33–45, 2010.
+- Dunne, T. and Black, R. D. “Partial area contributions to storm runoff in a
+  small New England watershed.” *Water Resources Research* 6, 1296–1311,
+  1970.
+- Fan, F. M., Collischonn, W., Pontes, P. R. M., and Paiva, R. C. D.
+  “Avaliação de um método de propagação de cheias em rios com aproximação
+  inercial das equações de Saint-Venant.” *Revista Brasileira de Recursos
+  Hídricos* 19, 137–147, 2014.
+- Fread, D. L. “Flow Routing.” In D. R. Maidment, ed., *Handbook of
+  Hydrology*. McGraw-Hill, 1993.
+- Moore, R. J. and Clarke, R. T. “A distribution function approach to
+  rainfall-runoff modelling.” *Water Resources Research* 17, 1367–1382,
+  1981.
+- Pontes, P. R. M., Fan, F. M., Fleischmann, A. S., Paiva, R. C. D., Buarque,
+  D. C., Siqueira, V. A., Jardim, P. F., Sorribas, M. V., and Collischonn, W.
+  “MGB-IPH model for hydrological and hydraulic simulation of large floodplain
+  river systems coupled with open source GIS.” *Environmental Modelling &
+  Software* 94, 1–20, 2017.
+- Rawls, W. J., Ahuja, L. R., Brakensiek, D. L., and Shirmohammadi, A.
+  “Infiltration and soil water movement.” In D. R. Maidment, ed., *Handbook
+  of Hydrology*. McGraw-Hill, 1993.
+- Rennó, C. D., Nobre, A. D., Cuartas, L. A., Soares, J. V., Hodnett, M. G.,
+  Tomasella, J., and Waterloo, M. J. “HAND, a new terrain descriptor using
+  SRTM-DEM: Mapping terra-firme rainforest environments in Amazonia.” *Remote
+  Sensing of Environment* 112, 3469–3481, 2008.
+- Shuttleworth, W. J. “Evaporation.” In D. R. Maidment, ed., *Handbook of
+  Hydrology*. McGraw-Hill, 1993.
+- Todini, E. “The ARNO rainfall-runoff model.” *Journal of Hydrology* 175,
+  339–382, 1996.
+- Tucci, C. E. M. *Modelos Hidrológicos*. Editora da UFRGS, 1998.
+- Wigmosta, M. S., Vail, L. W., and Lettenmaier, D. P. “A distributed
+  hydrology-vegetation model for complex terrain.” *Water Resources Research*
+  30, 1665–1679, 1994.
+
+## Selected MGB publications
+
 - Collischonn, W. *Simulação Hidrológica de Grandes Bacias*. PhD dissertation,
   Federal University of Rio Grande do Sul, 2001.
 - Siqueira, V. A., Paiva, R. C. D., Fleischmann, A. S., Fan, F. M., Ruhoff,
@@ -14,7 +66,7 @@
   river case study.” *Journal of Hydrology*, 2014.
 - Paiva, R. C. D., Collischonn, W., and Buarque, D. C. “Validation of a full
   hydrodynamic model for large-scale hydrologic modelling in the Amazon.”
-  *Hydrological Processes* 27, 1226–1243, 2013.
+  *Hydrological Processes* 27, 333–346, 2013.
 - Paiva, R. C. D., Collischonn, W., Bonnet, M.-P., Gonçalves, L. G. G.,
   Calmant, S., Getirana, A., and Santos da Silva, J. “Assimilating in situ and
   radar altimetry data into a large-scale hydrologic-hydrodynamic model for
@@ -36,10 +88,6 @@
 - Fan, F. M. and Collischonn, W. “Integração do Modelo MGB-IPH com Sistemas de
   Informação Geográfica.” *Revista Brasileira de Recursos Hídricos* 19,
   243–254, 2014.
-- Collischonn, W., Paiva, R. C. D., and Buarque, D. C. “Validation of a full
-  hydrodynamic model for large-scale hydrologic modelling in the Amazon.”
-  *Hydrological Processes* 27, 333–346, 2013. The legacy header lists this
-  separately from its other validation citation.
 - Collischonn, W., Paiva, R. C. D., and Buarque, D. C. “Short-term Ensemble
   Flood Forecasting.” *Geophysical Research Abstracts* 15, 11910, 2013.
 - Bravo, J. M., Collischonn, W., and others. “Coupled Hydrologic-Hydraulic

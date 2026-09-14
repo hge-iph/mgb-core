@@ -16,6 +16,14 @@ To build or run MGB:
 
 To understand how the software works:
 
+- Begin with [model concepts and discretization](model/model-concepts.md) for
+  the catchment, HRU, subbasin, and river-network hierarchy.
+- Use the detailed references for
+  [energy and evapotranspiration](model/energy-balance.md),
+  [soil and catchment processes](model/soil-and-catchment-processes.md),
+  [river routing](model/river-routing.md), and
+  [parameters and initial state](model/parameters-and-initial-state.md) when
+  interpreting the model equations.
 - Start with the [source architecture](development/architecture.md) for module
   responsibilities, dependencies, state organization, and execution flow.
 - Read the [process and numerical assumptions](model/model-processes.md) for the

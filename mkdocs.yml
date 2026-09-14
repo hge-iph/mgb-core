@@ -11,12 +11,25 @@ theme:
 plugins:
   - search
 
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 nav:
   - Home: index.md
   - Getting started:
       - Build: getting-started/build.md
       - Testing: getting-started/testing.md
   - Model:
+      - Concepts and discretization: model/model-concepts.md
+      - Energy balance and evapotranspiration: model/energy-balance.md
+      - Soil and catchment processes: model/soil-and-catchment-processes.md
+      - River routing: model/river-routing.md
+      - Parameters and initial state: model/parameters-and-initial-state.md
       - Processes and numerical assumptions: model/model-processes.md
       - I/O reference: model/io-reference.md
       - Portability: model/portability.md

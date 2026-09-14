@@ -2,7 +2,12 @@
 
 This page records the assumptions that must remain visible when the legacy
 implementation is changed. It describes the current executable order; it is
-not a replacement algorithm specification.
+not a replacement algorithm specification. For the equations and conceptual
+background, start with [Model concepts and discretization](model-concepts.md),
+then use the detailed pages for [energy and evapotranspiration](energy-balance.md),
+[soil and catchment processes](soil-and-catchment-processes.md),
+[river routing](river-routing.md), and
+[parameters and initial state](parameters-and-initial-state.md).
 
 ## Timestep order
 
@@ -42,6 +47,11 @@ updates include:
 - capillary transfer from groundwater to soil; and
 - surface, subsurface, and groundwater fluxes.
 
+The executable uses the groundwater threshold for both groundwater and
+subsurface drainage. With inertial routing, the effective floodplain
+infiltration rate is `min(Kint, 20 mm/day)`; the `Kinf` field read from
+`soil.par` is not the rate ultimately used by this calculation.
+
 Depth variables are generally in millimetres over the catchment or HRU.
 Discharge variables are in cubic metres per second. Reservoir volumes used by
 the flood solver are cubic metres. Conversions between depth, area, and
@@ -62,6 +72,7 @@ separates:
 
 Available interception storage limits actual interception evaporation. Soil and
 vegetation demand is limited by soil moisture thresholds and available water.
+The current unstressed threshold is 80 percent of maximum soil storage.
 Open-water demand is applied to the water surface and is also included in the
 floodplain continuity adjustment. Reported evapotranspiration outputs are
 depths per model timestep unless explicitly identified as potential demand.
@@ -87,18 +98,21 @@ coefficients. The implementation preserves the legacy reach subdivision limit
 and its upstream/downstream boundary ordering.
 
 Routing mode one uses the local inertial solver. It selects a stable internal
-timestep with the configured Courant alpha, gravity, reach length, and maximum
-water depth. The downstream boundary slope is supplied in metres per kilometre
-and converted to metres per metre by multiplying by 0.001 before it is used.
-The configured thread count controls the existing OpenMP parallel regions.
+timestep from the current water depth and reach length of every enabled
+catchment, together with the configured Courant alpha and gravity. The
+downstream boundary slope is supplied in metres per kilometre and converted to
+metres per metre by multiplying by 0.001 before it is used. The configured
+thread count controls the existing OpenMP parallel regions.
 
 ## Floodplain continuity
 
 For an inertial catchment, water volume is advanced from the previous volume by
 the internal timestep. The balance includes upstream discharge, local
-catchment lateral inflow, outgoing channel discharge, face/neighbor exchange,
-precipitation, floodplain infiltration, and open-water evaporation. The
-continuity update is repeated until the model timestep is consumed.
+catchment lateral inflow, outgoing channel discharge, precipitation,
+floodplain infiltration, and open-water evaporation. It also contains a term
+for pseudo-two-dimensional face/neighbor exchange, but the current runtime
+configuration always disables that path, so the term is zero. The continuity
+update is repeated until the model timestep is consumed.
 
 Stage, depth, and flooded area are updated after the volume step. Reservoir
 outflow substitution, when enabled, is applied at the existing routing point

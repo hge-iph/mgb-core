@@ -51,11 +51,10 @@ Use `.dev/plans/` for implementation plans, design notes, and tracked changes th
 # Build
 
 This project uses CMake with OpenMP. Validated build directories are kept under
-`build/` by operating system and compiler:
+`build/` by compiler:
 
-- Windows Intel: `build/windows`
-- Linux Intel: `build/linux`
-- Linux GNU: `build/linux-gfortran`
+- Linux Intel: `build/ifx`
+- Linux GNU: `build/gfortran`
 
 ## Windows
 
