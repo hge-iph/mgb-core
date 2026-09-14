@@ -23,4 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     intel-oneapi-mkl-devel \
     && rm -rf /var/lib/apt/lists/*
 
+RUN echo 'source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1' >> /etc/bash.bashrc
+
 RUN pip3 install --break-system-packages fortls
