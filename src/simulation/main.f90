@@ -52,7 +52,7 @@ program mgb_model
     use log_io, only: &
         & close_model_log, &
         & open_model_log
-    use simulation_runner, only: &
+    use runner, only: &
         & prepare_simulation, &
         & run_simulation
 

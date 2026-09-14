@@ -26,7 +26,8 @@ set(MGB_COMMON_SOURCES
 )
 
 set(MGB_SIMULATION_SOURCES
-    src/simulation/simulation_runner.f90
+    src/simulation/runner.f90
+    src/simulation/main.f90
 )
 
 set(MGB_VARIABLE_SOURCES
@@ -53,17 +54,12 @@ set(MGB_IO_SOURCES
     src/io/output_io.f90
 )
 
-set(MGB_APPLICATION_SOURCES
-    src/application/main.f90
-)
-
 add_executable(mgb_model
     ${MGB_COMMON_SOURCES}
     ${MGB_VARIABLE_SOURCES}
     ${MGB_SIMULATION_SOURCES}
     ${MGB_HYDROLOGY_SOURCES}
     ${MGB_IO_SOURCES}
-    ${MGB_APPLICATION_SOURCES}
 )
 set_target_properties(mgb_model PROPERTIES
     OUTPUT_NAME mgb_model

@@ -9,25 +9,12 @@ Work-in-progress proposals belong under `.dev/plans/`. When a proposal is
 accepted and implemented, update this page if it changes one of these durable
 decisions.
 
-## Modernize incrementally without casual scientific changes
-
-MGB is being prepared for collaborative development through small,
-reviewable changes. Structural improvements should preserve scientific
-behavior unless a behavior change is explicitly proposed, justified, tested,
-and documented.
-
-This approach favors regression coverage and clear module boundaries before
-broad source rewrites. A refactor should not also change precision, units,
-calculation order, or numerical methods merely because a different expression
-looks cleaner.
-
 ## Keep one executable with layered source responsibilities
 
 The project builds one `mgb_model` executable. Source directories describe
-responsibilities rather than separately deployed libraries:
+responsibilities:
 
-- `application` owns the process lifecycle;
-- `simulation` composes initialization and timestep execution;
+- `simulation` composes the process lifecycle, initialization and timestep execution;
 - `hydrology` owns scientific behavior;
 - `io` owns model file access and serialization;
 - `vars` owns shared model storage; and
@@ -38,7 +25,7 @@ utilities. Hydrology does not call other hydrology modules, scientific modules
 do not perform model I/O, and variable modules do not import project modules.
 The [architecture page](architecture.md) defines the complete dependency table.
 
-The consequence is some explicit coordination in `simulation_runner`. That
+The consequence is some explicit coordination in `runner`. That
 coordination is preferable to hidden calls across scientific domains because
 the model execution order remains visible in one place.
 
@@ -72,8 +59,7 @@ common utilities, but they do not depend on hydrology modules.
 
 Input filenames, namelist keys, record order, numeric precision, and binary
 layouts are runtime interfaces. Direct-access record lengths are derived with
-`INQUIRE(IOLENGTH=...)`; a `.bin` extension does not define a new portable
-encoding.
+`INQUIRE(IOLENGTH=...)`.
 
 Portability work must preserve the established physical records unless an
 intentional format migration has been agreed and documented. Historical names

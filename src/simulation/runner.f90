@@ -1,4 +1,4 @@
-module simulation_runner
+module runner
 
     implicit none
     private
@@ -291,4 +291,4 @@ contains
         return
     end subroutine run_timestep_loop
 
-end module simulation_runner
+end module runner

@@ -13,7 +13,7 @@ class ArchitectureCheckerTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.src = Path(self.temporary_directory.name) / "src"
-        self.write("application/main.f90", "program mgb_model\nimplicit none\nend program\n")
+        self.write("simulation/main.f90", "program mgb_model\nimplicit none\nend program\n")
 
     def tearDown(self) -> None:
         self.temporary_directory.cleanup()
@@ -74,9 +74,9 @@ class ArchitectureCheckerTests(unittest.TestCase):
             self.write(f"vars/{name}.f90", self.vars_module(name))
         self.write("io/configuration_io.f90", self.behavior_module("configuration_io"))
         self.write("io/log_io.f90", self.behavior_module("log_io"))
-        self.write("simulation/simulation_runner.f90", self.behavior_module("simulation_runner"))
+        self.write("simulation/runner.f90", self.behavior_module("runner"))
         self.write(
-            "application/main.f90",
+            "simulation/main.f90",
             "program mgb_model\n"
             "use attributes, only: value\n"
             "use config, only: value\n"
@@ -85,7 +85,7 @@ class ArchitectureCheckerTests(unittest.TestCase):
             "use state, only: value\n"
             "use configuration_io, only: value\n"
             "use log_io, only: value\n"
-            "use simulation_runner, only: value\n"
+            "use runner, only: value\n"
             "implicit none\n"
             "end program\n",
         )
@@ -94,7 +94,7 @@ class ArchitectureCheckerTests(unittest.TestCase):
     def test_application_may_not_depend_on_hydrology(self) -> None:
         self.write("hydrology/catchment.f90", self.behavior_module("catchment"))
         self.write(
-            "application/main.f90",
+            "simulation/main.f90",
             "program mgb_model\n"
             "use catchment, only: value\n"
             "implicit none\n"
@@ -106,7 +106,7 @@ class ArchitectureCheckerTests(unittest.TestCase):
     def test_application_may_not_depend_on_runtime_io(self) -> None:
         self.write("io/meteorological_io.f90", self.behavior_module("meteorological_io"))
         self.write(
-            "application/main.f90",
+            "simulation/main.f90",
             "program mgb_model\n"
             "use meteorological_io, only: value\n"
             "implicit none\n"

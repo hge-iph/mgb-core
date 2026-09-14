@@ -27,12 +27,12 @@ CLASSIFICATION = {
     "river_inertial": "hydrology", "reservoirs": "hydrology",
     "configuration_io": "io", "log_io": "io", "static_input_io": "io",
     "meteorological_io": "io", "hotstart_io": "io", "output_io": "io",
-    "simulation_runner": "runner",
+    "runner": "runner",
 }
 
 APPLICATION_ALLOWED_DEPENDENCIES = {
     "attributes", "config", "forcing", "parameters", "state",
-    "configuration_io", "log_io", "simulation_runner",
+    "configuration_io", "log_io", "runner",
 }
 
 EXPECTED_PATHS = {
@@ -179,13 +179,13 @@ def check_tree(source_root: Path) -> list[str]:
 
     if len(programs) != 1:
         errors.append(f"src:1: expected exactly one program, found {len(programs)}")
-    elif programs[0][0].relative_to(source_root).as_posix() != "application/main.f90":
+    elif programs[0][0].relative_to(source_root).as_posix() != "simulation/main.f90":
         path, item = programs[0]
-        errors.append(f"{path.relative_to(source_root)}:{item.line}: program must be application/main.f90")
+        errors.append(f"{path.relative_to(source_root)}:{item.line}: program must be simulation/main.f90")
     else:
         program_path, _ = programs[0]
         if not any(item.text == "implicit none" for item in parsed[program_path]):
-            errors.append("application/main.f90:1: program requires implicit none")
+            errors.append("simulation/main.f90:1: program requires implicit none")
     return errors
 
 
