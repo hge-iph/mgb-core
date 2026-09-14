@@ -5,6 +5,11 @@ shared model variables, centralized I/O, simulation orchestration, and common
 utilities. The organization preserves the legacy model's module-global storage
 while making the purpose of each shared variable explicit.
 
+This page describes the implemented system. The rationale for its durable
+constraints is recorded in [Design decisions](design-decisions.md), while the
+steps and checks for changing it belong in
+[CONTRIBUTING.md](https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md).
+
 ## Source tree
 
 ```text
@@ -87,6 +92,26 @@ serialize variables from the five shared namespaces without changing external
 formats. `log_io` owns the model log; `output_io` owns model-output files and
 records.
 
+## Execution lifecycle
+
+The application has three visible phases:
+
+1. **Prepare.** `main.f90` opens the log, reads `config.nml`, allocates the five
+   shared variable namespaces, and calls `prepare_simulation`. The runner reads
+   static inputs, prepares catchment and routing parameters, builds inertial
+   floodplain data when selected, and opens meteorological inputs.
+2. **Run.** `run_simulation` opens outputs, initializes catchment and routing
+   state, reads an optional hotstart and write schedule, and enters the
+   timestep loop. The scientific order within that loop is documented under
+   [Model processes and numerical assumptions](../model/model-processes.md).
+3. **Finish.** The runner writes any configured final hotstart, closes runtime
+   files, and returns to `main.f90`, which deallocates the shared namespaces,
+   reports elapsed time, and closes the log.
+
+This division keeps process-level concerns in the application, composition in
+the runner, scientific calculations in hydrology modules, and file ownership
+in I/O modules.
+
 ## Dependency direction
 
 ```text
@@ -121,7 +146,7 @@ I/O importing hydrology behavior. The application is also forbidden from
 depending directly on hydrology or runtime-I/O modules; those dependencies are
 owned by `simulation_runner`.
 
-## Scientific data flow
+## State and scientific data flow
 
 Meteorological I/O updates `forcing`. Catchment processing reads forcing,
 parameters, configuration, and retained state, then updates catchment state and
@@ -134,9 +159,29 @@ The direct module-variable exchange is intentional. Narrow `only:` lists show
 and constrain each procedure's coupling while avoiding wrapper types or a
 whole-model storage object.
 
+The five shared namespaces distinguish data by role and lifetime:
+
+```text
+static inputs -------------> attributes
+configuration -------------> config
+meteorological records ----> forcing ----+
+derived/prepared values ---> parameters  |
+                                        v
+                              hydrology kernels
+                                        |
+                                        v
+hotstart ------------------> state -----> output/hotstart serialization
+```
+
+`attributes`, `config`, and most of `parameters` are prepared before the time
+loop. `forcing` is refreshed as meteorological records are read. `state`
+contains evolving values carried between calculations and timesteps. I/O
+modules serialize these namespaces but do not become an alternative owner of
+scientific state.
+
 ## Architecture enforcement
 
-Run the policy checker from the repository root:
+The policy checker can be run from the repository root:
 
 ```bash
 python3 scripts/check_fortran_architecture.py
@@ -146,4 +191,5 @@ The checker enforces approved module names and paths, a single application
 program, contained project procedures, `implicit none`, visibility rules,
 explicit `only:` imports, the dependency table above, and the prohibition on
 named types in vars modules. Focused checker tests are under
-`tests/architecture` and the check is also registered with CTest.
+`tests/architecture` and the check is also registered with CTest. The
+contribution guide defines when contributors should run these checks.

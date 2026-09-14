@@ -1,6 +1,9 @@
 # Testing
 
 The regression suite covers both routing branches with the Magdalena fixture.
+This page explains the test system and how to operate it. The change-specific
+checks and pull-request expectations are maintained in
+[CONTRIBUTING.md](https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md).
 
 ## Layout
 
@@ -56,7 +59,7 @@ For each run, the regression harness:
   - successful runs clean up the temp directory
   - failed runs preserve the temp directory and print its path
 
-## Current Regression Gate
+## Compared results and tolerances
 
 Compared outputs:
 
@@ -86,16 +89,7 @@ python scripts/check_fortran_architecture.py
 python -m unittest discover -s tests/architecture
 ```
 
-## Formatting and documentation gates
-
-The development dependency pins `fprettify==0.3.7`. The format checker runs it
-on a temporary copy, then validates the repository's manual indentation and
-continuation layout:
-
-~~~bash
-python -m pip install -r requirements-dev.txt
-python scripts/check_fortran_format.py
-python scripts/check_fortran_architecture.py
-git diff --check
-python -m mkdocs build --strict
-~~~
+The [Fortran style guide](../development/fortran-style.md) describes the format
+checker and its pinned dependency. Documentation is built with MkDocs in
+strict mode. The contribution guide combines these checks into
+change-specific validation guidance instead of duplicating that policy here.

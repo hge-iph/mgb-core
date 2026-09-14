@@ -6,17 +6,29 @@ preserving its scientific behavior, binary layouts, and numerical record data.
 The source identifiers use descriptive English names while the runtime input
 filenames remain established MGB names.
 
-## Start here
+## Choose a starting point
 
-- [Build the model](getting-started/build.md) with validated Intel `ifx` or Linux GNU Fortran.
-- [Run the Magdalena regression case](getting-started/testing.md).
-- Review the [source architecture and dependency rules](development/architecture.md).
-- Review the [portability constraints](model/portability.md) before changing source
-  code.
-- Read the [process and numerical assumptions](model/model-processes.md) and the
-  [complete I/O reference](model/io-reference.md) before changing a file format.
-- Follow the [language and naming guide](development/language-and-naming.md) when writing
-  code or documentation.
+To build or run MGB:
+
+- [Build the model](getting-started/build.md) in a validated environment.
+- Use the [I/O reference](model/io-reference.md) to prepare configuration and
+  runtime files.
+
+To understand how the software works:
+
+- Start with the [source architecture](development/architecture.md) for module
+  responsibilities, dependencies, state organization, and execution flow.
+- Read the [process and numerical assumptions](model/model-processes.md) for the
+  scientific timestep and routing behavior.
+- Consult the [design decisions](development/design-decisions.md) for the
+  rationale behind current source boundaries and compatibility constraints.
+
+To make a change to the repository, follow
+[CONTRIBUTING.md](https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md).
+It contains the development setup, Git workflow, required standards, test and
+documentation expectations, and pull-request process. The detailed language,
+naming, and Fortran style pages are references for that workflow rather than a
+second contribution guide.
 
 ## Documentation locally
 

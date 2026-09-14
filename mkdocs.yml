@@ -22,8 +22,10 @@ nav:
       - Portability: model/portability.md
   - Development:
       - Architecture: development/architecture.md
+      - Design decisions: development/design-decisions.md
       - Language and naming: development/language-and-naming.md
       - Fortran style: development/fortran-style.md
   - Project:
       - History and contributors: project/project-history.md
       - References: project/references.md
+  - Contributing: https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md

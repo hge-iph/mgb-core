@@ -9,22 +9,10 @@ This project uses CMake and requires OpenMP. The validated compiler environments
 Use a separate build directory for each compiler. Select the compiler through the
 standard `FC` environment variable before configuring a new build tree.
 
-## Windows with Intel ifx
+This page is the build reference for users and developers. The repository
+change workflow and pull-request expectations are maintained in
+[CONTRIBUTING.md](https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md).
 
-Prerequisites:
-
-- Intel oneAPI installed and loaded:
-  - `call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"`
-- CMake available in that environment
-- Visual Studio Build Tools available through the configured oneAPI environment
-
-Run from the repository root:
-
-```cmd
-cmake -S . -B build/windows
-cmake --build build/windows --config Release
-ctest --test-dir build/windows -C Release --output-on-failure
-```
 
 ## Linux with Intel ifx
 
@@ -38,9 +26,26 @@ Run from the repository root:
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
-FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
-cmake --build build/linux
-ctest --test-dir build/linux --output-on-failure
+FC=ifx cmake -S . -B build/ifx -DCMAKE_BUILD_TYPE=Release
+cmake --build build/ifx
+ctest --test-dir build/ifx --output-on-failure
+```
+
+## Windows with Intel ifx
+
+Prerequisites:
+
+- Intel oneAPI installed and loaded:
+  - `call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"`
+- CMake available in that environment
+- Visual Studio Build Tools available through the configured oneAPI environment
+
+Run from the repository root:
+
+```cmd
+cmake -S . -B build/ifx
+cmake --build build/ifx --config Release
+ctest --test-dir build/ifx -C Release --output-on-failure
 ```
 
 ## Linux with GNU Fortran
@@ -54,9 +59,9 @@ Prerequisites:
 Run from the repository root:
 
 ```bash
-FC=gfortran cmake -S . -B build/linux-gfortran -DCMAKE_BUILD_TYPE=Release
-cmake --build build/linux-gfortran
-ctest --test-dir build/linux-gfortran --output-on-failure
+FC=gfortran cmake -S . -B build/gfortran -DCMAKE_BUILD_TYPE=Release
+cmake --build build/gfortran
+ctest --test-dir build/gfortran --output-on-failure
 ```
 
 ## Experimental Windows GNU Fortran
@@ -72,9 +77,9 @@ pacman -S --needed mingw-w64-ucrt-x86_64-gcc-fortran \
 Then configure a compiler-specific build tree:
 
 ```bash
-FC=gfortran cmake -S . -B build/windows-gfortran -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build/windows-gfortran
-ctest --test-dir build/windows-gfortran --output-on-failure
+FC=gfortran cmake -S . -B build/gfortran -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build/gfortran
+ctest --test-dir build/gfortran --output-on-failure
 ```
 
 ## Optional Diagnostics Build
@@ -85,16 +90,16 @@ Use the opt-in diagnostics mode when collecting compiler warning output for clea
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
-FC=ifx cmake -S . -B build/linux-diagnostics -DCMAKE_BUILD_TYPE=Release -DENABLE_FORTRAN_DIAGNOSTICS=ON
-cmake --build build/linux-diagnostics
+FC=ifx cmake -S . -B build/diagnostics -DCMAKE_BUILD_TYPE=Release -DENABLE_FORTRAN_DIAGNOSTICS=ON
+cmake --build build/diagnostics
 ```
 
 ### Windows
 
 ```cmd
 call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
-cmake -S . -B build/windows-diagnostics -DENABLE_FORTRAN_DIAGNOSTICS=ON
-cmake --build build/windows-diagnostics --config Release
+cmake -S . -B build/diagnostics -DENABLE_FORTRAN_DIAGNOSTICS=ON
+cmake --build build/diagnostics --config Release
 ```
 
 For GNU Fortran, use the same `-DENABLE_FORTRAN_DIAGNOSTICS=ON` option with the
