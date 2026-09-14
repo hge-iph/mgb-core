@@ -146,12 +146,12 @@ Allowed project dependencies are:
 
 | Consumer | May use |
 | --- | --- |
-| Common utility | Common utilities only |
-| Vars module | No project module |
-| Hydrology module | Vars modules and common utilities |
-| I/O module | Vars modules and common utilities |
+| Common | Common utilities only |
+| Vars | No project module |
+| Hydrology | Vars modules and common utilities |
+| I/O | Vars modules and common utilities |
 | `runner` | Hydrology, I/O, vars, and common modules |
-| `simulation/main.f90` | Vars, `configuration_io`, `log_io`, and `runner` |
+| `main` | Vars, `configuration_io`, `log_io`, and `runner` |
 
 Every project-module import requires an `only:` list. Behavioral, common, I/O,
 and runner modules use default `private` visibility and explicit public APIs.

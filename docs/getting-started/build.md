@@ -2,8 +2,8 @@
 
 This project uses CMake and requires OpenMP. The validated compiler environments are:
 
-- Windows x64 with Intel `ifx`
 - Linux x64 with Intel `ifx`
+- Windows x64 with Intel `ifx`
 - Linux x64 with GNU Fortran 13.3
 
 Use a separate build directory for each compiler. Select the compiler through the
@@ -64,10 +64,9 @@ cmake --build build/gfortran
 ctest --test-dir build/gfortran --output-on-failure
 ```
 
-## Experimental Windows GNU Fortran
+## Windows with GNU Fortran
 
-This environment is documented for evaluation but has not been validated. From an
-MSYS2 UCRT64 shell, install the UCRT64 GNU Fortran, CMake, and Ninja packages:
+From an MSYS2 UCRT64 shell, install the UCRT64 GNU Fortran, CMake, and Ninja packages:
 
 ```bash
 pacman -S --needed mingw-w64-ucrt-x86_64-gcc-fortran \
