@@ -2,6 +2,7 @@ name: Regression GNU Fortran
 
 on:
   pull_request:
+    types: [opened, reopened]
   workflow_dispatch:
 
 permissions:
