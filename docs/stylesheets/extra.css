@@ -1,0 +1,11 @@
+/* Keep the first column on one line and wrap all following columns. */
+.rst-content table th:first-child,
+.rst-content table td:first-child {
+  white-space: nowrap;
+}
+
+.rst-content table th:not(:first-child),
+.rst-content table td:not(:first-child) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
