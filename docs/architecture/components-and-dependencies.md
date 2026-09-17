@@ -12,13 +12,13 @@ runtime collaboration.
 Common modules provide focused services that can be reused by the rest of the
 model without owning scientific state or model files.
 
-| Module | Responsibility | Public API |
-| --- | --- | --- |
-| `date_time` | Calendar parsing and formatting, Julian-day conversion, and timestep-count calculations | `format_date_string`, `parse_date_string`, `calculate_integer_julian_day`, `calculate_julian_day`, `convert_julian_day_to_calendar`, `calculate_timestep_count` |
-| `interpolation` | Linear interpolation and endpoint extrapolation for tabulated values | `linear_interpolate` |
-| `runtime_support` | Legacy runtime support for random-seed initialization and timer updates | `initialize_random_seed`, `update_legacy_timer` |
+| Module | Responsibility |
+| --- | --- |
+| `date_time` | Calendar parsing and formatting, Julian-day conversion, and timestep-count calculations |
+| `interpolation` | Linear interpolation and endpoint extrapolation for tabulated values |
+| `runtime_support` | Legacy runtime support for random-seed initialization and timer updates |
 
-These modules have default-private visibility and expose only the listed
+These modules have default-private visibility and expose their documented
 procedures. They do not import other project modules.
 
 ## Shared variables
@@ -48,12 +48,12 @@ Hydrology modules implement terrestrial water balance, reservoir setup, and
 the two available river-routing methods. They exchange data through the shared
 variable modules and use common utilities where needed.
 
-| Module | Responsibility | Public API |
-| --- | --- | --- |
-| `catchment` | Evapotranspiration, interception, HRU water balance, catchment aggregation, and terrestrial linear reservoirs | `calculate_catchment_time_of_concentration`, `initialize_catchment`, `update_catchment` |
-| `reservoirs` | Initialization required by the existing reservoir and substitution behavior | `initialize_reservoir_state` |
-| `river_inertial` | Inertial topology and table preparation, initialization, and local-inertial routing | `prepare_inertial_routing`, `initialize_inertial_routing`, `route_inertial_flow` |
-| `river_muskingum` | Muskingum-Cunge parameter preparation, initialization, and network routing | `calculate_muskingum_cunge_parameters`, `initialize_muskingum_cunge_routing`, `route_muskingum_cunge_network` |
+| Module | Responsibility |
+| --- | --- |
+| `catchment` | Evapotranspiration, interception, HRU water balance, catchment aggregation, and terrestrial linear reservoirs |
+| `reservoirs` | Initialization required by the existing reservoir and substitution behavior |
+| `river_inertial` | Inertial topology and table preparation, initialization, and local-inertial routing |
+| `river_muskingum` | Muskingum-Cunge parameter preparation, initialization, and network routing |
 
 The evapotranspiration kernel is private to `catchment`, preserving the legacy
 per-HRU calculation order without creating a hidden call between hydrology
@@ -65,14 +65,14 @@ their public entry points.
 I/O modules own model files and transfer data to or from the five shared
 namespaces without changing external formats.
 
-| Module | Responsibility | Public API |
-| --- | --- | --- |
-| `configuration_io` | Read model configuration, establish dimensions and options, and initialize the simulation calendar | `read_model_configuration` |
-| `hotstart_io` | Read and write binary hydrologic/routing state and hotstart schedules | `read_hotstart`, `read_hotstart_schedule`, `write_hotstart` |
-| `log_io` | Open and close the model log file | `open_model_log`, `close_model_log` |
-| `meteorological_io` | Open, read, and close meteorological forcing streams for the timestep loop | `open_meteorological_inputs`, `read_meteorological_forcing`, `close_meteorological_inputs` |
-| `output_io` | Open, write, and close configured model-output streams | `open_model_outputs`, `write_model_outputs`, `close_model_outputs` |
-| `static_input_io` | Read fixed, calibrated, catchment, climatology, substitution-flow, floodplain, and reservoir inputs | `read_catchment_inputs`, `read_floodplain_inputs`, `read_reservoir_inputs` |
+| Module | Responsibility |
+| --- | --- |
+| `configuration_io` | Read model configuration, establish dimensions and options, and initialize the simulation calendar |
+| `hotstart_io` | Read and write binary hydrologic/routing state and hotstart schedules |
+| `log_io` | Open and close the model log file |
+| `meteorological_io` | Open, read, and close meteorological forcing streams for the timestep loop |
+| `output_io` | Open, write, and close configured model-output streams |
+| `static_input_io` | Read fixed, calibrated, catchment, climatology, substitution-flow, floodplain, and reservoir inputs |
 
 `configuration_io` and `log_io` are called directly by `main.f90`. The runner
 calls static, meteorological, hotstart, and output I/O during preparation and
@@ -83,10 +83,10 @@ the timestep sequence. I/O modules do not import hydrology behavior.
 The simulation component owns application control and the ordering of all
 preparation, runtime, and shutdown operations.
 
-| Unit | Responsibility | Public API |
-| --- | --- | --- |
-| `runner` | Coordinate static-input loading, scientific preparation, meteorological-input opening, initialization, timestep updates, hotstart handling, output writing, and shutdown | `prepare_simulation`, `run_simulation` |
-| `mgb_model` program | Assign runtime directories, open the log, read configuration, allocate and deallocate variables, report configuration and status, handle prompts, measure elapsed time, and call the runner | Program entry point |
+| Unit | Responsibility |
+| --- | --- |
+| `runner` | Coordinate static-input loading, scientific preparation, meteorological-input opening, initialization, timestep updates, hotstart handling, output writing, and shutdown |
+| `mgb_model` program | Assign runtime directories, open the log, read configuration, allocate and deallocate variables, report configuration and status, handle prompts, measure elapsed time, and call the runner |
 
 `main.f90` owns the visible application lifecycle. It calls `runner` for
 hydrology preparation and runtime simulation, while the runner coordinates the
