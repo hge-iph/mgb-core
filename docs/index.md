@@ -1,56 +1,58 @@
 # MGB Model
 
-MGB is a legacy Fortran model for large-scale hydrology and hydrodynamics. This
-repository is being prepared for maintainable collaborative development while
-preserving its scientific behavior, binary layouts, and numerical record data.
-The source identifiers use descriptive English names while the runtime input
-filenames remain established MGB names.
+MGB is a distributed large-scale hydrological and hydrodynamic model. This
+site documents the current Fortran implementation, its scientific formulation,
+software structure, runtime interfaces, and collaborative development workflow
+while preserving established numerical behavior and file formats.
 
-## Choose a starting point
+## Documentation map
 
-To build or run MGB:
+### Model
 
-- [Build the model](getting-started/build.md) in a validated environment.
-- Use the [I/O reference](model/io-reference.md) to prepare configuration and
-  runtime files.
+Start with the [Model overview](model/overview.md) for the model's purpose,
+process chain, spatial and temporal representation, routing choices, runtime
+boundary, and paths into the scientific reference.
 
-To understand how the software works:
+- [Concepts and discretization](model/model-concepts.md) defines catchments,
+  HRUs, subbasins, climate regions, and the spatial hierarchy.
+- [Energy balance and evapotranspiration](model/energy-balance.md) and
+  [soil and catchment processes](model/soil-and-catchment-processes.md)
+  document terrestrial behavior.
+- The [river-routing overview](model/river-routing.md) compares the routing
+  choices and links to the separate
+  [Muskingum-Cunge](model/muskingum-cunge-routing.md) and
+  [local-inertial](model/local-inertial-routing.md) formulations.
+- [Parameters and initial state](model/parameters-and-initial-state.md),
+  [model processes and numerical assumptions](model/model-processes.md), and
+  [scientific references](model/references.md) complete the scientific
+  reference.
 
-- Begin with [model concepts and discretization](model/model-concepts.md) for
-  the catchment, HRU, subbasin, and river-network hierarchy.
-- Use the detailed references for
-  [energy and evapotranspiration](model/energy-balance.md),
-  [soil and catchment processes](model/soil-and-catchment-processes.md),
-  [river routing](model/river-routing.md), and
-  [parameters and initial state](model/parameters-and-initial-state.md) when
-  interpreting the model equations.
-- Start with the [source architecture](development/architecture.md) for module
-  responsibilities, dependencies, state organization, and execution flow.
-- Read the [process and numerical assumptions](model/model-processes.md) for the
-  scientific timestep and routing behavior.
-- Consult the [design decisions](development/design-decisions.md) for the
-  rationale behind current source boundaries and compatibility constraints.
+### Architecture
 
-To make a change to the repository, follow
+The [Architecture overview](architecture/architecture.md) introduces the
+source layers and runtime shape.
+[Components and dependencies](architecture/components-and-dependencies.md)
+defines module responsibilities, APIs, dependency rules, and enforcement.
+[Execution and data flow](architecture/execution-and-data-flow.md) documents
+the application lifecycle, shared state, and scientific handoffs. The
+[I/O reference](architecture/io-reference.md) records runtime contracts, while
+[Design decisions](architecture/design-decisions.md) explains the rationale
+for durable boundaries.
+
+### Development
+
+The four development guides cover:
+
+- [Setup and build](development/build.md), including the development
+  container, native prerequisites, validated compiler workflows, and
+  portability status;
+- [Testing and debugging](development/testing.md), including regression,
+  policy, and documentation checks plus failure investigation;
+- [Automation and documentation](development/continuous-integration.md),
+  including CI workflows, MkDocs commands, and documentation boundaries; and
+- [Coding conventions](development/coding-conventions.md), including language,
+  naming, comments, Fortran style, and policy checks.
+
+Contributor workflow, branch conventions, review expectations, and pull-request
+checklists are maintained in
 [CONTRIBUTING.md](https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md).
-It contains the development setup, Git workflow, required standards, test and
-documentation expectations, and pull-request process. The detailed language,
-naming, and Fortran style pages are references for that workflow rather than a
-second contribution guide.
-
-## Documentation locally
-
-Install the documentation dependencies and start the development server:
-
-```bash
-python -m pip install -r requirements-docs.txt
-python -m mkdocs serve
-```
-
-Build the same strict site used by pull-request validation with:
-
-```bash
-python -m mkdocs build --strict
-```
-
-The generated site is written to `site/` and is not committed.

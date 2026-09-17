@@ -1,27 +1,26 @@
 # Model processes and numerical assumptions
 
-This page records the assumptions that must remain visible when the legacy
-implementation is changed. It describes the current executable order; it is
-not a replacement algorithm specification. For the equations and conceptual
-background, start with [Model concepts and discretization](model-concepts.md),
-then use the detailed pages for [energy and evapotranspiration](energy-balance.md),
-[soil and catchment processes](soil-and-catchment-processes.md),
-[river routing](river-routing.md), and
+This page records the assumptions that remain visible when the legacy
+implementation changes. It describes the current executable order and
+invariants. The equations and conceptual background are in [Model concepts and
+discretization](model-concepts.md), [energy and evapotranspiration](energy-balance.md),
+[soil and catchment processes](soil-and-catchment-processes.md), the
+[river-routing overview](river-routing.md), and
 [parameters and initial state](parameters-and-initial-state.md).
 
 ## Timestep order
 
-For each meteorological timestep, MGB:
+For each meteorological timestep, MGB follows this order:
 
-1. optionally writes the configured hotstart state;
-2. reads precipitation and the selected meteorological forcing series;
-3. calculates evapotranspiration and then updates runoff for every HRU within
-   the vertical water-balance loop;
-4. routes the river network with Muskingum-Cunge when selected;
-5. assembles lateral groundwater, subsurface, and surface inflows;
-6. advances local inertial routing, including floodplain continuity;
-7. stores one output value per catchment for each enabled output stream; and
-8. advances the calendar and Julian date.
+1. The configured hotstart state is optionally written.
+2. Precipitation and the selected meteorological forcing series are read.
+3. Evapotranspiration is calculated and runoff is updated for every HRU within
+   the vertical water-balance loop.
+4. The river network is routed with Muskingum-Cunge when that mode is active.
+5. Lateral groundwater, subsurface, and surface inflows are assembled.
+6. Local-inertial routing, including floodplain continuity, is advanced.
+7. One output value per catchment is stored for each enabled output stream.
+8. The calendar and Julian date advance.
 
 The order is part of the numerical behavior. In particular, the `catchment`
 module calculates evapotranspiration for each HRU before updating that HRU's
@@ -87,22 +86,24 @@ sunshine hours, sunshine percentage, or radiation.
 
 Net radiation combines shortwave and longwave terms using the configured
 albedo, day-of-year geometry, humidity, temperature, and pressure. The source
-uses its existing constants and precision; this description does not authorize
-changing units or replacing the radiation method.
+constants and precision define this implementation, including its units and
+radiation method.
 
 ## River routing
 
 Routing mode zero uses Muskingum-Cunge reaches. Catchment parameters determine
 reach count, celerity, wave travel time, channel geometry, and routing
 coefficients. The implementation preserves the legacy reach subdivision limit
-and its upstream/downstream boundary ordering.
+and its upstream/downstream boundary ordering. The complete formulation is in
+[Muskingum-Cunge routing](muskingum-cunge-routing.md).
 
 Routing mode one uses the local inertial solver. It selects a stable internal
 timestep from the current water depth and reach length of every enabled
 catchment, together with the configured Courant alpha and gravity. The
 downstream boundary slope is supplied in metres per kilometre and converted to
 metres per metre by multiplying by 0.001 before it is used. The configured
-thread count controls the existing OpenMP parallel regions.
+thread count controls the existing OpenMP parallel regions. The complete
+formulation is in [Local-inertial routing](local-inertial-routing.md).
 
 ## Floodplain continuity
 

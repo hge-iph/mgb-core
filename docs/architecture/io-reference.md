@@ -11,6 +11,15 @@ reservoir, and floodplain inputs, `meteorological_io` owns forcing streams,
 `hotstart_io` owns hotstart files and schedules, and `output_io` owns the log
 and model output streams. Scientific modules do not open or close model files.
 
+The model uses lowercase runtime directories relative to the working directory:
+
+- `input/`
+- `output/`
+- `hotstart/`
+
+The regression harness stages runtime files into a temporary working directory,
+so tests are not tied to the repository root.
+
 ## Configuration
 
 The only configuration file is config.nml. It contains four namelist
@@ -33,11 +42,11 @@ groups.
 
 | Key | Meaning and units |
 | --- | --- |
-| use_temperature_timeseries | Use air_temperature.bin instead of monthly means |
-| use_radiation_timeseries | Use solar_radiation.bin instead of monthly means |
-| use_humidity_timeseries | Use relative_humidity.bin instead of monthly means |
-| use_wind_timeseries | Use wind_speed.bin instead of monthly means |
-| use_pressure_timeseries | Use air_pressure.bin instead of monthly means |
+| use_temperature_timeseries | Selects `air_temperature.bin` for temperature forcing when enabled |
+| use_radiation_timeseries | Selects `solar_radiation.bin` for radiation forcing when enabled |
+| use_humidity_timeseries | Selects `relative_humidity.bin` for humidity forcing when enabled |
+| use_wind_timeseries | Selects `wind_speed.bin` for wind forcing when enabled |
+| use_pressure_timeseries | Selects `air_pressure.bin` for pressure forcing when enabled |
 | monthly_radiation_option | 0 sunshine hours, 1 sunshine percent, 2 radiation |
 
 ### routing
@@ -106,8 +115,9 @@ existing precision and direct-access record length are authoritative.
 
 flood_stage.bin and flood_area.bin retain their existing names and binary
 layouts. Stage data use the bottom-elevation records expected by the flood
-table builder; area data provide the fixed floodplain point records. Do not
-reinterpret their byte order or precision from the filename extension.
+table builder; area data provide the fixed floodplain point records. Their
+byte order and precision are defined by the source records, not by the
+filename extension.
 
 ## Hotstarts
 

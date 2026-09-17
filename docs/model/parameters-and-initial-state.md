@@ -4,9 +4,9 @@ MGB combines parameters that describe HRU vegetation, soil-water response,
 catchment geometry, terrestrial routing, and river routing. This page explains
 their role in the equations and records the initial conditions used by the
 current executable. File layouts and ordering requirements remain documented
-in the [I/O reference](io-reference.md).
+in the [I/O reference](../architecture/io-reference.md).
 
-Parameter values must be selected for the basin and input data being modeled.
+Parameter values correspond to the basin and input data being modeled.
 The current executable does not enforce parameter validity limits, and some
 regression datasets intentionally use values outside typical calibration
 ranges.
@@ -42,8 +42,8 @@ the file. Soil moisture then increases the effective resistance below
 $0.8W_m$, as detailed in
 [Energy balance and evapotranspiration](energy-balance.md).
 
-These properties are usually estimated from vegetation information rather
-than adjusted solely to fit discharge, but the executable does not enforce a
+These properties are usually estimated from vegetation information and may
+also be calibrated against discharge. The executable does not enforce a
 distinction between fixed and calibrated values.
 
 ## Soil and generated-flow parameters
@@ -106,7 +106,8 @@ During input preparation:
 
 Catchment time of concentration, Muskingum-Cunge celerity and subdivision, and
 local-inertial initial depth are derived from these prepared values. See
-[River routing](river-routing.md).
+[Muskingum-Cunge routing](muskingum-cunge-routing.md) and
+[Local-inertial routing](local-inertial-routing.md).
 
 ## Meteorological boundary conditions
 
@@ -123,11 +124,12 @@ runtime capabilities of this repository.
 Solar climatology can represent sunshine hours, sunshine percentage, or
 radiation according to `monthly_radiation_option`. A direct solar-radiation
 series bypasses that climatological conversion. Exact filenames and units are
-listed in the [I/O reference](io-reference.md).
+listed in the [I/O reference](../architecture/io-reference.md).
 
 The local-inertial downstream boundary is controlled by
 `downstream_boundary_slope`, except for its fixed-level and reservoir-dam
-special cases. Those conditions are detailed in [River routing](river-routing.md).
+special cases. Those conditions are detailed in
+[Local-inertial routing](local-inertial-routing.md).
 
 ## Default initial state
 

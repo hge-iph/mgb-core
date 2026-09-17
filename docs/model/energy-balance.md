@@ -5,7 +5,7 @@ HRU in every catchment. The same meteorological forcing is used by all HRUs in
 a catchment, while monthly vegetation parameters vary by HRU and climate
 region. The equations below describe the current `catchment` implementation;
 their scientific background follows Shuttleworth (1993) and Wigmosta et al.
-(1994), as cited in [References](../project/references.md).
+(1994), as cited in [References](references.md).
 
 Unless stated otherwise, radiation is in $\mathrm{MJ\,m^{-2}\,day^{-1}}$,
 water depths are in millimetres per model timestep, temperature is in degrees
@@ -97,8 +97,8 @@ R_s = R_a\left(0.25+0.50\frac{p_s}{100}\right)
 \quad\text{for sunshine percentage }p_s,
 $$
 
-or accepts the climatological value directly as radiation. See the
-[I/O reference](io-reference.md) for the forcing flags and record layouts.
+or accepts the climatological value directly as radiation. The
+[I/O reference](../architecture/io-reference.md) lists the forcing flags and record layouts.
 
 For HRU albedo $\alpha$, net shortwave radiation is
 

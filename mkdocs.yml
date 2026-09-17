@@ -6,7 +6,7 @@ repo_name: HGE-IPH/MGB-model
 edit_uri: edit/main/docs/
 
 theme:
-  name: mkdocs
+  name: readthedocs
 
 plugins:
   - search
@@ -21,24 +21,27 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Getting started:
-      - Build: getting-started/build.md
-      - Testing: getting-started/testing.md
   - Model:
+      - Overview: model/overview.md
       - Concepts and discretization: model/model-concepts.md
       - Energy balance and evapotranspiration: model/energy-balance.md
       - Soil and catchment processes: model/soil-and-catchment-processes.md
-      - River routing: model/river-routing.md
+      - River routing:
+          - Overview: model/river-routing.md
+          - Muskingum-Cunge: model/muskingum-cunge-routing.md
+          - Local-inertial: model/local-inertial-routing.md
       - Parameters and initial state: model/parameters-and-initial-state.md
       - Processes and numerical assumptions: model/model-processes.md
-      - I/O reference: model/io-reference.md
-      - Portability: model/portability.md
+      - Scientific references: model/references.md
+  - Architecture:
+      - Overview: architecture/architecture.md
+      - Components and dependencies: architecture/components-and-dependencies.md
+      - Execution and data flow: architecture/execution-and-data-flow.md
+      - I/O reference: architecture/io-reference.md
+      - Design decisions: architecture/design-decisions.md
   - Development:
-      - Architecture: development/architecture.md
-      - Design decisions: development/design-decisions.md
-      - Language and naming: development/language-and-naming.md
-      - Fortran style: development/fortran-style.md
-  - Project:
-      - History and contributors: project/project-history.md
-      - References: project/references.md
-  - Contributing: https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md
+      - Setup and build: development/build.md
+      - Testing and debugging: development/testing.md
+      - Automation and documentation: development/continuous-integration.md
+      - Coding conventions: development/coding-conventions.md
+      - Contributing: https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md

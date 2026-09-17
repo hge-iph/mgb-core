@@ -7,7 +7,7 @@ are area-weighted and routed through three catchment-scale linear reservoirs.
 The conceptual basis follows the ARNO/PDM variable-contributing-area approach,
 Brooks-Corey drainage, and related MGB methods. The equations here match the
 current `catchment` implementation. Background sources are listed in
-[References](../project/references.md).
+[References](references.md).
 
 ## Vertical water balance
 
@@ -41,8 +41,7 @@ calculation. If the result exceeds $W_m$, the excess is added to surface
 runoff. If the result is negative, the model reduces demand in this order:
 soil evapotranspiration, groundwater percolation, subsurface drainage, and
 surface runoff. The calculation repeats until storage is within its physical
-bounds. This limiting order is part of the model behavior, not merely an
-implementation convenience.
+bounds. This limiting order is part of the model behavior.
 
 ## Variable saturated area and surface runoff
 

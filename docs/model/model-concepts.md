@@ -9,7 +9,7 @@ at the model's spatial units.
 
 This page introduces the conceptual model behind the current executable. It
 describes the current source's names and implementation details. See
-[References](../project/references.md) for background publications and source
+[References](references.md) for background publications and source
 material.
 
 ## Three process levels
@@ -41,15 +41,13 @@ channel geometry, slope, connectivity, and the proportions of its HRUs.
 
 Every catchment has one downstream network index. Water generated on the land
 surface first enters that catchment's main river segment and then moves
-through the connected drainage network. Smaller streams that are not included
-in the explicit network are represented implicitly by the three linear
-reservoirs rather than as individual channels.
+through the connected drainage network. The three linear reservoirs represent
+smaller streams that are outside the explicit network.
 
 The catchment discretization is prepared outside this executable. It normally
 starts from a digital elevation model and a selected main drainage network.
-Increasing the number of catchments can represent more spatial detail, but it
-also increases cost and does not by itself guarantee better results. Reach
-lengths and network topology also affect routing stability and accuracy.
+Increasing the number of catchments adds spatial detail and computational cost.
+Model accuracy also depends on reach lengths and network topology.
 
 ## Hydrological response units
 
@@ -118,4 +116,4 @@ catchment loop, followed by network routing over catchments. Routing may add
 internal substeps: Muskingum-Cunge uses 24 substeps per meteorological step,
 while local-inertial routing selects substeps from its stability condition.
 The current implementation and its state flow are described in
-[Architecture](../development/architecture.md).
+[Execution and data flow](../architecture/execution-and-data-flow.md).
