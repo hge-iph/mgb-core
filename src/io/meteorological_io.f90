@@ -25,17 +25,17 @@ contains
         use config, only: &
             & catchment_count, &
             & input_directory, &
-            & precipitation_unit, &
-            & pressure_unit, &
-            & radiation_unit, &
-            & relative_humidity_unit, &
-            & temperature_unit, &
+            & io_unit_precipitation, &
+            & io_unit_pressure, &
+            & io_unit_radiation, &
+            & io_unit_relative_humidity, &
+            & io_unit_temperature, &
             & use_humidity_timeseries, &
             & use_pressure_timeseries, &
             & use_radiation_timeseries, &
             & use_temperature_timeseries, &
             & use_wind_timeseries, &
-            & wind_unit
+            & io_unit_wind
         use forcing, only: &
             & air_pressure, &
             & air_temperature, &
@@ -53,36 +53,36 @@ contains
             inquire (iolength=record_length) precipitation(1:catchment_count)
 
             !input binary file with interpolated rainfall data
-            open (precipitation_unit, file=input_directory//'precipitation.bin', status='old', recl=record_length, &
+            open (io_unit_precipitation, file=input_directory//'precipitation.bin', status='old', recl=record_length, &
                 & form='UNFORMATTED', access='DIRECT')
 
-            if (use_temperature_timeseries == 1) open (temperature_unit, file= &
+            if (use_temperature_timeseries == 1) open (io_unit_temperature, file= &
                 & input_directory//'air_temperature.bin', status='old', recl=record_length, form= &
                 & 'UNFORMATTED', access='DIRECT')
 
-            if (use_radiation_timeseries == 1) open (radiation_unit, file= &
+            if (use_radiation_timeseries == 1) open (io_unit_radiation, file= &
                 & input_directory//'solar_radiation.bin', status='old', recl=record_length, form= &
                 & 'UNFORMATTED', access='DIRECT')
 
-            if (use_humidity_timeseries == 1) open (relative_humidity_unit, file= &
+            if (use_humidity_timeseries == 1) open (io_unit_relative_humidity, file= &
                 & input_directory//'relative_humidity.bin', status='old', recl=record_length, &
                 & form='UNFORMATTED', access='DIRECT')
 
-            if (use_wind_timeseries == 1) open (wind_unit, file=input_directory//'wind_speed.bin', &
+            if (use_wind_timeseries == 1) open (io_unit_wind, file=input_directory//'wind_speed.bin', &
                 & status='old', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-            if (use_pressure_timeseries == 1) open (pressure_unit, file= &
+            if (use_pressure_timeseries == 1) open (io_unit_pressure, file= &
                 & input_directory//'air_pressure.bin', status='old', recl=record_length, form= &
                 & 'UNFORMATTED', access='DIRECT')
 
         else
             ! Closing met files
-            close (precipitation_unit)
-            close (temperature_unit)
-            close (radiation_unit)
-            close (relative_humidity_unit)
-            close (wind_unit)
-            close (pressure_unit)
+            close (io_unit_precipitation)
+            close (io_unit_temperature)
+            close (io_unit_radiation)
+            close (io_unit_relative_humidity)
+            close (io_unit_wind)
+            close (io_unit_pressure)
 
         end if
 
@@ -93,17 +93,17 @@ contains
         & forcing_record_index)
         use config, only: &
             & catchment_count, &
-            & precipitation_unit, &
-            & pressure_unit, &
-            & radiation_unit, &
-            & relative_humidity_unit, &
-            & temperature_unit, &
+            & io_unit_precipitation, &
+            & io_unit_pressure, &
+            & io_unit_radiation, &
+            & io_unit_relative_humidity, &
+            & io_unit_temperature, &
             & use_humidity_timeseries, &
             & use_pressure_timeseries, &
             & use_radiation_timeseries, &
             & use_temperature_timeseries, &
             & use_wind_timeseries, &
-            & wind_unit
+            & io_unit_wind
         use forcing, only: &
             & air_pressure, &
             & air_temperature, &
@@ -135,23 +135,23 @@ contains
         if (use_pressure_timeseries == 0) air_pressure(:) = monthly_air_pressure(:, month_number)
 
         ! Reads precipitation data
-        read (precipitation_unit, rec=forcing_record_index) (precipitation(climate_cell_index), climate_cell_index=1, &
+        read (io_unit_precipitation, rec=forcing_record_index) (precipitation(climate_cell_index), climate_cell_index=1, &
             & catchment_count)
 
         ! Reads meteorological data at the same time interval of precipitation
-        if (use_temperature_timeseries == 1) read (temperature_unit, rec= &
+        if (use_temperature_timeseries == 1) read (io_unit_temperature, rec= &
             & forcing_record_index) (air_temperature(climate_cell_index), climate_cell_index=1, &
             & catchment_count)
-        if (use_radiation_timeseries == 1) read (radiation_unit, rec= &
+        if (use_radiation_timeseries == 1) read (io_unit_radiation, rec= &
             & forcing_record_index) (solar_input(climate_cell_index), climate_cell_index=1, &
             & catchment_count)
-        if (use_humidity_timeseries == 1) read (relative_humidity_unit, rec= &
+        if (use_humidity_timeseries == 1) read (io_unit_relative_humidity, rec= &
             & forcing_record_index) (relative_humidity(climate_cell_index), climate_cell_index=1, &
             & catchment_count)
-        if (use_wind_timeseries == 1) read (wind_unit, rec= &
+        if (use_wind_timeseries == 1) read (io_unit_wind, rec= &
             & forcing_record_index) (wind_speed(climate_cell_index), climate_cell_index=1, &
             & catchment_count)
-        if (use_pressure_timeseries == 1) read (pressure_unit, rec= &
+        if (use_pressure_timeseries == 1) read (io_unit_pressure, rec= &
             & forcing_record_index) (air_pressure(climate_cell_index), climate_cell_index=1, &
             & catchment_count)
 

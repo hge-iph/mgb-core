@@ -16,8 +16,8 @@ contains
             & read_floodplain_inputs
         use config, only: &
             & inertial_catchment_count, &
-            & inertial_routing_enabled, &
-            & log_unit, &
+            & routing_mode, &
+            & io_unit_log, &
             & routing_method
 
         implicit none
@@ -25,7 +25,7 @@ contains
         call read_catchment_inputs
 
         ! Hydrodynamic modeling:
-        if (inertial_routing_enabled == 1) then
+        if (routing_mode == 1) then
             routing_method = 1
         else
             routing_method = 0
@@ -35,30 +35,30 @@ contains
         ! Test
         if (routing_method(1) == 1) then
             write (*, *) 'Reading Floodplain data...'
-            write (log_unit, *) 'Reading Floodplain data...'
+            write (io_unit_log, *) 'Reading Floodplain data...'
 
             ! Read floodplain stage-area data generated during DEM preprocessing.
             call read_floodplain_inputs
-            write (log_unit, *) 'FLOODPLAIN READ OK'
+            write (io_unit_log, *) 'FLOODPLAIN READ OK'
         end if
 
         ! End of subroutines related to input files that are read only once reading and MGB variables
         ! allocation
 
         write (*, *) 'Calculating river geometry information...'
-        write (log_unit, *) 'Calculating river geometry information...'
+        write (io_unit_log, *) 'Calculating river geometry information...'
         call calculate_catchment_time_of_concentration
         write (*, *) 'Catchment parameters calculated'
-        write (log_unit, *) 'Catchment parameters calculated'
+        write (io_unit_log, *) 'Catchment parameters calculated'
         call calculate_muskingum_cunge_parameters
-        write (log_unit, *) 'Muskingum-Cunge parameters calculated'
+        write (io_unit_log, *) 'Muskingum-Cunge parameters calculated'
         write (*, *) 'Muskingum-Cunge parameters calculated'
 
         if (routing_method(1) == 1) then
             call prepare_inertial_routing
-            write (log_unit, *) 'Flood topology loaded'
+            write (io_unit_log, *) 'Flood topology loaded'
             write (*, *) 'Flood topology loaded'
-            write (log_unit, *) 'Floodplain tables built'
+            write (io_unit_log, *) 'Floodplain tables built'
             write (*, *) 'Floodplain tables built'
         end if
 
@@ -67,7 +67,7 @@ contains
 
         !  Openning of MGB input files that are read during the simulation
         write (*, *) 'Opening input meteorological files...'
-        write (log_unit, *) 'Opening input meteorological files...'
+        write (io_unit_log, *) 'Opening input meteorological files...'
         call open_meteorological_inputs
 
         ! End of openning MGB-IPH main input and output files that are read and written over the
@@ -90,11 +90,11 @@ contains
         use reservoirs, only: initialize_reservoir_state
         use config, only: &
             & inertial_catchment_count, &
-            & log_unit, &
-            & read_hotstart_mode, &
+            & io_unit_log, &
+            & hotstart_read_mode, &
             & reservoir_substitution_enabled, &
             & routing_method, &
-            & write_hotstart_mode
+            & hotstart_write_mode
 
         implicit none
         integer :: i_step
@@ -115,31 +115,31 @@ contains
         end if
 
         ! Model initial conditions
-        write (log_unit, *) 'Calling initial conditions...'
+        write (io_unit_log, *) 'Calling initial conditions...'
         call initialize_catchment
         call initialize_muskingum_cunge_routing
         if (inertial_catchment_count > 0) call initialize_inertial_routing
 
         ! Read water-balance and hydraulic state only for inertial routing.
-        if (read_hotstart_mode == 1) then
+        if (hotstart_read_mode == 1) then
             call read_hotstart
         end if
 
         ! Checks if there are multiple time steps to write initial conditions. Useful for
         ! hindcasting
-        if (write_hotstart_mode == 2) then
+        if (hotstart_write_mode == 2) then
             call read_hotstart_schedule
         end if
 
         ! Time loop for water balance and routing simulation
-        write (log_unit, *) 'Running main model routine...'
+        write (io_unit_log, *) 'Running main model routine...'
         call run_timestep_loop( &
             & i_step)
 
         ! Hotstart output is available only with inertial routing.
-        if (write_hotstart_mode == 1 .or. write_hotstart_mode == 3) then
+        if (hotstart_write_mode == 1 .or. hotstart_write_mode == 3) then
             !for the end of MGB simulation (to allow starting the model n time step after)
-            write_hotstart_mode = 1
+            hotstart_write_mode = 1
             call write_hotstart
         end if
 
@@ -167,7 +167,7 @@ contains
             & model_timestep, &
             & routing_method, &
             & timestep_count, &
-            & write_hotstart_mode
+            & hotstart_write_mode
         use forcing, only: &
             & air_temperature, &
             & previous_air_temperature
@@ -218,7 +218,7 @@ contains
             ! Advance time
             i_step = i_step + 1
 
-            if (write_hotstart_mode == 2 .or. write_hotstart_mode == 3) then
+            if (hotstart_write_mode == 2 .or. hotstart_write_mode == 3) then
                 call write_hotstart
             end if
 

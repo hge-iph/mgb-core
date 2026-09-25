@@ -23,19 +23,17 @@ contains
 
     subroutine allocate_forcing( &
         & catchment_count, &
-        & climate_cell_count, &
         & substitution_count, &
         & timestep_count)
         integer, intent(in) :: catchment_count
-        integer, intent(in) :: climate_cell_count
         integer, intent(in) :: substitution_count
         integer, intent(in) :: timestep_count
-        allocate (climate_station_coordinates(climate_cell_count, 2))
-        allocate (monthly_air_temperature(climate_cell_count, 12))
-        allocate (monthly_relative_humidity(climate_cell_count, 12))
-        allocate (monthly_wind_speed(climate_cell_count, 12))
-        allocate (monthly_air_pressure(climate_cell_count, 12))
-        allocate (monthly_solar_input(climate_cell_count, 12))
+        allocate (climate_station_coordinates(catchment_count, 2))
+        allocate (monthly_air_temperature(catchment_count, 12))
+        allocate (monthly_relative_humidity(catchment_count, 12))
+        allocate (monthly_wind_speed(catchment_count, 12))
+        allocate (monthly_air_pressure(catchment_count, 12))
+        allocate (monthly_solar_input(catchment_count, 12))
         allocate (previous_air_temperature(catchment_count))
         allocate (air_temperature(catchment_count))
         allocate (relative_humidity(catchment_count))

@@ -30,7 +30,7 @@ groups.
 | Key | Meaning and units |
 | --- | --- |
 | simulation_start, simulation_end | Calendar strings: YYYY-MM-DD HH:mm |
-| timestep | Meteorological timestep in seconds |
+| model_timestep | Meteorological timestep in seconds |
 | hotstart_read_mode, hotstart_write_mode | Hotstart mode flags |
 | first_subbasin, last_subbasin | Inclusive simulated subbasin bounds |
 | catchment_count, hru_count, subbasin_count | Entity counts |

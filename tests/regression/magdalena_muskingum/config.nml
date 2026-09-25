@@ -5,7 +5,7 @@
 
     simulation_start                         = "1979-01-01 00:00"    ! Simulation start date (YYYY-MM-DD HH:mm).
     simulation_end                           = "1982-08-06 00:00"    ! Simulation end date (YYYY-MM-DD HH:mm).
-    timestep                                 = 86400.0               ! Meteorological forcing timestep in seconds.
+    model_timestep                           = 86400.0               ! Meteorological forcing timestep in seconds.
     hotstart_read_mode                       = 0                     ! Hotstart read: (0) disabled, (1) read initial conditions from water_balance_state_<date>.bin and inertial_state_<date>.bin.
     hotstart_write_mode                      = 0                     ! Hotstart write: (0) disabled, (1) write at the end, (2) write at hotstart_schedule.txt times.
 

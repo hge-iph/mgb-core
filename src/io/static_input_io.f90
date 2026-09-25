@@ -8,26 +8,26 @@ contains
 
     subroutine read_catchment_inputs
         use config, only: &
-            & log_unit, &
+            & io_unit_log, &
             & substitution_count
 
         implicit none
 
         write (*, *) 'Reading vegetation parameters...'
-        write (log_unit, *) 'Reading vegetation parameters...'
+        write (io_unit_log, *) 'Reading vegetation parameters...'
         call read_fixed_parameters
         write (*, *) 'Reading soil parameters...'
-        write (log_unit, *) 'Reading soil parameters...'
+        write (io_unit_log, *) 'Reading soil parameters...'
         call read_calibrated_parameters
         write (*, *) 'Reading mini.gtp file...'
-        write (log_unit, *) 'Reading mini.gtp file...'
+        write (io_unit_log, *) 'Reading mini.gtp file...'
         call read_catchment_data
         write (*, *) 'Reading observed discharge, substitution flows, and climate data...'
-        write (log_unit, *) 'Reading observed discharge, substitution flows, and climate data...'
+        write (io_unit_log, *) 'Reading observed discharge, substitution flows, and climate data...'
         call read_climatology
-        write (log_unit, *) 'Monthly climatology loaded'
+        write (io_unit_log, *) 'Monthly climatology loaded'
         if (substitution_count > 0) call read_substitution_flows
-        write (log_unit, *) 'Substitution flows loaded'
+        write (io_unit_log, *) 'Substitution flows loaded'
     end subroutine read_catchment_inputs
 
     subroutine read_floodplain_inputs
@@ -46,8 +46,8 @@ contains
         use config, only: &
             & catchment_count, &
             & climate_region_count, &
-            & climate_region_unit, &
-            & fixed_parameter_unit, &
+            & io_unit_climate_region, &
+            & io_unit_fixed_parameter, &
             & hru_count, &
             & input_directory
         use attributes, only: climate_region
@@ -67,49 +67,49 @@ contains
         integer :: ignored_catchment_id
         character(20) :: header_text
         character(5) :: month_labels(12)
-        open (fixed_parameter_unit, file=input_directory//'vegetation.par', status='OLD')
+        open (io_unit_fixed_parameter, file=input_directory//'vegetation.par', status='OLD')
 
         do climate_region_index_loop = 1, climate_region_count
             ! Read albedo:
-            read (fixed_parameter_unit, 71) header_text
-            read (fixed_parameter_unit, 71) header_text
+            read (io_unit_fixed_parameter, 71) header_text
+            read (io_unit_fixed_parameter, 71) header_text
             !#Region
-            read (fixed_parameter_unit, 71) header_text
-            read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index=1, 12)
+            read (io_unit_fixed_parameter, 71) header_text
+            read (io_unit_fixed_parameter, 73) header_text, (month_labels(month_index), month_index=1, 12)
             do i_hru = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(i_hru), (albedo(i_hru, month_index, climate_region_index_loop), &
+                read (io_unit_fixed_parameter, 72) hru_name(i_hru), (albedo(i_hru, month_index, climate_region_index_loop), &
                     & month_index=1, 12)
             end do
             ! Read leaf area index:
-            read (fixed_parameter_unit, 71) header_text
-            read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index=1, 12)
+            read (io_unit_fixed_parameter, 71) header_text
+            read (io_unit_fixed_parameter, 73) header_text, (month_labels(month_index), month_index=1, 12)
             do i_hru = 1, hru_count
-read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_index, climate_region_index_loop), month_index=1, 12)
+read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_index, climate_region_index_loop), month_index=1, 12)
             end do
             ! Read vegetation height:
-            read (fixed_parameter_unit, 71) header_text
-            read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index=1, 12)
+            read (io_unit_fixed_parameter, 71) header_text
+            read (io_unit_fixed_parameter, 73) header_text, (month_labels(month_index), month_index=1, 12)
             do i_hru = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(i_hru), (vegetation_height(i_hru, month_index, &
+                read (io_unit_fixed_parameter, 72) hru_name(i_hru), (vegetation_height(i_hru, month_index, &
                     & climate_region_index_loop), month_index=1, 12)
             end do
             ! Read surface resistance:
-            read (fixed_parameter_unit, 71) header_text
-            read (fixed_parameter_unit, 73) header_text, (month_labels(month_index), month_index=1, 12)
+            read (io_unit_fixed_parameter, 71) header_text
+            read (io_unit_fixed_parameter, 73) header_text, (month_labels(month_index), month_index=1, 12)
             do i_hru = 1, hru_count
-                read (fixed_parameter_unit, 72) hru_name(i_hru), (surface_resistance(i_hru, month_index, &
+                read (io_unit_fixed_parameter, 72) hru_name(i_hru), (surface_resistance(i_hru, month_index, &
                     & climate_region_index_loop), month_index=1, 12)
             end do
         end do
 
         surface_resistance = surface_resistance*1.5
-        close (fixed_parameter_unit)
+        close (io_unit_fixed_parameter)
 
         !Open Climate Region file
-        open (climate_region_unit, file=input_directory//'climate.reg', status='OLD')
-        read (climate_region_unit, 71) header_text
+        open (io_unit_climate_region, file=input_directory//'climate.reg', status='OLD')
+        read (io_unit_climate_region, 71) header_text
         do catchment_record_index = 1, catchment_count
-            read (climate_region_unit, 74) ignored_catchment_id, &
+            read (io_unit_climate_region, 74) ignored_catchment_id, &
                 & climate_region(catchment_record_index)
         end do
 
@@ -123,7 +123,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
 
     subroutine read_calibrated_parameters
         use config, only: &
-            & calibrated_parameter_unit, &
+            & io_unit_calibrated_parameter, &
             & header_fields, &
             & hru_count, &
             & input_directory, &
@@ -161,12 +161,12 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         unused_routing_parameter = 0.0
         groundwater_routing_coefficient = 0.0
         subsurface_routing_coefficient = 0.0
-        open (calibrated_parameter_unit, file=input_directory//'soil.par', status='OLD')
+        open (io_unit_calibrated_parameter, file=input_directory//'soil.par', status='OLD')
         do current_subbasin = 1, subbasin_count
-            read (calibrated_parameter_unit, 72) header_fields(1)
-            read (calibrated_parameter_unit, 72) (header_fields(header_index), header_index=1, 5)
+            read (io_unit_calibrated_parameter, 72) header_fields(1)
+            read (io_unit_calibrated_parameter, 72) (header_fields(header_index), header_index=1, 5)
             do i_hru = 1, hru_count
-                read (calibrated_parameter_unit, 71) hru_name(i_hru), &
+                read (io_unit_calibrated_parameter, 71) hru_name(i_hru), &
                     & max_soil_water_storage(current_subbasin, i_hru), &
                     & b_arno(current_subbasin, i_hru), &
                     & groundwater_conductivity(current_subbasin, i_hru), &
@@ -177,16 +177,16 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
                     & floodplain_infiltration_rate(current_subbasin, i_hru)
 
             end do
-            read (calibrated_parameter_unit, 73) header_fields(1), &
+            read (io_unit_calibrated_parameter, 73) header_fields(1), &
                 & surface_routing_coefficient(current_subbasin)
-            read (calibrated_parameter_unit, 73) header_fields(2), &
+            read (io_unit_calibrated_parameter, 73) header_fields(2), &
                 & subsurface_routing_coefficient(current_subbasin)
-            read (calibrated_parameter_unit, 73) header_fields(3), &
+            read (io_unit_calibrated_parameter, 73) header_fields(3), &
                 & groundwater_routing_coefficient(current_subbasin)
-            read (calibrated_parameter_unit, 74) header_fields(4), &
+            read (io_unit_calibrated_parameter, 74) header_fields(4), &
                 & specific_baseflow(current_subbasin)
         end do
-        close (calibrated_parameter_unit)
+        close (io_unit_calibrated_parameter)
 71      format(a10, 8f8.3)
 72      format(7a10)
 73      format(a10, f8.1)
@@ -197,10 +197,10 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
     subroutine read_catchment_data
         use config, only: &
             & catchment_count, &
-            & catchment_data_unit, &
+            & io_unit_catchment_data, &
             & first_subbasin, &
             & hru_count, &
-            & inertial_routing_enabled, &
+            & routing_mode, &
             & input_directory, &
             & last_subbasin, &
             & routing_method
@@ -242,11 +242,11 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
 
         max_enabled_drainage_area = 0.0
 
-        open (catchment_data_unit, file=input_directory//'mini.gtp', status='OLD')
-        read (catchment_data_unit, 77)
+        open (io_unit_catchment_data, file=input_directory//'mini.gtp', status='OLD')
+        read (io_unit_catchment_data, 77)
         subbasin_outlet_catchment = -999999
         do catchment_record_index = 1, catchment_count
-            read (catchment_data_unit, *) input_catchment_sequence, catchment_id(catchment_record_index), &
+            read (io_unit_catchment_data, *) input_catchment_sequence, catchment_id(catchment_record_index), &
                 & catchment_lon(catchment_record_index), catchment_lat(catchment_record_index), &
                 & catchment_subbasin(catchment_record_index), catchment_area(catchment_record_index), &
                 & drainage_area(catchment_record_index), river_length(catchment_record_index), &
@@ -313,7 +313,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         write (*, *) 'Radiation calculation is using sunshine'
 
         ! Redistribute the water HRU before hydrodynamic routing.
-        if (inertial_routing_enabled == 1) then
+        if (routing_mode == 1) then
             write (*, *) 'Redistributing the area of HRU water to other uses'
             !read_calibrated_parameters.F90 must be called before this
             do i_catch = 1, catchment_count
@@ -344,7 +344,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
 
         write (*, *) ''
 
-        close (catchment_data_unit)
+        close (io_unit_catchment_data)
 77      format(i5, 2f15.3, i5, 2f10.1, 2i5, f10.2, f10.6, i5, 6f5.1)
         return
     end
@@ -352,7 +352,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
     subroutine read_climatology
         use config, only: &
             & catchment_count, &
-            & climatology_unit, &
+            & io_unit_climatology, &
             & input_directory
         use forcing, only: &
             & monthly_air_pressure, &
@@ -369,7 +369,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
 
         !input binary file with interpolated rainfall data
         inquire (iolength=record_length) (monthly_air_temperature(climate_cell_index, 1), climate_cell_index=1, catchment_count)
-        open (climatology_unit, file=input_directory//'monthly_climatology.bin', status='old', recl=record_length, &
+        open (io_unit_climatology, file=input_directory//'monthly_climatology.bin', status='old', recl=record_length, &
             & form='UNFORMATTED', access='DIRECT')
 
         !Binary file of CRU climatology. Order of values:
@@ -382,14 +382,14 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         record_index = 1
         ! Near-surface air temperature (degrees C)
         do month_index = 1, 12
-            read (climatology_unit, rec=record_index) (monthly_air_temperature(climate_cell_index, month_index), &
+            read (io_unit_climatology, rec=record_index) (monthly_air_temperature(climate_cell_index, month_index), &
                 & climate_cell_index=1, catchment_count)
             record_index = record_index + 1
         end do
 
         ! near surface relative humidity (%)
         do month_index = 1, 12
-            read (climatology_unit, rec= record_index) (monthly_relative_humidity(climate_cell_index, month_index), &
+            read (io_unit_climatology, rec= record_index) (monthly_relative_humidity(climate_cell_index, month_index), &
                 & climate_cell_index=1, catchment_count)
             record_index = record_index + 1
         end do
@@ -397,26 +397,26 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         ! Radiation (MJ/timestep), sunshine hours, or sunshine percent according to the
         ! configuration.
         do month_index = 1, 12
-            read (climatology_unit, rec=record_index) (monthly_solar_input(climate_cell_index, month_index), &
+            read (io_unit_climatology, rec=record_index) (monthly_solar_input(climate_cell_index, month_index), &
                 & climate_cell_index=1, catchment_count)
             record_index = record_index + 1
         end do
 
         ! Wind speed (m/s)
         do month_index = 1, 12
-            read (climatology_unit, rec=record_index) (monthly_wind_speed(climate_cell_index, month_index), &
+            read (io_unit_climatology, rec=record_index) (monthly_wind_speed(climate_cell_index, month_index), &
                 & climate_cell_index=1, catchment_count)
             record_index = record_index + 1
         end do
 
         ! Atmospheric pressure (kPa)
         do month_index = 1, 12
-            read (climatology_unit, rec=record_index) (monthly_air_pressure(climate_cell_index, month_index), &
+            read (io_unit_climatology, rec=record_index) (monthly_air_pressure(climate_cell_index, month_index), &
                 & climate_cell_index=1, catchment_count)
             record_index = record_index + 1
         end do
 
-        close (climatology_unit)
+        close (io_unit_climatology)
 
         return
 
@@ -427,7 +427,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
             & header_fields, &
             & input_directory, &
             & substitution_count, &
-            & substitution_flow_unit, &
+            & io_unit_substitution_flow, &
             & timestep_count
         use forcing, only: substituted_q
 
@@ -437,13 +437,13 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         integer :: substitution_index
         integer :: input_day
         integer :: i_step
-        open (substitution_flow_unit, file=input_directory//'substitution_flows.txt', status='OLD')
-        read (substitution_flow_unit, 701) (header_fields(substitution_index), substitution_index=1, substitution_count)
+        open (io_unit_substitution_flow, file=input_directory//'substitution_flows.txt', status='OLD')
+        read (io_unit_substitution_flow, 701) (header_fields(substitution_index), substitution_index=1, substitution_count)
         do i_step = 1, timestep_count
-            read (substitution_flow_unit, *) input_year, input_month, input_day, (substituted_q(substitution_index, i_step), &
+            read (io_unit_substitution_flow, *) input_year, input_month, input_day, (substituted_q(substitution_index, i_step), &
                 & substitution_index=1, substitution_count)
         end do
-        close (substitution_flow_unit)
+        close (io_unit_substitution_flow)
 701     format(20a10)
         return
     end subroutine read_substitution_flows
@@ -451,10 +451,10 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
     subroutine read_floodplain_binary_data
         use config, only: &
             & catchment_count, &
-            & face_connection_unit, &
+            & io_unit_face_connection, &
             & face_count, &
-            & flood_area_unit, &
-            & flood_stage_unit, &
+            & io_unit_flood_area, &
+            & io_unit_flood_stage, &
             & input_directory, &
             & pseudo_2d_enabled
         use attributes, only: &
@@ -486,7 +486,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
 
         ! Opening the flood-stage data.
         inquire (iolength=flood_stage_record_length) floodplain_bottom_elevation
-        open (flood_stage_unit, file=input_directory//'flood_stage.bin', status='old', recl= flood_stage_record_length, &
+        open (io_unit_flood_stage, file=input_directory//'flood_stage.bin', status='old', recl= flood_stage_record_length, &
             & form='UNFORMATTED', access='DIRECT')
         !input binary file with interpolated rainfall data
 
@@ -495,7 +495,7 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         !3 - Floodplain elevations  [i = 1, 2 ... standard_floodplain_point_count] as REAL(KIND=8)
 
         direct_access_record = 1
-        read (flood_stage_unit, rec=direct_access_record) (floodplain_bottom_elevation(i_catch), i_catch=1, catchment_count)
+        read (io_unit_flood_stage, rec=direct_access_record) (floodplain_bottom_elevation(i_catch), i_catch=1, catchment_count)
         !Fills the vegetation_height values of floodplain increment
         do i_catch = 1, catchment_count
             do data_index = 1, standard_floodplain_point_count
@@ -506,39 +506,39 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
             end do
         end do
 
-        close (flood_stage_unit)
+        close (io_unit_flood_stage)
         !Close water level binary file
 
         !Reads the Floodplain Areas
         ! Values are double precision; derive the compiler's direct-access record units.
         inquire (iolength=flood_area_record_length) floodplain_area(:, 1)
-        open (flood_area_unit, file=input_directory//'flood_area.bin', status='old', recl= flood_area_record_length, &
+        open (io_unit_flood_area, file=input_directory//'flood_area.bin', status='old', recl= flood_area_record_length, &
             & form='UNFORMATTED', access='DIRECT')
         !input binary file with Floodplain area
 
         direct_access_record = 1
         do i_catch = 1, catchment_count
-            read (flood_area_unit, rec=direct_access_record) (floodplain_area(data_index, i_catch), data_index=1, &
+            read (io_unit_flood_area, rec=direct_access_record) (floodplain_area(data_index, i_catch), data_index=1, &
                 & standard_floodplain_point_count)
             direct_access_record = direct_access_record + 1
         end do
 
-        close (flood_area_unit)
+        close (io_unit_flood_area)
         !Close floodplain area binary file
 
         ! Read lateral face connections when pseudo-2D routing is enabled.
         if (pseudo_2d_enabled == 1) then
-            open (face_connection_unit, file=input_directory//'floodplain_connections.txt', status='OLD', action='READ')
+            open (io_unit_face_connection, file=input_directory//'floodplain_connections.txt', status='OLD', action='READ')
 
             ! Records contain the two catchment indices and their separation in metres.
             data_index = 0
             do
-                read (face_connection_unit, *, iostat=io_status) face_catchment_1(data_index + 1), &
+                read (io_unit_face_connection, *, iostat=io_status) face_catchment_1(data_index + 1), &
                     & face_catchment_2(data_index + 1), face_distance(data_index + 1)
                 if (io_status .ne. 0) exit
                 data_index = data_index + 1
             end do
-            close (face_connection_unit)
+            close (io_unit_face_connection)
             face_count = data_index
         end if
 
@@ -547,10 +547,10 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
 
     subroutine read_floodplain_text_data
         use config, only: &
-            & face_connection_unit, &
+            & io_unit_face_connection, &
             & face_count, &
             & input_directory, &
-            & stage_area_unit
+            & io_unit_stage_area
         use attributes, only: &
             & catchment_lon, &
             & face_catchment_1, &
@@ -569,33 +569,33 @@ read (fixed_parameter_unit, 72) hru_name(i_hru), (leaf_area_index(i_hru, month_i
         integer :: io_status
 
         ! Opening the floodplain stage-area data.
-        open (stage_area_unit, file=input_directory//'floodplain_stage_area.txt', status='OLD', action='READ')
+        open (io_unit_stage_area, file=input_directory//'floodplain_stage_area.txt', status='OLD', action='READ')
 
         ! Reading data:
-        read (stage_area_unit, *)
+        read (io_unit_stage_area, *)
         floodplain_point_count = 0
         do
-            read (stage_area_unit, *, iostat=io_status) i_catch, floodplain_bottom_elevation(i_catch), &
+            read (io_unit_stage_area, *, iostat=io_status) i_catch, floodplain_bottom_elevation(i_catch), &
                 & floodplain_elevation(floodplain_point_count(i_catch) + 1, i_catch), &
                 & floodplain_area(floodplain_point_count(i_catch) + 1, i_catch)
             if (io_status .ne. 0) exit
             floodplain_point_count(i_catch) = floodplain_point_count(i_catch) + 1
         end do
-        close (stage_area_unit)
+        close (io_unit_stage_area)
 
         ! This text face-connection branch remains disabled.
         if (1 == 0) then
-            open (face_connection_unit, file=input_directory//'floodplain_connections.txt', status='OLD', action='READ')
+            open (io_unit_face_connection, file=input_directory//'floodplain_connections.txt', status='OLD', action='READ')
 
             ! Records contain face ID, two catchments, boundary elevations, and distance.
             connection_index = 0
             do
-                read (face_connection_unit, *, iostat=io_status) connection_index, face_catchment_1(connection_index), &
+                read (io_unit_face_connection, *, iostat=io_status) connection_index, face_catchment_1(connection_index), &
                     & first_face_elevation(connection_index), face_catchment_2(connection_index), &
                     & second_face_elevation(connection_index), face_distance(connection_index)
                 if (io_status .ne. 0) exit
             end do
-            close (face_connection_unit)
+            close (io_unit_face_connection)
             face_count = connection_index
         end if
 

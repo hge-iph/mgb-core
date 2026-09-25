@@ -8,20 +8,20 @@ contains
 
     subroutine open_model_log
         use config, only: &
-            & log_unit, &
+            & io_unit_log, &
             & output_directory
 
         implicit none
 
-        open (log_unit, file=output_directory//'model.log', status='UNKNOWN')
+        open (io_unit_log, file=output_directory//'model.log', status='UNKNOWN')
     end subroutine open_model_log
 
     subroutine close_model_log
-        use config, only: log_unit
+        use config, only: io_unit_log
 
         implicit none
 
-        close (log_unit)
+        close (io_unit_log)
     end subroutine close_model_log
 
 end module log_io

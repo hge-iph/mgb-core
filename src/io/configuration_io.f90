@@ -20,71 +20,59 @@ contains
             & month, &
             & year
         use config, only: &
-            & catchment_count_state => catchment_count, &
-            & climate_cell_count_state => climate_cell_count, &
-            & climate_region_count_state => climate_region_count, &
-            & config_unit, &
+            & catchment_count, &
+            & climate_region_count, &
+            & io_unit_config, &
             & downstream_water_surface_slope, &
-            & first_subbasin_state => first_subbasin, &
-            & hru_count_state => hru_count, &
-            & inertial_routing_enabled, &
+            & first_subbasin, &
+            & hru_count, &
             & input_directory, &
-            & last_subbasin_state => last_subbasin, &
-            & model_timestep_state => model_timestep, &
-            & monthly_radiation_option_state => monthly_radiation_option, &
+            & last_subbasin, &
+            & model_timestep, &
+            & monthly_radiation_option, &
             & overland_flow_width, &
             & overland_manning_n, &
             & pseudo_2d_enabled, &
-            & reservoir_count_state => reservoir_count, &
-            & reservoir_substitution_enabled_state => reservoir_substitution_enabled, &
-            & subbasin_count_state => subbasin_count, &
-            & thread_count_state => thread_count, &
+            & reservoir_count, &
+            & reservoir_substitution_enabled, &
+            & routing_mode, &
+            & subbasin_count, &
+            & thread_count, &
             & timestep_count, &
-            & courant_alpha_state => courant_alpha, &
-            & use_humidity_timeseries_state => use_humidity_timeseries, &
-            & use_pressure_timeseries_state => use_pressure_timeseries, &
-            & use_radiation_timeseries_state => use_radiation_timeseries, &
-            & use_temperature_timeseries_state => use_temperature_timeseries, &
-            & use_wind_timeseries_state => use_wind_timeseries, &
-            & hotstart_read_mode_state => read_hotstart_mode, &
-            & hotstart_write_mode_state => write_hotstart_mode, &
-            & write_discharge_output, &
-            & write_et_output, &
-            & write_flooded_area_output, &
-            & write_groundwater_flux_output, &
-            & write_groundwater_storage_output, &
-            & write_hand_output, &
-            & write_interception_et_output, &
-            & write_interception_storage_output, &
-            & write_open_water_et_output, &
-            & write_potential_open_water_et_output, &
-            & write_runoff_output, &
-            & write_soil_moisture_output, &
-            & write_soil_saturation_output, &
-            & write_soil_vegetation_et_output, &
-            & write_subsurface_flux_output, &
-            & write_subsurface_storage_output, &
-            & write_surface_flux_output, &
-            & write_surface_storage_output, &
-            & write_surface_water_output, &
-            & write_total_water_storage_output, &
-            & write_water_hru_et_output, &
-            & write_water_surface_elevation_output
+            & courant_alpha, &
+            & use_humidity_timeseries, &
+            & use_pressure_timeseries, &
+            & use_radiation_timeseries, &
+            & use_temperature_timeseries, &
+            & use_wind_timeseries, &
+            & hotstart_read_mode, &
+            & hotstart_write_mode, &
+            & write_discharge, &
+            & write_evapotranspiration, &
+            & write_flooded_area, &
+            & write_groundwater_flux, &
+            & write_groundwater_storage, &
+            & write_flooded_level, &
+            & write_interception_evaporation, &
+            & write_interception_storage, &
+            & write_open_water_evaporation, &
+            & write_potential_open_water_evaporation, &
+            & write_runoff, &
+            & write_soil_water, &
+            & write_soil_saturation, &
+            & write_soil_vegetation_evapotranspiration, &
+            & write_subsurface_flux, &
+            & write_subsurface_storage, &
+            & write_surface_flux, &
+            & write_surface_storage, &
+            & write_surface_water, &
+            & write_total_water_storage, &
+            & write_water_hru_evaporation, &
+            & write_water_surface_elevation
 
         implicit none
 
-        integer :: catchment_count
-        integer :: hru_count
-        integer :: subbasin_count
-        integer :: climate_region_count
-        integer :: hotstart_read_mode
-        integer :: hotstart_write_mode
-        integer :: first_subbasin
-        integer :: last_subbasin
-        real(4) :: timestep
         ! Meteorological forcing timestep in seconds.
-        integer :: reservoir_substitution_enabled
-        integer :: reservoir_count
         character(len=40) :: simulation_start
         character(len=40) :: simulation_end
 
@@ -95,49 +83,21 @@ contains
         integer :: i_min_end
         real(8) jday_end
 
-        integer :: use_temperature_timeseries
-        integer :: use_radiation_timeseries
-        integer :: use_humidity_timeseries
-        integer :: use_wind_timeseries
-        integer :: use_pressure_timeseries
-        integer :: monthly_radiation_option
-
-        integer :: routing_mode
-        integer :: thread_count
         real :: downstream_boundary_slope
-        real :: courant_alpha
         ! Downstream boundary slope in metres per kilometre.
 
-        integer :: write_discharge
-        integer :: write_soil_water
-        integer :: write_water_surface_elevation
-        integer :: write_flooded_level
-        integer :: write_total_water_storage
-        integer :: write_runoff
-        integer :: write_surface_water
-        integer :: write_soil_saturation
-        integer :: write_evapotranspiration
-        integer :: write_interception_evaporation
-        integer :: write_soil_vegetation_evapotranspiration
-        integer :: write_open_water_evaporation
-        integer :: write_water_hru_evaporation
-        integer :: write_potential_open_water_evaporation
-        integer :: write_groundwater_storage
-        integer :: write_subsurface_storage
-        integer :: write_surface_storage
-        integer :: write_interception_storage
-        integer :: write_groundwater_flux
-        integer :: write_subsurface_flux
-        integer :: write_surface_flux
-        integer :: write_flooded_area
+        ! Output controls are imported from config and used directly by the namelist.
 
-        namelist /model/ simulation_start, simulation_end, timestep, hotstart_read_mode, &
+        namelist /model/ simulation_start, simulation_end, model_timestep, hotstart_read_mode, &
             & hotstart_write_mode, first_subbasin, last_subbasin, catchment_count, hru_count, &
             & subbasin_count, climate_region_count, reservoir_substitution_enabled, reservoir_count
+
         namelist /forcing/ use_temperature_timeseries, use_radiation_timeseries, &
             & use_humidity_timeseries, use_wind_timeseries, use_pressure_timeseries, &
             & monthly_radiation_option
+
         namelist /routing/ routing_mode, thread_count, downstream_boundary_slope, courant_alpha
+
         namelist /output/ write_discharge, write_water_surface_elevation, write_flooded_level, &
             & write_runoff, write_soil_water, write_soil_saturation, write_total_water_storage, &
             & write_surface_water, write_evapotranspiration, write_interception_evaporation, &
@@ -147,21 +107,8 @@ contains
             & write_interception_storage, write_groundwater_flux, write_subsurface_flux, &
             & write_surface_flux, write_flooded_area
 
-        open (config_unit, file=input_directory//'config.nml', status='old', action='read')
-        read (config_unit, nml=model)
-
-        model_timestep_state = timestep
-        catchment_count_state = catchment_count
-        climate_cell_count_state = catchment_count
-        hru_count_state = hru_count
-        subbasin_count_state = subbasin_count
-        climate_region_count_state = climate_region_count
-        reservoir_substitution_enabled_state = reservoir_substitution_enabled
-        hotstart_read_mode_state = hotstart_read_mode
-        hotstart_write_mode_state = hotstart_write_mode
-        reservoir_count_state = reservoir_count
-        first_subbasin_state = first_subbasin
-        last_subbasin_state = last_subbasin
+        open (io_unit_config, file=input_directory//'config.nml', status='old', action='read')
+        read (io_unit_config, nml=model)
 
         ! Parse start and end simulation dates from strings
         call parse_date_string( &
@@ -182,56 +129,23 @@ contains
         ! Compute number of time steps using start/end julian day and hour
         julian_day = calculate_julian_day(year, month, day, hour, minute)
         jday_end = calculate_julian_day(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end)
-        timestep_count = calculate_timestep_count(jday_end, julian_day, real(model_timestep_state, 8)) + 1
+        timestep_count = calculate_timestep_count(jday_end, julian_day, real(model_timestep, 8)) + 1
 
-        read (config_unit, nml=forcing)
-
-        use_temperature_timeseries_state = use_temperature_timeseries
-        use_radiation_timeseries_state = use_radiation_timeseries
-        use_humidity_timeseries_state = use_humidity_timeseries
-        use_wind_timeseries_state = use_wind_timeseries
-        use_pressure_timeseries_state = use_pressure_timeseries
-        monthly_radiation_option_state = monthly_radiation_option
+        read (io_unit_config, nml=forcing)
 
         ! Pseudo-2D routing remains disabled by the current runtime interface.
         pseudo_2d_enabled = 0
         overland_flow_width = 10.0
         overland_manning_n = 0.1
 
-        read (config_unit, nml=routing)
+        read (io_unit_config, nml=routing)
 
-        courant_alpha_state = courant_alpha
-        inertial_routing_enabled = routing_mode
-        thread_count_state = thread_count
         downstream_water_surface_slope = downstream_boundary_slope
         downstream_water_surface_slope = downstream_water_surface_slope*0.001
 
-        read (config_unit, nml=output)
+        read (io_unit_config, nml=output)
 
-        write_discharge_output = write_discharge
-        write_water_surface_elevation_output = write_water_surface_elevation
-        write_hand_output = write_flooded_level
-        write_runoff_output = write_runoff
-        write_soil_moisture_output = write_soil_water
-        write_soil_saturation_output = write_soil_saturation
-        write_total_water_storage_output = write_total_water_storage
-        write_surface_water_output = write_surface_water
-        write_et_output = write_evapotranspiration
-        write_interception_et_output = write_interception_evaporation
-        write_soil_vegetation_et_output = write_soil_vegetation_evapotranspiration
-        write_open_water_et_output = write_open_water_evaporation
-        write_water_hru_et_output = write_water_hru_evaporation
-        write_potential_open_water_et_output = write_potential_open_water_evaporation
-        write_groundwater_storage_output = write_groundwater_storage
-        write_subsurface_storage_output = write_subsurface_storage
-        write_surface_storage_output = write_surface_storage
-        write_interception_storage_output = write_interception_storage
-        write_groundwater_flux_output = write_groundwater_flux
-        write_subsurface_flux_output = write_subsurface_flux
-        write_surface_flux_output = write_surface_flux
-        write_flooded_area_output = write_flooded_area
-
-        close (config_unit)
+        close (io_unit_config)
 
         return
     end

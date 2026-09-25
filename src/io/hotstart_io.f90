@@ -8,7 +8,7 @@ contains
 
     subroutine read_hotstart_schedule
         use config, only: &
-            & hotstart_list_unit, &
+            & io_unit_hotstart_list, &
             & hotstart_write_schedule, &
             & input_directory, &
             & timestep_count
@@ -17,12 +17,12 @@ contains
 
         integer :: i_step
 
-        open (hotstart_list_unit, file=input_directory//'hotstart_schedule.txt', status='OLD', action='READ')
+        open (io_unit_hotstart_list, file=input_directory//'hotstart_schedule.txt', status='OLD', action='READ')
         hotstart_write_schedule = 0
         do i_step = 1, timestep_count
-            read (hotstart_list_unit, *) hotstart_write_schedule(i_step)
+            read (io_unit_hotstart_list, *) hotstart_write_schedule(i_step)
         end do
-        close (hotstart_list_unit)
+        close (io_unit_hotstart_list)
     end subroutine read_hotstart_schedule
 
     subroutine read_hotstart
@@ -31,8 +31,8 @@ contains
             & catchment_count, &
             & hotstart_input_directory, &
             & hru_count, &
-            & inertial_hotstart_unit, &
-            & water_balance_hotstart_unit
+            & io_unit_inertial_hotstart, &
+            & io_unit_water_balance_hotstart
         use forcing, only: air_temperature
         use parameters, only: muskingum_reach_count
         use state, only: &
@@ -95,10 +95,10 @@ contains
         write (*, *)
         write (*, *) 'Reading Water Balance State Variables for: ', hotstart_filename
 
-        open (water_balance_hotstart_unit, file= hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
+        open (io_unit_water_balance_hotstart, file= hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
             & status= 'old', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-        read (water_balance_hotstart_unit, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
+        read (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
         ! Reading state variables:
 
         state_index = 0
@@ -159,7 +159,7 @@ contains
             !Reading Runoff generation at each cell
         end do
 
-        close (water_balance_hotstart_unit)
+        close (io_unit_water_balance_hotstart)
         deallocate (hotstart_water_balance_vector)
 
         state_variable_count = (9*catchment_count)
@@ -170,9 +170,9 @@ contains
         write (*, *) 'Reading Hydraulic State Variables for: ', hotstart_filename
         write (*, *)
 
-        open (inertial_hotstart_unit, file= hotstart_input_directory//'inertial_state_'//trim(hotstart_filename)//'.bin', &
+        open (io_unit_inertial_hotstart, file= hotstart_input_directory//'inertial_state_'//trim(hotstart_filename)//'.bin', &
             & status='old', recl=record_length, form='UNFORMATTED', access='DIRECT')
-        read (inertial_hotstart_unit, rec=1) (inertial_state_vector(state_index), state_index=1, state_variable_count)
+        read (io_unit_inertial_hotstart, rec=1) (inertial_state_vector(state_index), state_index=1, state_variable_count)
         ! Reading state variables:
 
         state_index = 0
@@ -231,7 +231,7 @@ contains
         end do
 
         deallocate (inertial_state_vector)
-        close (inertial_hotstart_unit)
+        close (io_unit_inertial_hotstart)
 
         return
     end
@@ -244,9 +244,9 @@ contains
             & catchment_count, &
             & hotstart_input_directory, &
             & hru_count, &
-            & inertial_hotstart_unit, &
-            & water_balance_hotstart_unit, &
-            & write_hotstart_mode
+            & io_unit_inertial_hotstart, &
+            & io_unit_water_balance_hotstart, &
+            & hotstart_write_mode
         use forcing, only: air_temperature
         use parameters, only: muskingum_reach_count
         use state, only: &
@@ -295,7 +295,7 @@ contains
 
         ! For option 1, model state variables are saved only at the end of simulation
         ! (state_index.e. They will allow starting the MGB one timestep after the end date)
-        if (write_hotstart_mode == 1) then
+        if (hotstart_write_mode == 1) then
 
             ! compute calendar date
             call convert_julian_day_to_calendar( &
@@ -310,7 +310,7 @@ contains
             ! conditions for the beginning of each time step.
             ! For option 3, model state variables will be saved for the beginning of each time
             ! step,
-            ! and also for the end of simulation. write_hotstart_mode will be automatically set to
+            ! and also for the end of simulation. hotstart_write_mode will be automatically set to
             ! 1
             ! at the end of simulation
         end if
@@ -321,7 +321,7 @@ contains
         allocate (hotstart_water_balance_vector(state_variable_count))
         inquire (iolength=record_length) hotstart_water_balance_vector
 
-        open (water_balance_hotstart_unit, file= hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
+        open (io_unit_water_balance_hotstart, file= hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
             & status= 'unknown', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
         write (*, *) 'Writing Water Balance State Variables for: ', hotstart_filename
@@ -384,10 +384,10 @@ contains
             !Runoff generated at catchment
         end do
 
-        write (water_balance_hotstart_unit, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
+        write (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
         deallocate (hotstart_water_balance_vector)
 
-        close (water_balance_hotstart_unit)
+        close (io_unit_water_balance_hotstart)
 
         state_variable_count = (9*catchment_count)
         ! Variables from inertial routing
@@ -398,7 +398,7 @@ contains
         allocate (inertial_state_vector(state_variable_count))
         inquire (iolength=record_length) inertial_state_vector
 
-        open (inertial_hotstart_unit, file= hotstart_input_directory//'inertial_state_'//trim(hotstart_filename)//'.bin', &
+        open (io_unit_inertial_hotstart, file= hotstart_input_directory//'inertial_state_'//trim(hotstart_filename)//'.bin', &
             & status='unknown', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
         state_index = 0
@@ -456,10 +456,10 @@ contains
             !Updated flow for interconnections (signal can be positive or negative)
         end do
 
-        write (inertial_hotstart_unit, rec=1) (inertial_state_vector(state_index), state_index=1, state_variable_count)
+        write (io_unit_inertial_hotstart, rec=1) (inertial_state_vector(state_index), state_index=1, state_variable_count)
 
         deallocate (inertial_state_vector)
-        close (inertial_hotstart_unit)
+        close (io_unit_inertial_hotstart)
 
         return
     end
