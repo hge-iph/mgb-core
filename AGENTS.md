@@ -10,87 +10,121 @@ Focus first on infrastructure that makes later refactors safer:
 
 - Preserve and improve the CMake-based build.
 - Expand regression coverage before risky restructuring.
-- Maintain validated Windows and Linux builds with Intel `ifx`; keep eventual `gfortran` support in view.
-- Add Sphinx user documentation and in-repo developer documentation.
+- Maintain validated Windows and Linux builds with Intel `ifx` and the validated Linux GNU Fortran build.
+- Maintain MkDocs user documentation and in-repo developer documentation.
 - Clean unused variables, stale comments, and confusing code incrementally.
 
-Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`; see `docs/build.md` and `docs/portability.md`.
-
-## Change Boundaries
-
-- Keep PRs focused and reviewable. Avoid large mixed changes.
-- Do not combine algorithm changes with formatting, cleanup, or module restructuring.
-- Preserve input/output file formats and model outputs unless the PR explicitly documents and tests the change.
-- Separate IO restructuring from hydrology and routing logic changes.
-- Prefer small behavior-preserving steps that can be checked by regression tests.
+Do not claim support for platforms or compilers that have not been validated. The current documented baselines are Windows x64 and Linux x64 with Intel `ifx`, plus Linux x64 with GNU Fortran 13.3; see `docs/development/build.md`.
 
 ## Fortran Modernization
 
 - Prefer modules with clear responsibility and explicit interfaces.
 - Reduce global-state coupling gradually; avoid broad rewrites just to make code look modern.
 - Keep comments useful: explain intent, assumptions, units, file formats, and non-obvious hydrological behavior. Remove comments that merely repeat the code.
+- Write new source identifiers, comments, and documentation in English using
+  the conventions in `docs/development/coding-conventions.md`.
 - Follow existing naming and layout conventions unless a PR is explicitly improving them in a narrow area.
-
-## Git Contribution Flow
-
-- `main` is the stable branch.
-- Use feature branches for development work.
-- Pull requests are preferred for all changes, especially source, build, tests, docs structure, and regression data.
-- Small documentation or metadata fixes may be committed directly by maintainers.
-- PR descriptions should explain behavior impact and list build/test evidence.
 
 ## Validation
 
-- For source or build changes, run the CMake build and `regression_magdalena` on the affected supported platform when available.
+- For source or build changes, run the CMake build and both `regression_magdalena_inertial` and `regression_magdalena_muskingum` on the affected supported platform when available.
 - For portability work, document the exact OS, compiler, CMake command, and any known failing assumptions.
 - For refactors, provide regression evidence showing unchanged outputs or explicitly document output changes.
-- For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/build.md`, `docs/testing.md`, and `docs/portability.md`.
+- For docs-only changes, verify links and keep guidance aligned with `README.md`, `docs/development/build.md`, and `docs/development/testing.md`.
+
+## Documentation
+
+Install, preview, and validate the English MkDocs site from the repository root:
+
+```bash
+python -m pip install -r requirements-docs.txt
+python -m mkdocs serve
+python -m mkdocs build --strict
+```
+
+### Documentation voice
+
+Documentation describes the model, its rationale, and its conventions directly.
+Prose uses declarative sentences, active voice, concrete technical terms, and
+affirmative explanations of implemented behavior. Command blocks remain
+reference commands; surrounding prose describes what each command represents.
+
+Headings and lists in `docs/` state facts, responsibilities, or behavior.
+Development standards are declarative reference pages, while `CONTRIBUTING.md`
+contains contributor instructions and workflow steps.
+
+Ordinary explanations use affirmative wording and avoid rhetorical negative or
+contrast framing. Necessary negation remains when it records a limitation,
+unsupported environment, compatibility rule, or scientific meaning.
+
+## Development notes and plans
+
+Use `.dev/pr/` for temporary files specific to the current PR, such as implementation notes, checklists, and draft PR descriptions.
+
+Use `.dev/plans/` for implementation plans, design notes, and tracked changes that may span multiple PRs.
 
 # Build
 
-This project uses CMake with Intel `ifx`. Validated build directories are kept
-under `build/` by operating system:
+This project uses CMake with OpenMP. Validated build directories are kept under
+`build/` by compiler:
 
-- Windows: `build/windows`
-- Linux: `build/linux`
+- Linux Intel: `build/ifx`
+- Linux GNU: `build/gfortran`
 
 ## Windows
 
 Prerequisites:
 
-- Intel oneAPI installed and loaded:
-  - `call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"`
+- Intel oneAPI installed
 - CMake available in that environment
 - Visual Studio Build Tools available through the configured oneAPI environment
 
-Run from the repository root:
+When `ifx` is unavailable, initialize oneAPI from the repository root:
 
 ```cmd
-cmake -S . -B build/windows
-cmake --build build/windows --config Release
-ctest --test-dir build/windows -C Release --output-on-failure -R regression_magdalena
+call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+```
+
+Build from the repository root:
+
+```cmd
+set "FC=ifx"
+cmake -S . -B build/ifx
+cmake --build build/ifx --config Release
+ctest --test-dir build/ifx -C Release --output-on-failure -R regression_magdalena_
 ```
 
 ## Linux
 
 Prerequisites:
 
-- Intel oneAPI installed and loaded:
-  - `source /opt/intel/oneapi/setvars.sh`
+- Intel oneAPI installed
 - CMake available in that environment
 
-Run from the repository root:
+When `ifx` is unavailable, initialize oneAPI from the repository root:
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
-FC=ifx cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
-cmake --build build/linux
-ctest --test-dir build/linux --output-on-failure -R regression_magdalena
+```
+
+Build from the repository root:
+
+```bash
+FC=ifx cmake -S . -B build/ifx -DCMAKE_BUILD_TYPE=Release
+cmake --build build/ifx
+ctest --test-dir build/ifx --output-on-failure -R regression_magdalena_
+```
+
+For GNU Fortran 13.3 on Linux:
+
+```bash
+FC=gfortran cmake -S . -B build/gfortran -DCMAKE_BUILD_TYPE=Release
+cmake --build build/gfortran
+ctest --test-dir build/gfortran --output-on-failure -R regression_magdalena_
 ```
 
 ## Build Definition
 
 - Canonical build definition: `CMakeLists.txt`
-- Intel Fortran flags: `cmake/bootstrap_intel_fortran.cmake`
-- Validated compiler: Intel `ifx`
-
+- Compiler-specific flags: `cmake/configure_fortran.cmake`
+- Validated compilers: Intel `ifx`, and GNU Fortran 13.3 on Linux

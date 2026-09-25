@@ -30,6 +30,9 @@ def stage_case(case_dir: Path, manifest: dict, work_dir: Path) -> tuple[Path, Pa
     input_dir = case_dir / manifest["input_dir"]
     output_dir = work_dir / "output"
     shutil.copytree(input_dir, work_dir / "input")
+    for relative_path in manifest.get("input_overrides", []):
+        source = case_dir / relative_path
+        shutil.copy2(source, work_dir / "input" / source.name)
     output_dir.mkdir(parents=True, exist_ok=True)
     return input_dir, output_dir
 
@@ -73,4 +76,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

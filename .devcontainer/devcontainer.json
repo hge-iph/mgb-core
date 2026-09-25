@@ -1,0 +1,30 @@
+{
+    "name": "MGB Fortran",
+
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+
+    "features": {
+        "ghcr.io/devcontainers/features/node:2.1.0": {
+            "version": "24"
+        }
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "fortran-lang.linter-gfortran",
+                "ms-vscode.cmake-tools",
+                "openai.chatgpt"
+            ],
+            "settings": {
+                "fortran.linter.compiler": "ifx",
+                "cmake.generator": "Ninja"
+            }
+        }
+    },
+
+    "postCreateCommand": "npm install -g @openai/codex"
+}
