@@ -55,7 +55,7 @@ contains
         integer :: ignored_catchment_id
         character(20) :: header_text
         character(5) :: month_labels(12)
-        
+
         open (io_unit_fixed_parameter, file=input_directory//'vegetation.par', status='OLD')
 
         do i_cli_region = 1, climate_region_count
@@ -147,7 +147,7 @@ contains
         surface_routing_coefficient = 0.0
         groundwater_routing_coefficient = 0.0
         subsurface_routing_coefficient = 0.0
-        
+
         open (io_unit_calibrated_parameter, file=input_directory//'soil.par', status='OLD')
         do i_sub = 1, subbasin_count
             read (io_unit_calibrated_parameter, 72) header_fields(1)
@@ -164,7 +164,7 @@ contains
                     & floodplain_infiltration_rate(i_sub, i_hru)
 
             end do
-            
+
             read (io_unit_calibrated_parameter, 73) header_fields(1), &
                 & surface_routing_coefficient(i_sub)
             read (io_unit_calibrated_parameter, 73) header_fields(2), &
@@ -174,9 +174,9 @@ contains
             read (io_unit_calibrated_parameter, 74) header_fields(4), &
                 & specific_baseflow(i_sub)
         end do
-        
+
         close (io_unit_calibrated_parameter)
-      
+
 71      format(a10, 8f8.3)
 72      format(7a10)
 73      format(a10, f8.1)
@@ -231,7 +231,7 @@ contains
 
         open (io_unit_catchment_data, file=input_directory//'mini.gtp', status='OLD')
         read (io_unit_catchment_data, 77)
-        
+
         subbasin_outlet_catchment = -999999
         do i_catch = 1, catchment_count
             read (io_unit_catchment_data, *) input_catchment_sequence, catchment_id(i_catch), &

@@ -8,7 +8,9 @@ contains
 
     subroutine prepare_simulation
         use catchment, only: calculate_catchment_time_of_concentration
-        use meteorological_io, only: open_meteorological_inputs, read_climatology
+        use meteorological_io, only: &
+            & open_meteorological_inputs, &
+            & read_climatology
         use reservoir_io, only: read_substitution_flows
         use river_inertial, only: prepare_inertial_routing
         use river_muskingum, only: calculate_muskingum_cunge_parameters

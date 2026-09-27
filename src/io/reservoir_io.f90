@@ -21,15 +21,15 @@ contains
         integer :: i_subst
         integer :: input_day
         integer :: i_step
-        
+
         open (io_unit_substitution_flow, file=input_directory//'substitution_flows.txt', status='OLD')
         read (io_unit_substitution_flow, 701) (header_fields(i_subst), i_subst=1, substitution_count)
-        
+
         do i_step = 1, timestep_count
             read (io_unit_substitution_flow, *) input_year, input_month, input_day, (substituted_q(i_subst, i_step), &
                 & i_subst=1, substitution_count)
         end do
-        
+
         close (io_unit_substitution_flow)
 701     format(20a10)
         return
@@ -224,4 +224,3 @@ contains
     end subroutine
 
 end module reservoir_io
-

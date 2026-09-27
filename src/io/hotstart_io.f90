@@ -385,7 +385,8 @@ contains
             !Runoff generated at catchment
         end do
 
-        write (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
+        write (io_unit_water_balance_hotstart, rec=1) &
+            & (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
         deallocate (hotstart_water_balance_vector)
 
         close (io_unit_water_balance_hotstart)
