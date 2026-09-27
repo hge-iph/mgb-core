@@ -70,9 +70,9 @@ namespaces without changing external formats.
 | `configuration_io` | Read model configuration, establish dimensions and options, and initialize the simulation calendar |
 | `hotstart_io` | Read and write binary hydrologic/routing state and hotstart schedules |
 | `log_io` | Open and close the model log file |
-| `meteorological_io` | Open, read, and close meteorological forcing streams for the timestep loop |
+| `meteorological_io` | Read climatology and open, read, and close meteorological forcing streams |
 | `output_io` | Open, write, and close configured model-output streams |
-| `static_input_io` | Read fixed, calibrated, catchment, climatology, substitution-flow, floodplain, and reservoir inputs |
+| `static_input_io` | Read fixed, calibrated, catchment, substitution-flow, floodplain, and reservoir inputs |
 
 `configuration_io` and `log_io` are called directly by `main.f90`. The runner
 calls static, meteorological, hotstart, and output I/O during preparation and

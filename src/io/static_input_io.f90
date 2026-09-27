@@ -24,8 +24,6 @@ contains
         call read_catchment_data
         write (*, *) 'Reading observed discharge, substitution flows, and climate data...'
         write (io_unit_log, *) 'Reading observed discharge, substitution flows, and climate data...'
-        call read_climatology
-        write (io_unit_log, *) 'Monthly climatology loaded'
         if (substitution_count > 0) call read_substitution_flows
         write (io_unit_log, *) 'Substitution flows loaded'
 
@@ -349,79 +347,6 @@ contains
 77      format(i5, 2f15.3, i5, 2f10.1, 2i5, f10.2, f10.6, i5, 6f5.1)
         return
     end
-
-    subroutine read_climatology
-        use config, only: &
-            & catchment_count, &
-            & io_unit_climatology, &
-            & input_directory
-        use forcing, only: &
-            & monthly_air_pressure, &
-            & monthly_air_temperature, &
-            & monthly_relative_humidity, &
-            & monthly_solar_input, &
-            & monthly_wind_speed
-
-        implicit none
-        integer :: i_catch
-        integer :: i_month
-        integer :: record_index
-        integer :: record_length
-
-        !input binary file with interpolated rainfall data
-        inquire (iolength=record_length) (monthly_air_temperature(i_catch, 1), i_catch=1, catchment_count)
-        open (io_unit_climatology, file=input_directory//'monthly_climatology.bin', status='old', recl=record_length, &
-            & form='UNFORMATTED', access='DIRECT')
-
-        !Binary file of CRU climatology. Order of values:
-        !1 - Surface Temperature        [months: 1 ... 12]
-        !2 - Relative Humidity          [months: 1 ... 12]
-        !3 - Radiation                  [months: 1 ... 12]
-        !4 - Wind Speed                 [months: 1 ... 12]
-        !5 - Atmospheric pressure       [months: 1 ... 12]
-
-        record_index = 1
-        ! Near-surface air temperature (degrees C)
-        do i_month = 1, 12
-            read (io_unit_climatology, rec=record_index) (monthly_air_temperature(i_catch, i_month), &
-                & i_catch=1, catchment_count)
-            record_index = record_index + 1
-        end do
-
-        ! near surface relative humidity (%)
-        do i_month = 1, 12
-            read (io_unit_climatology, rec= record_index) (monthly_relative_humidity(i_catch, i_month), &
-                & i_catch=1, catchment_count)
-            record_index = record_index + 1
-        end do
-
-        ! Radiation (MJ/timestep), sunshine hours, or sunshine percent according to the
-        ! configuration.
-        do i_month = 1, 12
-            read (io_unit_climatology, rec=record_index) (monthly_solar_input(i_catch, i_month), &
-                & i_catch=1, catchment_count)
-            record_index = record_index + 1
-        end do
-
-        ! Wind speed (m/s)
-        do i_month = 1, 12
-            read (io_unit_climatology, rec=record_index) (monthly_wind_speed(i_catch, i_month), &
-                & i_catch=1, catchment_count)
-            record_index = record_index + 1
-        end do
-
-        ! Atmospheric pressure (kPa)
-        do i_month = 1, 12
-            read (io_unit_climatology, rec=record_index) (monthly_air_pressure(i_catch, i_month), &
-                & i_catch=1, catchment_count)
-            record_index = record_index + 1
-        end do
-
-        close (io_unit_climatology)
-
-        return
-
-    end subroutine read_climatology
 
     subroutine read_substitution_flows
         use config, only: &

@@ -8,7 +8,7 @@ contains
 
     subroutine prepare_simulation
         use catchment, only: calculate_catchment_time_of_concentration
-        use meteorological_io, only: open_meteorological_inputs
+        use meteorological_io, only: open_meteorological_inputs, read_climatology
         use river_inertial, only: prepare_inertial_routing
         use river_muskingum, only: calculate_muskingum_cunge_parameters
         use static_input_io, only: &
@@ -23,6 +23,8 @@ contains
         implicit none
 
         call read_catchment_inputs
+        call read_climatology
+        write (io_unit_log, *) 'Monthly climatology loaded'
 
         ! Hydrodynamic modeling:
         if (routing_mode == 1) then
