@@ -58,6 +58,7 @@ config.nml ----------> configuration_io ------> config
                                                     +--> reservoir date alignment
 
 static files --------> static_input_io --------> attributes + parameters
+reservoir files -----> reservoir_io ----------> forcing + parameters
                               |                 +-> forcing
                               +------------------> selected config
 meteorological files -> meteorological_io -------> forcing

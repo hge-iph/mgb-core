@@ -6,8 +6,9 @@ binary files. Record lengths are derived with `INQUIRE(IOLENGTH=...)` so Intel
 and GNU compilers retain the established physical record layouts.
 
 Runtime file ownership is centralized: `configuration_io` owns `config.nml`,
-`static_input_io` owns static parameter, catchment, substitution, reservoir,
-and floodplain inputs, `meteorological_io` owns climatology and forcing streams,
+`static_input_io` owns static parameter, catchment, and floodplain inputs,
+`reservoir_io` owns substitution-flow and reservoir inputs,
+`meteorological_io` owns climatology and forcing streams,
 `hotstart_io` owns hotstart files and schedules, and `output_io` owns the log
 and model output streams. Scientific modules do not open or close model files.
 

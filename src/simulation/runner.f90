@@ -9,6 +9,7 @@ contains
     subroutine prepare_simulation
         use catchment, only: calculate_catchment_time_of_concentration
         use meteorological_io, only: open_meteorological_inputs, read_climatology
+        use reservoir_io, only: read_substitution_flows
         use river_inertial, only: prepare_inertial_routing
         use river_muskingum, only: calculate_muskingum_cunge_parameters
         use static_input_io, only: &
@@ -18,11 +19,14 @@ contains
             & inertial_catchment_count, &
             & routing_mode, &
             & io_unit_log, &
-            & routing_method
+            & routing_method, &
+            & substitution_count
 
         implicit none
 
         call read_catchment_inputs
+        if (substitution_count > 0) call read_substitution_flows
+        write (io_unit_log, *) 'Substitution flows loaded'
         call read_climatology
         write (io_unit_log, *) 'Monthly climatology loaded'
 
@@ -88,7 +92,7 @@ contains
         use output_io, only: &
             & close_model_outputs, &
             & open_model_outputs
-        use static_input_io, only: read_reservoir_inputs
+        use reservoir_io, only: read_reservoir_data
         use reservoirs, only: initialize_reservoir_state
         use config, only: &
             & inertial_catchment_count, &
@@ -111,7 +115,7 @@ contains
             if (reservoir_substitution_enabled == 1) then
                 write (*, *) 'READING SUBSTITUTION FLOW DATA'
                 !! SIN_RESERV
-                call read_reservoir_inputs
+                call read_reservoir_data
                 !! SIN_RESERV
             end if
         end if

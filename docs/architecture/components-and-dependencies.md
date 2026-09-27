@@ -72,7 +72,8 @@ namespaces without changing external formats.
 | `log_io` | Open and close the model log file |
 | `meteorological_io` | Read climatology and open, read, and close meteorological forcing streams |
 | `output_io` | Open, write, and close configured model-output streams |
-| `static_input_io` | Read fixed, calibrated, catchment, substitution-flow, floodplain, and reservoir inputs |
+| `reservoir_io` | Read substitution-flow and reservoir input files |
+| `static_input_io` | Read fixed, calibrated, catchment, and floodplain inputs |
 
 `configuration_io` and `log_io` are called directly by `main.f90`. The runner
 calls static, meteorological, hotstart, and output I/O during preparation and
@@ -124,6 +125,7 @@ the inventory covers every module and the `mgb_model` program.
 | `log_io` | `config` |
 | `meteorological_io` | `config`, `forcing` |
 | `output_io` | `config`, `state` |
+| `reservoir_io` | `attributes`, `config`, `date_time`, `forcing`, `parameters`, `state` |
 | `static_input_io` | `attributes`, `config`, `date_time`, `forcing`, `parameters`, `state` |
 
 ### Shared variables
