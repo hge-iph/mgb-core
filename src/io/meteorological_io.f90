@@ -3,7 +3,7 @@ module meteorological_io
     implicit none
     private
     public :: open_meteorological_inputs, read_climatology, read_meteorological_forcing, &
-              & close_meteorological_inputs
+        & close_meteorological_inputs
 
 contains
 
@@ -32,7 +32,7 @@ contains
             & monthly_relative_humidity, &
             & monthly_solar_input, &
             & monthly_wind_speed
-        
+
         implicit none
         integer :: i_catch
         integer :: i_month
@@ -69,9 +69,9 @@ contains
                 & i_catch=1, catchment_count)
             record_index = record_index + 1
         end do
-        
+
         close (io_unit_climatology)
-    
+
     end subroutine read_climatology
 
 
@@ -177,7 +177,7 @@ contains
         ! Calendar month
         integer, intent(in) :: month_number
         ! timestep for reading binaries
-        integer, intent(in) :: record_index        
+        integer, intent(in) :: record_index
         integer :: i_catch
 
         ! Using vectorized read for monthly climatological data
@@ -197,19 +197,19 @@ contains
         if (use_temperature_timeseries == 1) read (io_unit_temperature, rec= &
             & record_index) (air_temperature(i_catch), i_catch=1, &
             & catchment_count)
-       
+
         if (use_radiation_timeseries == 1) read (io_unit_radiation, rec= &
             & record_index) (solar_input(i_catch), i_catch=1, &
             & catchment_count)
-        
+
         if (use_humidity_timeseries == 1) read (io_unit_relative_humidity, rec= &
             & record_index) (relative_humidity(i_catch), i_catch=1, &
             & catchment_count)
-       
+
         if (use_wind_timeseries == 1) read (io_unit_wind, rec= &
             & record_index) (wind_speed(i_catch), i_catch=1, &
             & catchment_count)
-       
+
         if (use_pressure_timeseries == 1) read (io_unit_pressure, rec= &
             & record_index) (air_pressure(i_catch), i_catch=1, &
             & catchment_count)

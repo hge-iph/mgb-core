@@ -98,7 +98,8 @@ contains
         open (io_unit_water_balance_hotstart, file= hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
             & status= 'old', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-        read (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
+        read (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), &
+            & state_index=1, state_variable_count)
         ! Reading state variables:
 
         state_index = 0
