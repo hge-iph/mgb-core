@@ -28,6 +28,7 @@ contains
         write (io_unit_log, *) 'Monthly climatology loaded'
         if (substitution_count > 0) call read_substitution_flows
         write (io_unit_log, *) 'Substitution flows loaded'
+
     end subroutine read_catchment_inputs
 
     subroutine read_floodplain_inputs
@@ -67,6 +68,7 @@ contains
         integer :: ignored_catchment_id
         character(20) :: header_text
         character(5) :: month_labels(12)
+        
         open (io_unit_fixed_parameter, file=input_directory//'vegetation.par', status='OLD')
 
         do i_cli_region = 1, climate_region_count
@@ -84,7 +86,7 @@ contains
             read (io_unit_fixed_parameter, 71) header_text
             read (io_unit_fixed_parameter, 73) header_text, (month_labels(i_month), i_month=1, 12)
             do i_hru = 1, hru_count
-read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_month, i_cli_region), i_month=1, 12)
+                read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_month, i_cli_region), i_month=1, 12)
             end do
             ! Read vegetation height:
             read (io_unit_fixed_parameter, 71) header_text
@@ -148,19 +150,17 @@ read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_mo
         integer :: i_sub
         integer :: header_index
         integer :: i_hru
-        real :: unused_hru_parameters(subbasin_count, hru_count)
-        real :: unused_routing_parameter(subbasin_count)
+
         ! Specific base flow (M3/S/KM2): specific_baseflow(subbasin_count)
         max_soil_water_storage = 0.0
         b_arno = 0.0
         subsurface_conductivity = 0.0
         groundwater_conductivity = 0.0
         lambda_brooks_corey = 0.0
-        unused_hru_parameters = 0.0
         surface_routing_coefficient = 0.0
-        unused_routing_parameter = 0.0
         groundwater_routing_coefficient = 0.0
         subsurface_routing_coefficient = 0.0
+        
         open (io_unit_calibrated_parameter, file=input_directory//'soil.par', status='OLD')
         do i_sub = 1, subbasin_count
             read (io_unit_calibrated_parameter, 72) header_fields(1)
@@ -177,6 +177,7 @@ read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_mo
                     & floodplain_infiltration_rate(i_sub, i_hru)
 
             end do
+            
             read (io_unit_calibrated_parameter, 73) header_fields(1), &
                 & surface_routing_coefficient(i_sub)
             read (io_unit_calibrated_parameter, 73) header_fields(2), &
@@ -186,7 +187,9 @@ read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_mo
             read (io_unit_calibrated_parameter, 74) header_fields(4), &
                 & specific_baseflow(i_sub)
         end do
+        
         close (io_unit_calibrated_parameter)
+      
 71      format(a10, 8f8.3)
 72      format(7a10)
 73      format(a10, f8.1)
@@ -241,6 +244,7 @@ read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_mo
 
         open (io_unit_catchment_data, file=input_directory//'mini.gtp', status='OLD')
         read (io_unit_catchment_data, 77)
+        
         subbasin_outlet_catchment = -999999
         do i_catch = 1, catchment_count
             read (io_unit_catchment_data, *) input_catchment_sequence, catchment_id(i_catch), &
@@ -303,7 +307,7 @@ read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_mo
         write (*, *) 'Reach slopes from geometry transformed to m/m'
         river_slope = river_slope/1000.0
         ! Correct length of longest tributary:
-        write (*, *) 'Minimun tributarie lenght set to 0.001 km'
+        write (*, *) 'Minimum tributarie lenght set to 0.001 km'
         do i_catch = 1, catchment_count
             longest_reach_length(i_catch) = max(longest_reach_length(i_catch), 0.001)
         end do
@@ -434,15 +438,19 @@ read (io_unit_fixed_parameter, 72) hru_name(i_hru), (leaf_area_index(i_hru, i_mo
         integer :: i_subst
         integer :: input_day
         integer :: i_step
+        
         open (io_unit_substitution_flow, file=input_directory//'substitution_flows.txt', status='OLD')
         read (io_unit_substitution_flow, 701) (header_fields(i_subst), i_subst=1, substitution_count)
+        
         do i_step = 1, timestep_count
             read (io_unit_substitution_flow, *) input_year, input_month, input_day, (substituted_q(i_subst, i_step), &
                 & i_subst=1, substitution_count)
         end do
+        
         close (io_unit_substitution_flow)
 701     format(20a10)
         return
+
     end subroutine read_substitution_flows
 
     subroutine read_floodplain_binary_data
