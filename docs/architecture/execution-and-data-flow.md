@@ -41,9 +41,10 @@ loop or writer. Each write emits both payloads.
 
 The I/O modules populate more than one shared namespace. Configuration I/O
 writes configuration values and the initial calendar state. Static input I/O
-populates attributes, parameters, climatological and substitution forcing, and
-selected configuration values. During reservoir loading it reads the calendar
-from `state` to align reservoir observations. Meteorological I/O refreshes the
+populates attributes and parameters and sets selected configuration values.
+Reservoir I/O loads substitution flows and reservoir outflows into `forcing`,
+updates reservoir parameters, and reads the calendar from `state` to align
+reservoir observations. Meteorological I/O loads climatology and refreshes the
 current forcing arrays. Hotstart I/O restores `state` and the retained air
 temperature in `forcing`. Output I/O writes prepared serialization buffers
 from `state`; it does not calculate the scientific values in those buffers.
@@ -58,10 +59,12 @@ config.nml ----------> configuration_io ------> config
                                                     +--> reservoir date alignment
 
 static files --------> static_input_io --------> attributes + parameters
-reservoir files -----> reservoir_io ----------> forcing + parameters
-                              |                 +-> forcing
                               +------------------> selected config
-meteorological files -> meteorological_io -------> forcing
+reservoir files -----> reservoir_io ----------> forcing + parameters
+                              ^
+                              |
+                       state calendar
+meteorological files -> meteorological_io -------> climatology + forcing
 hotstart files ------> hotstart_io --------------> state + forcing air temperature
 
 attributes + config + forcing + parameters + state

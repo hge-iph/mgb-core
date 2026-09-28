@@ -76,8 +76,9 @@ namespaces without changing external formats.
 | `static_input_io` | Read fixed, calibrated, catchment, and floodplain inputs |
 
 `configuration_io` and `log_io` are called directly by `main.f90`. The runner
-calls static, meteorological, hotstart, and output I/O during preparation and
-the timestep sequence. I/O modules do not import hydrology behavior.
+calls static, meteorological, reservoir, hotstart, and output I/O during
+preparation and the timestep sequence. I/O modules do not import hydrology
+behavior.
 
 ## Simulation
 
@@ -105,7 +106,7 @@ the inventory covers every module and the `mgb_model` program.
 | Consumer | Direct project dependencies |
 | --- | --- |
 | `mgb_model` program | `attributes`, `config`, `configuration_io`, `forcing`, `log_io`, `parameters`, `runner`, `state` |
-| `runner` | `attributes`, `catchment`, `config`, `date_time`, `forcing`, `hotstart_io`, `meteorological_io`, `output_io`, `parameters`, `reservoirs`, `river_inertial`, `river_muskingum`, `state`, `static_input_io` |
+| `runner` | `attributes`, `catchment`, `config`, `date_time`, `forcing`, `hotstart_io`, `meteorological_io`, `output_io`, `parameters`, `reservoir_io`, `reservoirs`, `river_inertial`, `river_muskingum`, `state`, `static_input_io` |
 
 ### Hydrology
 
@@ -126,7 +127,7 @@ the inventory covers every module and the `mgb_model` program.
 | `meteorological_io` | `config`, `forcing` |
 | `output_io` | `config`, `state` |
 | `reservoir_io` | `attributes`, `config`, `date_time`, `forcing`, `parameters`, `state` |
-| `static_input_io` | `attributes`, `config`, `date_time`, `forcing`, `parameters`, `state` |
+| `static_input_io` | `attributes`, `config`, `parameters` |
 
 ### Shared variables
 
