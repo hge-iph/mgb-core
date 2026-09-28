@@ -98,7 +98,8 @@ contains
         open (io_unit_water_balance_hotstart, file= hotstart_input_directory//'runoff_state_'//trim(hotstart_filename)//'.bin', &
             & status= 'old', recl=record_length, form='UNFORMATTED', access='DIRECT')
 
-        read (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
+        read (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), &
+            & state_index=1, state_variable_count)
         ! Reading state variables:
 
         state_index = 0
@@ -384,7 +385,8 @@ contains
             !Runoff generated at catchment
         end do
 
-        write (io_unit_water_balance_hotstart, rec=1) (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
+        write (io_unit_water_balance_hotstart, rec=1) &
+            & (hotstart_water_balance_vector(state_index), state_index=1, state_variable_count)
         deallocate (hotstart_water_balance_vector)
 
         close (io_unit_water_balance_hotstart)

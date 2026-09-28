@@ -70,13 +70,15 @@ namespaces without changing external formats.
 | `configuration_io` | Read model configuration, establish dimensions and options, and initialize the simulation calendar |
 | `hotstart_io` | Read and write binary hydrologic/routing state and hotstart schedules |
 | `log_io` | Open and close the model log file |
-| `meteorological_io` | Open, read, and close meteorological forcing streams for the timestep loop |
+| `meteorological_io` | Read climatology and open, read, and close meteorological forcing streams |
 | `output_io` | Open, write, and close configured model-output streams |
-| `static_input_io` | Read fixed, calibrated, catchment, climatology, substitution-flow, floodplain, and reservoir inputs |
+| `reservoir_io` | Read substitution-flow and reservoir input files |
+| `static_input_io` | Read fixed, calibrated, catchment, and floodplain inputs |
 
 `configuration_io` and `log_io` are called directly by `main.f90`. The runner
-calls static, meteorological, hotstart, and output I/O during preparation and
-the timestep sequence. I/O modules do not import hydrology behavior.
+calls static, meteorological, reservoir, hotstart, and output I/O during
+preparation and the timestep sequence. I/O modules do not import hydrology
+behavior.
 
 ## Simulation
 
@@ -104,7 +106,7 @@ the inventory covers every module and the `mgb_model` program.
 | Consumer | Direct project dependencies |
 | --- | --- |
 | `mgb_model` program | `attributes`, `config`, `configuration_io`, `forcing`, `log_io`, `parameters`, `runner`, `state` |
-| `runner` | `attributes`, `catchment`, `config`, `date_time`, `forcing`, `hotstart_io`, `meteorological_io`, `output_io`, `parameters`, `reservoirs`, `river_inertial`, `river_muskingum`, `state`, `static_input_io` |
+| `runner` | `attributes`, `catchment`, `config`, `date_time`, `forcing`, `hotstart_io`, `meteorological_io`, `output_io`, `parameters`, `reservoir_io`, `reservoirs`, `river_inertial`, `river_muskingum`, `state`, `static_input_io` |
 
 ### Hydrology
 
@@ -124,7 +126,8 @@ the inventory covers every module and the `mgb_model` program.
 | `log_io` | `config` |
 | `meteorological_io` | `config`, `forcing` |
 | `output_io` | `config`, `state` |
-| `static_input_io` | `attributes`, `config`, `date_time`, `forcing`, `parameters`, `state` |
+| `reservoir_io` | `attributes`, `config`, `date_time`, `forcing`, `parameters`, `state` |
+| `static_input_io` | `attributes`, `config`, `parameters` |
 
 ### Shared variables
 

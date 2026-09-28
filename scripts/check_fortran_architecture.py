@@ -26,7 +26,7 @@ CLASSIFICATION = {
     "catchment": "hydrology", "river_muskingum": "hydrology",
     "river_inertial": "hydrology", "reservoirs": "hydrology",
     "configuration_io": "io", "log_io": "io", "static_input_io": "io",
-    "meteorological_io": "io", "hotstart_io": "io", "output_io": "io",
+    "meteorological_io": "io", "reservoir_io": "io", "hotstart_io": "io", "output_io": "io",
     "runner": "runner",
 }
 

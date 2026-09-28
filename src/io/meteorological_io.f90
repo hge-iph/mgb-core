@@ -2,7 +2,8 @@ module meteorological_io
 
     implicit none
     private
-    public :: open_meteorological_inputs, read_meteorological_forcing, close_meteorological_inputs
+    public :: open_meteorological_inputs, read_climatology, read_meteorological_forcing, &
+        & close_meteorological_inputs
 
 contains
 
@@ -19,6 +20,60 @@ contains
         call manage_meteorological_input_files( &
             & 0)
     end subroutine close_meteorological_inputs
+
+    subroutine read_climatology
+        use config, only: &
+            & catchment_count, &
+            & io_unit_climatology, &
+            & input_directory
+        use forcing, only: &
+            & monthly_air_pressure, &
+            & monthly_air_temperature, &
+            & monthly_relative_humidity, &
+            & monthly_solar_input, &
+            & monthly_wind_speed
+
+        implicit none
+        integer :: i_catch
+        integer :: i_month
+        integer :: record_index
+        integer :: record_length
+
+        inquire (iolength=record_length) (monthly_air_temperature(i_catch, 1), i_catch=1, catchment_count)
+        open (io_unit_climatology, file=input_directory//'monthly_climatology.bin', status='old', recl=record_length, &
+            & form='UNFORMATTED', access='DIRECT')
+
+        record_index = 1
+        do i_month = 1, 12
+            read (io_unit_climatology, rec=record_index) (monthly_air_temperature(i_catch, i_month), &
+                & i_catch=1, catchment_count)
+            record_index = record_index + 1
+        end do
+        do i_month = 1, 12
+            read (io_unit_climatology, rec=record_index) (monthly_relative_humidity(i_catch, i_month), &
+                & i_catch=1, catchment_count)
+            record_index = record_index + 1
+        end do
+        do i_month = 1, 12
+            read (io_unit_climatology, rec=record_index) (monthly_solar_input(i_catch, i_month), &
+                & i_catch=1, catchment_count)
+            record_index = record_index + 1
+        end do
+        do i_month = 1, 12
+            read (io_unit_climatology, rec=record_index) (monthly_wind_speed(i_catch, i_month), &
+                & i_catch=1, catchment_count)
+            record_index = record_index + 1
+        end do
+        do i_month = 1, 12
+            read (io_unit_climatology, rec=record_index) (monthly_air_pressure(i_catch, i_month), &
+                & i_catch=1, catchment_count)
+            record_index = record_index + 1
+        end do
+
+        close (io_unit_climatology)
+
+    end subroutine read_climatology
+
 
     subroutine manage_meteorological_input_files( &
         & file_action)
@@ -90,7 +145,7 @@ contains
 
     subroutine read_meteorological_forcing( &
         & month_number, &
-        & forcing_record_index)
+        & record_index)
         use config, only: &
             & catchment_count, &
             & io_unit_precipitation, &
@@ -119,13 +174,13 @@ contains
 
         implicit none
 
-        integer, intent(in) :: month_number
         ! Calendar month
-        integer, intent(in) :: forcing_record_index
+        integer, intent(in) :: month_number
         ! timestep for reading binaries
-        integer :: climate_cell_index
+        integer, intent(in) :: record_index
+        integer :: i_catch
 
-        ! Using vectorized read for monthly data
+        ! Using vectorized read for monthly climatological data
         if (use_temperature_timeseries == 0) air_temperature(:) = monthly_air_temperature(:, &
             & month_number)
         if (use_radiation_timeseries == 0) solar_input(:) = monthly_solar_input(:, month_number)
@@ -135,24 +190,28 @@ contains
         if (use_pressure_timeseries == 0) air_pressure(:) = monthly_air_pressure(:, month_number)
 
         ! Reads precipitation data
-        read (io_unit_precipitation, rec=forcing_record_index) (precipitation(climate_cell_index), climate_cell_index=1, &
+        read (io_unit_precipitation, rec=record_index) (precipitation(i_catch), i_catch=1, &
             & catchment_count)
 
         ! Reads meteorological data at the same time interval of precipitation
         if (use_temperature_timeseries == 1) read (io_unit_temperature, rec= &
-            & forcing_record_index) (air_temperature(climate_cell_index), climate_cell_index=1, &
+            & record_index) (air_temperature(i_catch), i_catch=1, &
             & catchment_count)
+
         if (use_radiation_timeseries == 1) read (io_unit_radiation, rec= &
-            & forcing_record_index) (solar_input(climate_cell_index), climate_cell_index=1, &
+            & record_index) (solar_input(i_catch), i_catch=1, &
             & catchment_count)
+
         if (use_humidity_timeseries == 1) read (io_unit_relative_humidity, rec= &
-            & forcing_record_index) (relative_humidity(climate_cell_index), climate_cell_index=1, &
+            & record_index) (relative_humidity(i_catch), i_catch=1, &
             & catchment_count)
+
         if (use_wind_timeseries == 1) read (io_unit_wind, rec= &
-            & forcing_record_index) (wind_speed(climate_cell_index), climate_cell_index=1, &
+            & record_index) (wind_speed(i_catch), i_catch=1, &
             & catchment_count)
+
         if (use_pressure_timeseries == 1) read (io_unit_pressure, rec= &
-            & forcing_record_index) (air_pressure(climate_cell_index), climate_cell_index=1, &
+            & record_index) (air_pressure(i_catch), i_catch=1, &
             & catchment_count)
 
     end subroutine read_meteorological_forcing
