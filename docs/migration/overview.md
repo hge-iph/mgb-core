@@ -14,8 +14,7 @@ follow older code notes, papers, local patches, and model datasets.
 
 The source comparison uses the parent of #11 as its baseline. The runtime
 comparison uses that revision's readers, writers, namelists, and regression
-fixtures. Later historical migration drafts are not authoritative when their
-names differ from either endpoint.
+fixtures.
 
 ## Current source layout
 

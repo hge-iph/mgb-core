@@ -98,8 +98,8 @@ m/m. The current key names and complete key set are also listed in the
 | `input/sin_dados_defluencia.txt` | `reservoir_outflow.txt` | Reservoir outflow records; the legacy reader hard-coded the `input/` prefix |
 | `hotstartlist.prev` | `hotstart_schedule.txt` | Scheduled hotstart times |
 
-These migration-era support files are not opened by the model's Fortran
-readers. Their fixture/tool correspondences are:
+These legacy support files are not opened by the model's Fortran readers.
+Their fixture/tool correspondences are:
 
 | Legacy fixture or tool file | Current fixture or tool file | Role |
 | --- | --- | --- |
@@ -110,25 +110,6 @@ readers. Their fixture/tool correspondences are:
 
 These correspondences do not make the files executable inputs or outputs. See
 the [I/O reference](../architecture/io-reference.md#input-files).
-
-Several archived migration drafts used proposed names that are absent from
-the current readers. For example, `model_config.nml`,
-`vegetation_parameters.txt`, `hru_definitions.txt`, `climate_regions.txt`,
-`catchment_data.txt`, and `soil_parameters.txt` were intermediate labels.
-
-| Intermediate draft name | Actual current name | Name at `41146b1` | Interface status |
-| --- | --- | --- | --- |
-| `model_config.nml` | `config.nml` | `infomgb.sim` | Current configuration input |
-| `vegetation_parameters.txt` | `vegetation.par` | `albiaf.fix` | Current vegetation input |
-| `hru_definitions.txt` | `hru.def` | `blocos.hrc` | Fixture dictionary at both endpoints; not opened by the executable |
-| `climate_regions.txt` | `climate.reg` | `climate_regions.fix` | Current climate-region input |
-| `catchment_data.txt` | `mini.gtp` | `mini.gtp` | Runtime filename retained from baseline |
-| `soil_parameters.txt` | `soil.par` | `paruso.cal` | Current soil parameter input |
-| `observed_discharge.txt` | `observed_discharge.dat` | `qobs.qob` | Regression/performance fixture, not an executable input |
-
-The intermediate labels are not accepted aliases. The current runtime names
-are the actual names in the current readers; `hru.def` and
-`observed_discharge.dat` remain fixture/support files.
 
 ## Output files
 
