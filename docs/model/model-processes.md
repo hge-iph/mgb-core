@@ -8,6 +8,12 @@ discretization](model-concepts.md), [energy and evapotranspiration](energy-balan
 [river-routing overview](river-routing.md), and
 [parameters and initial state](parameters-and-initial-state.md).
 
+Readers of pre-refactor papers or code notes can use the
+[legacy routine and flow mapping](../migration/routines-and-flow.md) and
+[shared-variable mapping](../migration/shared-variables.md) and
+[routine-local mapping](../migration/routine-locals.md) to translate
+historical identifiers into current modules and routines.
+
 ## Timestep order
 
 For each meteorological timestep, MGB follows this order:

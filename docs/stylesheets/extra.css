@@ -1,11 +1,66 @@
-/* Keep the first column on one line and wrap all following columns. */
-.rst-content table th:first-child,
-.rst-content table td:first-child {
-  white-space: nowrap;
+/* Keep table content readable when identifiers and paths are long. */
+.rst-content table {
+  width: 100%;
 }
 
-.rst-content table th:not(:first-child),
-.rst-content table td:not(:first-child) {
+/* The custom theme removes the fixed bottom versions strip. */
+.wy-nav-side {
+  padding-bottom: 0;
+}
+
+body.migration-page .rst-content table th,
+body.migration-page .rst-content table td {
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Migration mappings use narrow identifier/path columns and a wider explanation column. */
+body.migration-page .rst-content table {
+  table-layout: fixed;
+}
+
+/* Keep unbroken identifiers readable when the viewport is narrow. */
+body.migration-page .rst-content .section {
+  overflow-x: auto;
+}
+
+body.migration-page .rst-content table th:nth-child(1),
+body.migration-page .rst-content table td:nth-child(1) {
+  width: 20%;
+}
+
+body.migration-page .rst-content table th:nth-child(2),
+body.migration-page .rst-content table td:nth-child(2) {
+  width: 30%;
+}
+
+body.migration-page .rst-content table th:nth-child(3),
+body.migration-page .rst-content table td:nth-child(3) {
+  width: 50%;
+}
+
+body.migration-page .rst-content table th:nth-child(1),
+body.migration-page .rst-content table td:nth-child(1),
+body.migration-page .rst-content table th:nth-child(2),
+body.migration-page .rst-content table td:nth-child(2) {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+body.migration-page .rst-content table.migration-table-2 th:nth-child(1),
+body.migration-page .rst-content table.migration-table-2 td:nth-child(1) {
+  width: 30%;
+}
+
+body.migration-page .rst-content table.migration-table-2 th:nth-child(2),
+body.migration-page .rst-content table.migration-table-2 td:nth-child(2) {
+  width: 70%;
+}
+
+body.migration-page .rst-content table code {
+  white-space: inherit;
+  overflow-wrap: normal;
+  word-break: normal;
 }

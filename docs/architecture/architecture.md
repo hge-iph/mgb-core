@@ -64,6 +64,8 @@ architecture checker enforces the allowed dependency direction.
   runtime, shutdown, shared-state movement, and scientific handoffs.
 - [I/O reference](io-reference.md) defines configuration, input, output, and
   hotstart contracts and their owning modules.
+- [Legacy migration reference](../migration/overview.md) maps the pre-#11
+  source tree, shared variables, routines, and runtime names to this layout.
 - [Design decisions](design-decisions.md) records the rationale for durable
   boundaries and compatibility constraints.
 

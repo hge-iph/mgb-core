@@ -4,6 +4,8 @@ The simulation layer coordinates preparation, timestep execution, and
 shutdown. Hydrology and I/O exchange values through the five shared variable
 namespaces described under
 [Components and dependencies](components-and-dependencies.md).
+The [legacy routine and flow mapping](../migration/routines-and-flow.md)
+connects this lifecycle with the pre-refactor entry points.
 
 ## Execution lifecycle
 

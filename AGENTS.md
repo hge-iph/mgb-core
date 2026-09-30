@@ -34,6 +34,14 @@ Do not claim support for platforms or compilers that have not been validated. Th
 
 ## Documentation
 
+Documentation tables use at most three columns. Drop or merge columns when
+the same information can be expressed together. A table is not a good form of
+presentation when its content does not fit clearly into three columns; use
+prose, lists, or another presentation instead.
+
+Legacy migration mappings list one variable per row, use the section title for
+the namespace, and keep identifiers and paths intact without mid-word wrapping.
+
 Install, preview, and validate the English MkDocs site from the repository root:
 
 ```bash

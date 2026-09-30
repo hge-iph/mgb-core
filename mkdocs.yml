@@ -3,10 +3,10 @@ site_description: Documentation for the MGB large-scale hydrological model
 site_url: https://hge-iph.github.io/MGB-model/
 repo_url: https://github.com/HGE-IPH/MGB-model
 repo_name: HGE-IPH/MGB-model
-edit_uri: edit/main/docs/
 
 theme:
   name: readthedocs
+  custom_dir: docs/overrides
 
 plugins:
   - search
@@ -16,6 +16,7 @@ markdown_extensions:
       generic: true
 
 extra_javascript:
+  - javascripts/site.js
   - javascripts/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
@@ -48,3 +49,10 @@ nav:
       - Automation and documentation: development/continuous-integration.md
       - Coding conventions: development/coding-conventions.md
       - Contributing: https://github.com/HGE-IPH/MGB-model/blob/main/CONTRIBUTING.md
+  - Legacy migration reference:
+      - Overview: migration/overview.md
+      - Source files and modules: migration/source-files.md
+      - Routines and execution flow: migration/routines-and-flow.md
+      - Shared variables: migration/shared-variables.md
+      - Routine-local variables: migration/routine-locals.md
+      - Runtime names: migration/runtime-names.md
