@@ -16,39 +16,12 @@ The source comparison uses the parent of #11 as its baseline. The runtime
 comparison uses that revision's readers, writers, namelists, and regression
 fixtures.
 
-## Current source layout
-
-The former flat source tree is organized by responsibility:
-
-| Current directory | Responsibility |
-| --- | --- |
-| `src/simulation/` | Program entry point, initialization phases, simulation lifecycle, and timestep coordination |
-| `src/hydrology/` | Catchment water balance, reservoirs, and river routing |
-| `src/io/` | Configuration, static inputs, meteorological forcing, hotstarts, logs, outputs, and reservoir files |
-| `src/vars/` | Shared attributes, configuration, forcing, parameters, and evolving model state |
-| `src/common/` | Date/time, interpolation, random-seed, and runtime support |
-
-The module responsibilities and dependency direction are described in the
-[architecture overview](../architecture/architecture.md) and
-[components and dependencies](../architecture/components-and-dependencies.md).
-
 ## How to use the tables
 
-The tables record correspondence for reading and migration work. They do not
-add runtime aliases, preserve old Fortran entry points, or guarantee that an
-old configuration or dataset runs unchanged. Use the current names and formats
-listed in the [runtime name mapping](runtime-names.md) and authoritative
-[I/O reference](../architecture/io-reference.md).
+The tables record correspondence for reading and migration work. “Split” means one legacy file or variable now has owners in more than one module. “Consolidated” means multiple legacy routines or files now share one current owner. “Removed” means the old interface or calculation has no current counterpart. An item marked “absorbed” remains part of a larger current procedure but no longer has a separate entry point.
 
-“Split” means one legacy file or variable now has owners in more than one
-module. “Consolidated” means multiple legacy routines or files now share one
-current owner. “Removed” means the old interface or calculation has no current
-counterpart. An item marked “absorbed” remains part of a larger current
-procedure but no longer has a separate entry point.
-
-## Related references
-
+For current implementation, see:
 - [Architecture overview](../architecture/architecture.md)
+- [Components and dependencies](../architecture/components-and-dependencies.md).
 - [Execution and data flow](../architecture/execution-and-data-flow.md)
 - [I/O reference](../architecture/io-reference.md)
-- [Model processes and numerical assumptions](../model/model-processes.md)

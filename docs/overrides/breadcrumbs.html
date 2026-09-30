@@ -1,0 +1,21 @@
+<div role="navigation" aria-label="{% trans %}breadcrumbs navigation{% endtrans %}">
+  <ul class="wy-breadcrumbs">
+    <li><a href="{{ nav.homepage.url|url }}" class="icon icon-home" aria-label="{% trans %}Docs{% endtrans %}"></a></li>
+    {%- if page %}
+      {%- for doc in page.ancestors[::-1] %}
+        {%- if doc.url %}
+          <li class="breadcrumb-item"><a href="{{ doc.url|url }}">{{ doc.title }}</a></li>
+        {%- else %}
+          <li class="breadcrumb-item">{{ doc.title }}</li>
+        {%- endif %}
+      {%- endfor %}
+      <li class="breadcrumb-item active">{{ page.title }}</li>
+    {%- endif %}
+    <li class="wy-breadcrumbs-aside">
+      {%- if config.repo_url %}
+        <a href="{{ config.repo_url }}" class="icon icon-github"> {{ config.repo_name or 'GitHub' }}</a>
+      {%- endif %}
+    </li>
+  </ul>
+  <hr/>
+</div>
