@@ -42,6 +42,12 @@ nav:
       - Execution and data flow: architecture/execution-and-data-flow.md
       - I/O reference: architecture/io-reference.md
       - Design decisions: architecture/design-decisions.md
+  - Legacy migration reference:
+      - Overview: migration/overview.md
+      - Source files and modules: migration/source-files.md
+      - Routines and execution flow: migration/routines-and-flow.md
+      - Shared variables and terminology: migration/shared-variables.md
+      - Runtime names: migration/runtime-names.md
   - Development:
       - Setup and build: development/build.md
       - Testing and debugging: development/testing.md

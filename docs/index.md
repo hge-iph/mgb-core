@@ -39,6 +39,15 @@ the application lifecycle, shared state, and scientific handoffs. The
 [Design decisions](architecture/design-decisions.md) explains the rationale
 for durable boundaries.
 
+### Legacy migration
+
+The [Legacy migration reference](migration/overview.md) maps the source tree
+at commit `41146b1` to the current implementation. It includes mappings for
+[source files and modules](migration/source-files.md),
+[routines and execution flow](migration/routines-and-flow.md),
+[shared variables and terminology](migration/shared-variables.md), and
+[runtime names](migration/runtime-names.md).
+
 ### Development
 
 The four development guides cover:

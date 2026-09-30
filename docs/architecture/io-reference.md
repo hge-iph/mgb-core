@@ -12,6 +12,9 @@ Runtime file ownership is centralized: `configuration_io` owns `config.nml`,
 `hotstart_io` owns hotstart files and schedules, and `output_io` owns the log
 and model output streams. Scientific modules do not open or close model files.
 
+The [legacy runtime name mapping](../migration/runtime-names.md) lists the
+pre-refactor namelist groups, keys, filenames, and their current equivalents.
+
 The model uses lowercase runtime directories relative to the working directory:
 
 - `input/`
@@ -80,14 +83,14 @@ write_flooded_area are the complete output key set.
 | File | Format and ordering |
 | --- | --- |
 | vegetation.par | Four parameter blocks. Each HRU row has a 10-character identifier, 12 monthly values with F5.2 precision, 12 monthly names/labels, and four fixed fields. |
-| hru.def | The authoritative HRU dictionary. The current fixture has nine rows in order: blc_01 through blc_09. Comment lines begin with two slashes. |
+| hru.def | Reference dictionary for HRU labels. The Fortran reader does not open it; parameter row order in vegetation.par and soil.par defines the runtime correspondence. The current fixture lists blc_01 through blc_09. |
 | climate.reg | Header followed by one two-integer climate-region record per catchment. |
 | mini.gtp | Header followed by catchment records in input order. The fixed legacy fields are catchment sequence/id, area and drainage geometry, network/subbasin fields, routing parameters, and six geometry/parameter values, followed by the HRU percentages. |
 | soil.par | HRU calibration rows use A10 identifiers and the existing fixed F8.3, F8.1, and F8.6 numeric fields, followed by subbasin routing parameter rows. |
 | floodplain_stage_area.txt | Text stage-area records: catchment index, bottom/elevation value, stage/elevation, and area. |
 | floodplain_connections.txt | Face connection records used by the pseudo-2D path. The current text reader retains the historical connection layout and the active binary floodplain path remains unchanged. |
 | substitution_flows.txt | Header fields followed by date/time and reservoir substitution flow records. |
-| observed_discharge.dat | Observed discharge fixture used by regression and performance tooling. |
+| observed_discharge.dat | Observed discharge fixture used by regression and performance tooling; the Fortran model reader does not open it. |
 | hotstart_schedule.txt | Hotstart timestep schedule read as integer records. |
 | reservoir_config.txt | Reservoir-to-catchment and lake configuration records when reservoir substitution is enabled. |
 | reservoir_outflow.txt | Time-indexed reservoir outflow records when reservoir substitution is enabled. |
