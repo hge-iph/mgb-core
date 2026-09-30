@@ -10,8 +10,9 @@ discretization](model-concepts.md), [energy and evapotranspiration](energy-balan
 
 Readers of pre-refactor papers or code notes can use the
 [legacy routine and flow mapping](../migration/routines-and-flow.md) and
-[shared-variable reference](../migration/shared-variables.md) to translate
-historical identifiers into current modules.
+[shared-variable mapping](../migration/shared-variables.md) and
+[routine-local mapping](../migration/routine-locals.md) to translate
+historical identifiers into current modules and routines.
 
 ## Timestep order
 

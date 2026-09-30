@@ -53,5 +53,6 @@ nav:
       - Overview: migration/overview.md
       - Source files and modules: migration/source-files.md
       - Routines and execution flow: migration/routines-and-flow.md
-      - Shared variables and terminology: migration/shared-variables.md
+      - Shared variables: migration/shared-variables.md
+      - Routine-local variables: migration/routine-locals.md
       - Runtime names: migration/runtime-names.md

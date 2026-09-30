@@ -20,8 +20,29 @@ fixtures.
 
 The tables record correspondence for reading and migration work. “Split” means one legacy file or variable now has owners in more than one module. “Consolidated” means multiple legacy routines or files now share one current owner. “Removed” means the old interface or calculation has no current counterpart. An item marked “absorbed” remains part of a larger current procedure but no longer has a separate entry point.
 
+The [shared-variable mapping](shared-variables.md) lists former globals by
+their current module. The [routine-local mapping](routine-locals.md) lists
+selected former globals now used as local equation inputs or temporaries.
+
 For current implementation, see:
+
 - [Architecture overview](../architecture/architecture.md)
-- [Components and dependencies](../architecture/components-and-dependencies.md).
+- [Components and dependencies](../architecture/components-and-dependencies.md)
 - [Execution and data flow](../architecture/execution-and-data-flow.md)
 - [I/O reference](../architecture/io-reference.md)
+
+## Terminology
+
+| Historical term | Current term | Usage |
+| --- | --- | --- |
+| URH | HRU | Historical abbreviation for *unidade de resposta hidrológica*; current English term is hydrological response unit. |
+| minibacia | catchment | Local contributing area associated with one explicit river segment. |
+| montante | upstream | Direction toward the headwaters. |
+| jusante | downstream | Direction toward the outlet. |
+| cota | stage or elevation | Water-surface or floodplain elevation, depending on context. |
+| cota-área-volume | stage-area-volume | Floodplain lookup relation used by local-inertial routing. |
+| vazão | discharge or flow | Volumetric flow rate; identify the variable context and units. |
+| solo | soil | Soil storage and flux domain in catchment water balance. |
+
+The current model's spatial units and storage concepts are introduced in
+[Model concepts](../model/model-concepts.md).

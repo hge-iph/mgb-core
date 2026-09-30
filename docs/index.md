@@ -63,5 +63,6 @@ The [Legacy migration reference](migration/overview.md) maps the source tree
 at commit `41146b1` to the current implementation. It includes mappings for
 [source files and modules](migration/source-files.md),
 [routines and execution flow](migration/routines-and-flow.md),
-[shared variables and terminology](migration/shared-variables.md), and
+[shared variables](migration/shared-variables.md),
+[routine-local variables](migration/routine-locals.md), and
 [runtime names](migration/runtime-names.md).
