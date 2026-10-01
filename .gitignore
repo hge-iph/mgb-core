@@ -17,10 +17,6 @@ input_example/**
 /cmake_install.cmake
 /CTestTestfile.cmake
 
-# Files/formats from ad hoc runtime input paths
-/Input/*.pbi
-/Input/*.qob
-
 # Python caches
 __pycache__/
 *.pyc
@@ -66,5 +62,4 @@ __pycache__/
 *.app
 
 # Machine states
-.omx/
 .codex
