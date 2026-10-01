@@ -32,11 +32,15 @@ def select_catchments(
         relative_error = absolute_error / max(abs(expected_value), abs(actual_value), 1.0e-30)
         maximum_absolute[catchment] = max(maximum_absolute[catchment], absolute_error)
         maximum_relative[catchment] = max(maximum_relative[catchment], relative_error)
-    return [
-        catchment + 1
-        for catchment, (absolute_error, relative_error) in enumerate(zip(maximum_absolute, maximum_relative))
-        if absolute_error >= threshold_abs or relative_error >= threshold_rel
-    ]
+    return sorted(
+        (
+            catchment + 1
+            for catchment, (absolute_error, relative_error) in enumerate(zip(maximum_absolute, maximum_relative))
+            if absolute_error >= threshold_abs or relative_error >= threshold_rel
+        ),
+        key=lambda catchment: maximum_absolute[catchment - 1],
+        reverse=True,
+    )
 
 
 def write_report(
@@ -145,6 +149,15 @@ def write_report(
             indices = range(catchment - 1, result["count"], result["catchment_count"])
             actual = [result["actual_values"][index] for index in indices]
             residual = [actual_value - expected_value for expected_value, actual_value in zip(expected, actual)]
+            maximum_absolute = max(map(abs, residual), default=0.0)
+            maximum_relative = max(
+                (
+                    abs(actual_value - expected_value)
+                    / max(abs(expected_value), abs(actual_value), 1.0e-30)
+                    for expected_value, actual_value in zip(expected, actual)
+                ),
+                default=0.0,
+            )
 
             figure = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.12)
             figure.add_trace(go.Scatter(x=dates, y=expected, mode="lines", name="Expected"), row=1, col=1)
@@ -154,7 +167,10 @@ def write_report(
             figure.update_yaxes(title_text=f"Residual ({unit})", row=2, col=1)
             figure.update_xaxes(title_text="Date", row=2, col=1)
             figure.update_layout(
-                title=f"Catchment {catchment}",
+                title=(
+                    f"Catchment {catchment} — max abs error {maximum_absolute:.8e}; "
+                    f"max rel error {maximum_relative:.8e}"
+                ),
                 template="plotly_white",
                 height=620,
                 legend={"orientation": "h", "y": 1.1},

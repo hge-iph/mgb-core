@@ -227,13 +227,13 @@ class ReportSelectionTests(unittest.TestCase):
             threshold_abs=0.125,
             threshold_rel=1.0,
         )
-        self.assertEqual(selected, [1, 2, 4])
+        self.assertEqual(selected, [2, 1, 4])
 
     def test_thresholds_are_per_output(self) -> None:
         expected = [1.0, 1.0, 0.0, 0.0]
         changed = [1.125, -1.0, 0.0, 0.0625]
         unchanged = [1.0, 1.0, 0.0, 0.0]
-        self.assertEqual(select_catchments(expected, changed, 4, 0.125, 1.0), [1, 2, 4])
+        self.assertEqual(select_catchments(expected, changed, 4, 0.125, 1.0), [2, 1, 4])
         self.assertEqual(select_catchments(expected, unchanged, 4, 0.125, 1.0), [])
 
     def test_values_below_both_thresholds_are_skipped(self) -> None:
