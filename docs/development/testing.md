@@ -20,11 +20,11 @@ The validated Windows Intel build uses `build/ifx` and the multi-configuration
 executable under `build/ifx/Release`:
 
 ```powershell
-ctest --test-dir build/ifx -C Release --output-on-failure -R regression_magdalena_
+ctest --test-dir build/ifx -C Release --verbose --output-on-failure -R regression_magdalena_
 ```
 
 ```powershell
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/ifx/Release/mgb_model.exe --work-dir C:\mgbmagtest
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/ifx/Release/mgb_model.exe --results-dir C:\mgbmagtest
 ```
 
 ## Linux x64 with Intel ifx (validated)
@@ -32,8 +32,8 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena_
 The validated Linux Intel build uses `build/ifx`:
 
 ```bash
-ctest --test-dir build/ifx --output-on-failure -R regression_magdalena_
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/ifx/mgb_model --work-dir /tmp/mgbmagtest
+ctest --test-dir build/ifx --verbose --output-on-failure -R regression_magdalena_
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/ifx/mgb_model --results-dir /tmp/mgbmagtest
 ```
 
 ## Linux x64 with GNU Fortran 13.3 (validated)
@@ -41,8 +41,8 @@ python tests/regression/run_regression.py --case-dir tests/regression/magdalena_
 The validated Linux GNU build uses `build/gfortran`:
 
 ```bash
-ctest --test-dir build/gfortran --output-on-failure -R regression_magdalena_
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/gfortran/mgb_model --work-dir /tmp/mgbmagtest
+ctest --test-dir build/gfortran --verbose --output-on-failure -R regression_magdalena_
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/gfortran/mgb_model --results-dir /tmp/mgbmagtest
 ```
 
 ## Windows x64 with GNU Fortran (experimental, unvalidated)
@@ -51,8 +51,8 @@ The experimental MSYS2 UCRT64 workflow uses the single-configuration
 executable in `build/gfortran`:
 
 ```bash
-ctest --test-dir build/gfortran --output-on-failure -R regression_magdalena_
-python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/gfortran/mgb_model.exe --work-dir /tmp/mgbmagtest
+ctest --test-dir build/gfortran --verbose --output-on-failure -R regression_magdalena_
+python tests/regression/run_regression.py --case-dir tests/regression/magdalena_inertial --exe build/gfortran/mgb_model.exe --results-dir /tmp/mgbmagtest
 ```
 
 ## Runtime staging behavior
@@ -68,10 +68,9 @@ For each run, the regression harness performs this sequence:
 
 ## Temporary output handling
 
-The failure-investigation section below describes how `--work-dir` preserves
-staged inputs and outputs for inspection. Without that option, successful runs
-clean up their temporary directory while failed runs preserve it and print its
-path.
+`--results-dir` preserves staged inputs, outputs, and the HTML report for
+inspection. Without that option, successful runs clean up their temporary
+directory while failed runs preserve it and print its path.
 
 ## Output comparisons and tolerances
 
@@ -82,7 +81,21 @@ The compared outputs are:
 - `total_water_storage.bin`
 - `flooded_area.bin`
 
-The current manifest tolerances are `atol = 1.0` and `rtol = 1e2`.
+Each case manifest declares the inclusive simulation period. The runner reads
+catchment count and timestep length from the effective `input/config.nml`,
+including case-specific overrides. A binary output contains one
+single-precision value per catchment per timestep. Flat zero-based index `i` maps to timestep
+`i // catchment_count + 1` and catchment `i % catchment_count + 1`; the manifest
+period determines the expected record count.
+
+The comparator reports p99 and maximum absolute and relative error, both
+maximum locations, and the number of values outside tolerance. The p99 uses
+linear interpolation at sorted zero-based position `0.99 * (n - 1)`. Relative
+error is `abs(actual - expected) / max(abs(expected), abs(actual), 1e-30)`. A
+value passes when its absolute error is at most `atol` and its relative error
+is at most `rtol`. Current manifests use `atol = 1.0` and `rtol = 0.1`.
+These error statistics measure numerical drift; they do not establish whether
+a changed hydrological trajectory is scientifically correct.
 
 The inertial fixture requests two OpenMP threads, so regression builds execute
 the existing parallel routing regions and verify the linked OpenMP runtime.
@@ -139,10 +152,10 @@ command.
 
 ## Investigating regression failures
 
-Pass `--work-dir` to the regression runner when staged inputs and outputs need
-inspection. The supplied directory is recreated and preserved after the run.
-Without that option, successful runs remove their temporary directory while
-failed runs preserve it and print its path.
+Pass `--results-dir` to keep staged inputs, outputs, and the report together.
+The runner replaces its `input/`, `output/`, and `report.html` artifacts while
+preserving unrelated files. Without that option, successful runs remove their
+temporary directory while failed runs preserve it and print its path.
 
 The regression harness uses `MGB_NONINTERACTIVE=1`, so console prompts do not
 interrupt diagnostic runs. Inspect `model.log` and the preserved `output/`
@@ -150,3 +163,25 @@ directory in the runtime working directory. The
 [Execution and data flow](../architecture/execution-and-data-flow.md) and
 [I/O reference](../architecture/io-reference.md) identify the owners and
 formats of runtime streams.
+
+## Local HTML reports
+
+Install the optional plotting dependency to create an offline interactive
+report. Normal CTest and CI runs use only the Python standard library.
+
+```bash
+python -m pip install -r requirements-report.txt
+python tests/regression/run_regression.py \
+  --case-dir tests/regression/magdalena_inertial \
+  --exe build/gfortran/mgb_model \
+  --results-dir /tmp/mgb-regression-report \
+  --threshold-abs 1e-2 \
+  --threshold-rel 1e-3
+```
+
+The runner writes `output/` and `report.html` inside the results directory.
+Each output includes catchments whose maximum absolute or relative error meets
+either threshold. The report records both thresholds and selected IDs. It is
+generated when comparisons finish, including tolerance failures, while model
+startup or execution errors retain their ordinary runner message. Open the
+report directly in a browser; its Plotly JavaScript is embedded in the file.

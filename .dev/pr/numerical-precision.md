@@ -2,7 +2,7 @@
 
 ## Scope
 
-This task follows [regression diagnostics](regression-diagnostics.md). Use its Magdalena output comparison and reporting code for the measurements below. The source change removes the rounding-related `VOLATILE` declarations and gives every numerical variable an explicit kind from `iso_fortran_env`. Preserve each variable's current storage width: use `real32` and `real64` in place of default `real`, `real(4)`, `real(8)`, and `real*8`, and `int32` for default integers on the validated builds. Update affected constants and procedure interfaces so the code builds without compiler-wide default-kind flags. Preserve input, output, and hotstart record formats.
+Use `tests/regression/compare_regression.py` and `tests/regression/report_regression.py` for the Magdalena output measurements below. The source change removes the rounding-related `VOLATILE` declarations and gives every numerical variable an explicit kind from `iso_fortran_env`. Preserve each variable's current storage width: use `real32` and `real64` in place of default `real`, `real(4)`, `real(8)`, and `real*8`, and `int32` for default integers on the validated builds. Update affected constants and procedure interfaces so the code builds without compiler-wide default-kind flags. Preserve input, output, and hotstart record formats.
 
 The current `VOLATILE` sites are in `src/hydrology/catchment.f90` and `src/hydrology/river_inertial.f90`. They are used as a rounding workaround. Remove them; retain a site only if it has an actual asynchronous writer and document that writer. Do not substitute `-fp-model=precise` or another global rounding workaround.
 
