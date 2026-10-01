@@ -1,5 +1,6 @@
 module reservoir_io
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     private
     public :: read_substitution_flows, read_reservoir_data
@@ -16,11 +17,11 @@ contains
         use forcing, only: substituted_q
 
         implicit none
-        integer :: input_year
-        integer :: input_month
-        integer :: i_subst
-        integer :: input_day
-        integer :: i_step
+        integer(int32) :: input_year
+        integer(int32) :: input_month
+        integer(int32) :: i_subst
+        integer(int32) :: input_day
+        integer(int32) :: i_step
 
         open (io_unit_substitution_flow, file=input_directory//'substitution_flows.txt', status='OLD')
         read (io_unit_substitution_flow, 701) (header_fields(i_subst), i_subst=1, substitution_count)
@@ -64,35 +65,35 @@ contains
 
         implicit none
 
-        integer, parameter :: reservoir_input_unit = 159
-        integer :: reservoir_lake_catchment_count
-        integer :: listed_lake_catchment_count
-        integer :: ignored_reservoir_code
-        integer :: reservoir_index
-        integer :: lake_list_index
-        integer :: floodplain_point_index
-        integer :: first_outflow_timestep
-        integer :: i_catch
-        integer :: i_step
-        integer :: upstream_count
-        integer :: simulate_reservoir
-        integer :: disable_lake_floodplain
-        integer :: any_reservoir_substitution
-        integer :: data_month
-        integer :: data_day
-        integer :: data_year
-        integer :: skipped_outflow_timesteps
-        integer, dimension(catchment_count) :: reservoir_lake_catchments
-        real :: incremental_volume
-        real :: elevation_increment
-        real*8 :: lake_volume_increment
-        integer :: simulation_julian_day
-        integer :: data_julian_day
-        integer :: elevation_lower
-        integer :: elevation_upper
-        integer :: lake_range_start
-        integer :: lake_range_end
-        real*8 :: previous_volume
+        integer(int32), parameter :: reservoir_input_unit = 159
+        integer(int32) :: reservoir_lake_catchment_count
+        integer(int32) :: listed_lake_catchment_count
+        integer(int32) :: ignored_reservoir_code
+        integer(int32) :: reservoir_index
+        integer(int32) :: lake_list_index
+        integer(int32) :: floodplain_point_index
+        integer(int32) :: first_outflow_timestep
+        integer(int32) :: i_catch
+        integer(int32) :: i_step
+        integer(int32) :: upstream_count
+        integer(int32) :: simulate_reservoir
+        integer(int32) :: disable_lake_floodplain
+        integer(int32) :: any_reservoir_substitution
+        integer(int32) :: data_month
+        integer(int32) :: data_day
+        integer(int32) :: data_year
+        integer(int32) :: skipped_outflow_timesteps
+        integer(int32), dimension(catchment_count) :: reservoir_lake_catchments
+        real(real32) :: incremental_volume
+        real(real32) :: elevation_increment
+        real(real64) :: lake_volume_increment
+        integer(int32) :: simulation_julian_day
+        integer(int32) :: data_julian_day
+        integer(int32) :: elevation_lower
+        integer(int32) :: elevation_upper
+        integer(int32) :: lake_range_start
+        integer(int32) :: lake_range_end
+        real(real64) :: previous_volume
         character(len=15) :: reservoir_name
 
         call allocate_reservoir_forcing( &

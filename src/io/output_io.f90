@@ -1,5 +1,6 @@
 module output_io
 
+    use, intrinsic :: iso_fortran_env, only: int32
     implicit none
     private
     public :: open_model_outputs, write_model_outputs, close_model_outputs
@@ -94,8 +95,8 @@ contains
 
         implicit none
 
-        integer, intent(in) :: i_step
-        integer :: i_catch
+        integer(int32), intent(in) :: i_step
+        integer(int32) :: i_catch
 
         !Writing outputs for selected variables in configuration file
         if (write_discharge == 1) &
@@ -232,8 +233,8 @@ contains
         use state, only: q_river_output
 
         implicit none
-        integer, intent(in) :: file_action
-        integer :: record_length
+        integer(int32), intent(in) :: file_action
+        integer(int32) :: record_length
 
         if (file_action == 1) then
             inquire (iolength=record_length) q_river_output(1:catchment_count)

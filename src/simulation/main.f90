@@ -2,6 +2,7 @@
 
 program mgb_model
 
+    use, intrinsic :: iso_fortran_env, only: int32, real64
     use attributes, only: &
         & allocate_attributes, &
         & deallocate_attributes
@@ -57,13 +58,13 @@ program mgb_model
 
     implicit none
     !States that non declared variables cannot be used
-    real(8) elapsed_time
+    real(real64) elapsed_time
     ! Processing time in seconds.
-    integer :: clock_start
-    integer :: clock_end
-    integer :: clock_rate
-    integer :: clock_max
-    integer :: clock_ticks
+    integer(int32) :: clock_start
+    integer(int32) :: clock_end
+    integer(int32) :: clock_rate
+    integer(int32) :: clock_max
+    integer(int32) :: clock_ticks
     character(8) :: noninteractive_env
     logical :: noninteractive
     !  Statements used to calculate the processing time
@@ -209,7 +210,7 @@ program mgb_model
     else
         clock_ticks = (clock_max - clock_start + 1) + clock_end
     end if
-    elapsed_time = dble(clock_ticks)/dble(clock_rate)
+    elapsed_time = real(clock_ticks, real64)/real(clock_rate, real64)
     write (*, *) 'TOTAL TIME:', elapsed_time/60., 'MINUTES'
     write (io_unit_log, *) 'TOTAL TIME:', elapsed_time/60., 'MINUTES'
 

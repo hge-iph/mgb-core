@@ -1,5 +1,6 @@
 module configuration_io
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     private
     public :: read_model_configuration
@@ -76,14 +77,14 @@ contains
         character(len=40) :: simulation_start
         character(len=40) :: simulation_end
 
-        integer :: i_yr_end
-        integer :: i_mo_end
-        integer :: i_day_end
-        integer :: i_hr_end
-        integer :: i_min_end
-        real(8) jday_end
+        integer(int32) :: i_yr_end
+        integer(int32) :: i_mo_end
+        integer(int32) :: i_day_end
+        integer(int32) :: i_hr_end
+        integer(int32) :: i_min_end
+        real(real64) jday_end
 
-        real :: downstream_boundary_slope
+        real(real32) :: downstream_boundary_slope
         ! Downstream boundary slope in metres per kilometre.
 
         ! Output controls are imported from config and used directly by the namelist.
@@ -129,7 +130,7 @@ contains
         ! Compute number of time steps using start/end julian day and hour
         julian_day = calculate_julian_day(year, month, day, hour, minute)
         jday_end = calculate_julian_day(i_yr_end, i_mo_end, i_day_end, i_hr_end, i_min_end)
-        timestep_count = calculate_timestep_count(jday_end, julian_day, real(model_timestep, 8)) + 1
+        timestep_count = calculate_timestep_count(jday_end, julian_day, real(model_timestep, real64)) + 1
 
         read (io_unit_config, nml=forcing)
 

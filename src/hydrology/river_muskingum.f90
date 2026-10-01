@@ -1,5 +1,6 @@
 module river_muskingum
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32
     implicit none
     private
     public :: calculate_muskingum_cunge_parameters, initialize_muskingum_cunge_routing, &
@@ -41,11 +42,11 @@ contains
         ! i_subst substitution index [1]
         ! r       catchment runoff entering the river [m3/s]
         ! q       routed river discharge [m3/s]
-        integer :: i_catch
-        integer :: i_down
-        integer :: i_subst
-        real :: r
-        real :: q
+        integer(int32) :: i_catch
+        integer(int32) :: i_down
+        integer(int32) :: i_subst
+        real(real32) :: r
+        real(real32) :: q
 
         incoming_q_current = 0.0
         incoming_groundwater_fraction_current = 0.0
@@ -125,19 +126,19 @@ contains
         ! roughness  Manning roughness [s/m^(1/3)]
         ! n_reach    routing-reach count [1]
         ! n_step     routing-substep count [1]
-        integer :: i_catch
-        integer :: n_step
-        integer :: n_reach
-        real :: c_factor
-        real :: dt_model
-        real :: dt_route
-        real :: dx_ideal
-        real :: q_ref
-        real :: b_river
-        real :: slope
-        real :: l_total
-        real :: celerity
-        real :: roughness
+        integer(int32) :: i_catch
+        integer(int32) :: n_step
+        integer(int32) :: n_reach
+        real(real32) :: c_factor
+        real(real32) :: dt_model
+        real(real32) :: dt_route
+        real(real32) :: dx_ideal
+        real(real32) :: q_ref
+        real(real32) :: b_river
+        real(real32) :: slope
+        real(real32) :: l_total
+        real(real32) :: celerity
+        real(real32) :: roughness
 
         do i_catch = 1, catchment_count
             if (catchment_order(i_catch) > 1) then
@@ -239,7 +240,7 @@ contains
 
         implicit none
 
-        integer, intent(in) :: i_model_step
+        integer(int32), intent(in) :: i_model_step
 
         ! Symbols:
         ! i_model_step    current model timestep index [1]
@@ -291,60 +292,60 @@ contains
         ! n_step       routing-substep count [1]
         ! n_route_steps model-step routing-substep count [1]
         ! i_step       routing-substep index [1]
-        integer :: i_catch
-        integer :: i_sub
-        real :: dx
+        integer(int32) :: i_catch
+        integer(int32) :: i_sub
+        real(real32) :: dx
         !Space-step
-        real :: x_musk
-        real :: k_musk
-        real :: q_ref
-        real :: b_river
-        real :: slope
-        real :: celerity
-        real :: roughness
-        real :: depth_discharge_term
-        real :: depth_geometry_term
+        real(real32) :: x_musk
+        real(real32) :: k_musk
+        real(real32) :: q_ref
+        real(real32) :: b_river
+        real(real32) :: slope
+        real(real32) :: celerity
+        real(real32) :: roughness
+        real(real32) :: depth_discharge_term
+        real(real32) :: depth_geometry_term
         ! Muskingum-Cunge reach parameters.
-        real :: r
-        real :: r_groundwater
-        real :: r_subsurface
-        real :: r_surface
-        real :: q
-        real :: q_prev
-        real :: q_down
-        real :: q_boundary
-        real :: q_boundary_change
-        real :: q_groundwater
-        real :: q_subsurface
-        real :: q_surface
-        real :: r_prev
-        real :: f_groundwater
-        real :: f_subsurface
-        real :: f_surface
-        real :: v_groundwater
-        real :: v_subsurface
-        real :: v_surface
-        real :: dt_route
-        real :: c_denom
-        real :: v_route
-        integer :: i_down
+        real(real32) :: r
+        real(real32) :: r_groundwater
+        real(real32) :: r_subsurface
+        real(real32) :: r_surface
+        real(real32) :: q
+        real(real32) :: q_prev
+        real(real32) :: q_down
+        real(real32) :: q_boundary
+        real(real32) :: q_boundary_change
+        real(real32) :: q_groundwater
+        real(real32) :: q_subsurface
+        real(real32) :: q_surface
+        real(real32) :: r_prev
+        real(real32) :: f_groundwater
+        real(real32) :: f_subsurface
+        real(real32) :: f_surface
+        real(real32) :: v_groundwater
+        real(real32) :: v_subsurface
+        real(real32) :: v_surface
+        real(real32) :: dt_route
+        real(real32) :: c_denom
+        real(real32) :: v_route
+        integer(int32) :: i_down
         !Auxiliary variables
-        integer :: n_reach
-        integer :: n_step
-        real :: c_up_prev
-        real :: c_up_curr
-        real :: c_down_prev
+        integer(int32) :: n_reach
+        integer(int32) :: n_step
+        real(real32) :: c_up_prev
+        real(real32) :: c_up_curr
+        real(real32) :: c_down_prev
         !Muskingum-Cunge coefficients
 
-        real :: h_prev
-        real :: h_curr
+        real(real32) :: h_prev
+        real(real32) :: h_curr
         !To compute velocities
 
         !Counters
-        integer :: n_route_steps
-        integer :: i_step
-        integer :: i_search
-        integer :: i_subst
+        integer(int32) :: n_route_steps
+        integer(int32) :: i_step
+        integer(int32) :: i_search
+        integer(int32) :: i_subst
 
         if (muskingum_timestep(catchment_count) < 0.00001) stop &
             & 'Something wrong in time-step on rede.f90'
@@ -643,20 +644,20 @@ contains
         ! q          reach river-discharge array [m3/s]
         ! q_loss     prescribed upstream loss [m3/s]
         ! q_next     routed river discharge at the next reach and timestep [m3/s]
-        integer, intent(in) :: i_catch
-        integer, intent(in) :: n_reach
-        integer, intent(in) :: n_step
-        real, intent(in) :: q_in
-        real, intent(in) :: c_up_prev
-        real, intent(in) :: c_up_curr
-        real, intent(in) :: c_down_prev
-        real, intent(out) :: q_out
-        integer :: i_step
-        integer :: i_reach
+        integer(int32), intent(in) :: i_catch
+        integer(int32), intent(in) :: n_reach
+        integer(int32), intent(in) :: n_step
+        real(real32), intent(in) :: q_in
+        real(real32), intent(in) :: c_up_prev
+        real(real32), intent(in) :: c_up_curr
+        real(real32), intent(in) :: c_down_prev
+        real(real32), intent(out) :: q_out
+        integer(int32) :: i_step
+        integer(int32) :: i_reach
 
-        real, allocatable :: q(:, :)
-        real :: q_loss
-        real :: q_next
+        real(real32), allocatable :: q(:, :)
+        real(real32) :: q_loss
+        real(real32) :: q_next
         allocate (q(n_reach + 1, n_step + 1))
 
         if (n_reach > max_muskingum_reach_count) stop &

@@ -1,5 +1,6 @@
 module runner
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     private
     public :: prepare_simulation, run_simulation
@@ -105,7 +106,7 @@ contains
             & hotstart_write_mode
 
         implicit none
-        integer :: i_step
+        integer(int32) :: i_step
 
         call open_model_outputs
 
@@ -207,13 +208,11 @@ contains
             & year
 
         implicit none
-
-        integer, parameter :: real_kind = 8
-        integer, intent(out) :: i_step
-        integer :: i_catch
-        real :: maximum_domain_q
-        real :: completion_percentage
-        real :: river_stage
+        integer(int32), intent(out) :: i_step
+        integer(int32) :: i_catch
+        real(real32) :: maximum_domain_q
+        real(real32) :: completion_percentage
+        real(real32) :: river_stage
         ! Current statistics
 
         write (*, *) ' IT         Date       Max flow (m3/s)   % Complete'
@@ -242,7 +241,7 @@ contains
             ! Get simulation statistics
             maximum_domain_q = maxval(outgoing_q_current)
             ! Maximum flow for the entire model domain
-            completion_percentage = (100.*real(i_step)/real(timestep_count))
+            completion_percentage = (100.*real(i_step, real32)/real(timestep_count, real32))
             !% of simulation completion
             write (*, &
             & '(i5,"    ",i4,"-",i2.2,"-",i2.2," ",i2.2,":",i2.2,"  ",f10.1,"      ",f6.2," %")') &
@@ -282,8 +281,8 @@ contains
                 total_water_storage_output(i_catch) = total_water_storage(i_catch)
                 flooded_area_output(i_catch) = current_flooded_area(i_catch)
                 catchment_q_output(i_catch) = catchment_q_current(i_catch)
-                river_stage = water_surface_elevation(i_catch) - real(stage_table(1, i_catch))
-                hand_output(i_catch) = river_stage - real(bankfull_depth(i_catch))
+                river_stage = water_surface_elevation(i_catch) - real(stage_table(1, i_catch), real32)
+                hand_output(i_catch) = river_stage - real(bankfull_depth(i_catch), real32)
                 potential_open_water_et_output(i_catch) = potential_open_water_et(i_catch)
             end do
 
@@ -291,7 +290,7 @@ contains
                 & i_step)
 
             ! Advance Julian date for next time step
-            julian_day = calculate_julian_day(year, month, day, hour, minute) + (real(model_timestep, real_kind)/86400.0_real_kind)
+            julian_day = calculate_julian_day(year, month, day, hour, minute) + (real(model_timestep, real64)/86400.0_real64)
 
         end do
         !End time loop

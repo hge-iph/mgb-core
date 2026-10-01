@@ -1,5 +1,6 @@
 module static_input_io
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     private
     public :: read_catchment_inputs, read_floodplain_inputs
@@ -48,11 +49,11 @@ contains
         ! File with monthly fixed parameters for each HRU.
 
         implicit none
-        integer :: i_month
-        integer :: i_cli_region
-        integer :: i_catch
-        integer :: i_hru
-        integer :: ignored_catchment_id
+        integer(int32) :: i_month
+        integer(int32) :: i_cli_region
+        integer(int32) :: i_catch
+        integer(int32) :: i_hru
+        integer(int32) :: ignored_catchment_id
         character(20) :: header_text
         character(5) :: month_labels(12)
 
@@ -134,9 +135,9 @@ contains
         ! Reads soil and routing calibration parameters.
 
         implicit none
-        integer :: i_sub
-        integer :: header_index
-        integer :: i_hru
+        integer(int32) :: i_sub
+        integer(int32) :: header_index
+        integer(int32) :: i_hru
 
         ! Specific base flow (M3/S/KM2): specific_baseflow(subbasin_count)
         max_soil_water_storage = 0.0
@@ -216,16 +217,16 @@ contains
             & subbasin_outlet_catchment
 
         implicit none
-        integer :: catchment_id(catchment_count)
-        integer :: i_hru_new
-        integer :: enabled_outlet_index
-        integer :: input_catchment_sequence
-        integer :: i_catch
-        integer :: i_hru
-        integer :: i_sub
-        real :: max_enabled_drainage_area
-        real :: redistributed_water_hru_percentage
-        real :: redistributed_share
+        integer(int32) :: catchment_id(catchment_count)
+        integer(int32) :: i_hru_new
+        integer(int32) :: enabled_outlet_index
+        integer(int32) :: input_catchment_sequence
+        integer(int32) :: i_catch
+        integer(int32) :: i_hru
+        integer(int32) :: i_sub
+        real(real32) :: max_enabled_drainage_area
+        real(real32) :: redistributed_water_hru_percentage
+        real(real32) :: redistributed_share
 
         max_enabled_drainage_area = 0.0
 
@@ -313,7 +314,7 @@ contains
                         if (hru_percentage(i_catch, i_hru) > 99.999) then
                             do i_hru_new = 1, hru_count
                                 !HRUs will have the same area
-                                hru_percentage(i_catch, i_hru) = 100./dble(hru_count)
+                                hru_percentage(i_catch, i_hru) = 100./real(hru_count, real64)
                             end do
                         end if
                         !Eliminating HRU water
@@ -359,16 +360,16 @@ contains
         use parameters, only: vegetation_height
 
         implicit none
-        integer :: data_index
-        integer :: record_index
-        integer :: i_catch
-        integer :: io_status
-        integer :: flood_area_record_length
-        integer :: flood_stage_record_length
-        integer :: elevation_offset
-        integer, parameter :: floodplain_elevation_increment = 1
+        integer(int32) :: data_index
+        integer(int32) :: record_index
+        integer(int32) :: i_catch
+        integer(int32) :: io_status
+        integer(int32) :: flood_area_record_length
+        integer(int32) :: flood_stage_record_length
+        integer(int32) :: elevation_offset
+        integer(int32), parameter :: floodplain_elevation_increment = 1
         !Increment in floodplain is assumed to be 1m
-        integer, parameter :: standard_floodplain_point_count = 100
+        integer(int32), parameter :: standard_floodplain_point_count = 100
         !Standard number of elevation points in floodplain
 
         floodplain_point_count = standard_floodplain_point_count
@@ -382,7 +383,7 @@ contains
 
         !The Structure of interpolate_stage_area.bin file is as follows:
         !2 - Water Level elevations [i_catch = 1,2... catchment_count] as INTEGER(KIND=4)
-        !3 - Floodplain elevations  [i = 1, 2 ... standard_floodplain_point_count] as REAL(KIND=8)
+        ! 3 - Floodplain elevations [i = 1, 2, ... standard_floodplain_point_count] as real64.
 
         record_index = 1
         read (io_unit_flood_stage, rec=record_index) (floodplain_bottom_elevation(i_catch), i_catch=1, catchment_count)
@@ -454,9 +455,9 @@ contains
             & second_face_elevation
 
         implicit none
-        integer :: connection_index
-        integer :: i_catch
-        integer :: io_status
+        integer(int32) :: connection_index
+        integer(int32) :: i_catch
+        integer(int32) :: io_status
 
         ! Opening the floodplain stage-area data.
         open (io_unit_stage_area, file=input_directory//'floodplain_stage_area.txt', status='OLD', action='READ')

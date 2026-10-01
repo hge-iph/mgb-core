@@ -1,5 +1,6 @@
 module interpolation
 
+    use, intrinsic :: iso_fortran_env, only: int32, real64
     implicit none
     private
     public :: linear_interpolate
@@ -13,17 +14,17 @@ contains
         & query_x)
         implicit none
 
-        integer, intent(in) :: point_count
-        real*8, intent(in) :: x_values(point_count)
-        real*8, intent(in) :: y_values(point_count)
-        real*8, intent(in) :: query_x
-        real*8 :: linear_interpolate
-        integer :: upper_index
-        integer :: lower_index
-        real*8 :: x_lower
-        real*8 :: x_upper
-        real*8 :: y_lower
-        real*8 :: y_upper
+        integer(int32), intent(in) :: point_count
+        real(real64), intent(in) :: x_values(point_count)
+        real(real64), intent(in) :: y_values(point_count)
+        real(real64), intent(in) :: query_x
+        real(real64) :: linear_interpolate
+        integer(int32) :: upper_index
+        integer(int32) :: lower_index
+        real(real64) :: x_lower
+        real(real64) :: x_upper
+        real(real64) :: y_lower
+        real(real64) :: y_upper
 
         ! x_lower    lower tabulated coordinate [same units as query_x]
         ! x_upper    upper tabulated coordinate [same units as query_x]

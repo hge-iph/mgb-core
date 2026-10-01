@@ -1,5 +1,6 @@
 module hotstart_io
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     private
     public :: read_hotstart, read_hotstart_schedule, write_hotstart
@@ -15,7 +16,7 @@ contains
 
         implicit none
 
-        integer :: i_step
+        integer(int32) :: i_step
 
         open (io_unit_hotstart_list, file=input_directory//'hotstart_schedule.txt', status='OLD', action='READ')
         hotstart_write_schedule = 0
@@ -61,14 +62,14 @@ contains
             & year
 
         implicit none
-        integer :: i_catch
-        integer :: i_hru
-        integer :: record_length
-        integer :: state_index
-        integer :: state_variable_count
-        integer :: reach_index
-        real(4), allocatable :: hotstart_water_balance_vector(:)
-        real*8, allocatable :: inertial_state_vector(:)
+        integer(int32) :: i_catch
+        integer(int32) :: i_hru
+        integer(int32) :: record_length
+        integer(int32) :: state_index
+        integer(int32) :: state_variable_count
+        integer(int32) :: reach_index
+        real(real32), allocatable :: hotstart_water_balance_vector(:)
+        real(real64), allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
         logical :: file_exists
 
@@ -277,14 +278,14 @@ contains
             & year
 
         implicit none
-        integer :: i_catch
-        integer :: i_hru
-        integer :: record_length
-        integer :: state_index
-        integer :: state_variable_count
-        integer :: reach_index
-        real(4), allocatable :: hotstart_water_balance_vector(:)
-        real*8, allocatable :: inertial_state_vector(:)
+        integer(int32) :: i_catch
+        integer(int32) :: i_hru
+        integer(int32) :: record_length
+        integer(int32) :: state_index
+        integer(int32) :: state_variable_count
+        integer(int32) :: reach_index
+        real(real32), allocatable :: hotstart_water_balance_vector(:)
+        real(real64), allocatable :: inertial_state_vector(:)
         character(len=10) :: hotstart_filename
 
         state_variable_count = catchment_count*hru_count
@@ -395,7 +396,7 @@ contains
         ! Variables from inertial routing
 
         write (*, *) 'Writing Hydraulic State Variables for: ', hotstart_filename
-        !All variables below are in double precision (Real*8)
+        ! Values below are stored as real64.
 
         allocate (inertial_state_vector(state_variable_count))
         inquire (iolength=record_length) inertial_state_vector
@@ -442,7 +443,7 @@ contains
 
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            inertial_state_vector(state_index) = dble(stage_table_index(i_catch))
+            inertial_state_vector(state_index) = real(stage_table_index(i_catch), real64)
             !index of Volume level at catchment (i_catch)
         end do
 
