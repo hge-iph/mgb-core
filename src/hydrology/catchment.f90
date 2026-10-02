@@ -48,7 +48,7 @@ contains
         integer(int32) :: tk_bas
         integer(int32) :: tk_int
         integer(int32) :: tk_sup
-        real(real32) :: v_bas
+        real(real64) :: v_bas
 
         interception_storage = 0.0
         do i_catch = 1, catchment_count
@@ -90,8 +90,8 @@ contains
         ! l_reach longest reach length [km]
         ! dh      reach elevation difference [m]
         integer(int32) :: i_catch
-        real(real32) :: l_reach
-        real(real32) :: dh
+        real(real64) :: l_reach
+        real(real64) :: dh
 
         ! Calculates Time of Concentration (i.e. time of travel) for Catchment
         do i_catch = 1, catchment_count
@@ -246,60 +246,60 @@ contains
         integer(int32) :: i_catch
         integer(int32) :: i_hru
         integer(int32) :: i_sub
-        real(real32) :: p
-        real(real32) :: w
-        real(real32) :: wm
-        real(real32) :: pa
-        real(real32) :: ta
-        real(real32) :: wind
-        real(real32) :: rh
-        real(real32) :: solar
-        real(real32) :: t_prev
-        real(real32) :: lai
-        real(real32) :: alb
-        real(real32) :: z_veg
-        real(real32) :: rs
-        real(real32) :: si
-        real(real32) :: lat
-        real(real32) :: b
-        real(real32) :: k_int
-        real(real32) :: k_bas
-        real(real32) :: lambda
-        real(real32) :: cap
-        real(real32) :: wc
-        real(real32) :: k_inf
-        real(real32) :: et_soil
-        real(real32) :: et_int
-        real(real32) :: et_total
-        real(real32) :: et_int_pot
-        real(real32) :: et_water_pot
-        real(real32) :: lambda_e
-        real(real32) :: r_top
-        real(real32) :: r_short
-        real(real32) :: d_sup
-        real(real32) :: d_int
-        real(real32) :: d_bas
-        real(real32) :: d_infil
-        real(real32) :: q_sup
-        real(real32) :: q_int
-        real(real32) :: q_bas
-        real(real32) :: q_sup_acc
-        real(real32) :: q_int_acc
-        real(real32) :: q_bas_acc
-        real(real32) :: q_cap_acc
-        real(real32) :: hru_pct
+        real(real64) :: p
+        real(real64) :: w
+        real(real64) :: wm
+        real(real64) :: pa
+        real(real64) :: ta
+        real(real64) :: wind
+        real(real64) :: rh
+        real(real64) :: solar
+        real(real64) :: t_prev
+        real(real64) :: lai
+        real(real64) :: alb
+        real(real64) :: z_veg
+        real(real64) :: rs
+        real(real64) :: si
+        real(real64) :: lat
+        real(real64) :: b
+        real(real64) :: k_int
+        real(real64) :: k_bas
+        real(real64) :: lambda
+        real(real64) :: cap
+        real(real64) :: wc
+        real(real64) :: k_inf
+        real(real64) :: et_soil
+        real(real64) :: et_int
+        real(real64) :: et_total
+        real(real64) :: et_int_pot
+        real(real64) :: et_water_pot
+        real(real64) :: lambda_e
+        real(real64) :: r_top
+        real(real64) :: r_short
+        real(real64) :: d_sup
+        real(real64) :: d_int
+        real(real64) :: d_bas
+        real(real64) :: d_infil
+        real(real64) :: q_sup
+        real(real64) :: q_int
+        real(real64) :: q_bas
+        real(real64) :: q_sup_acc
+        real(real64) :: q_int_acc
+        real(real64) :: q_bas_acc
+        real(real64) :: q_cap_acc
+        real(real64) :: hru_pct
         real(real64) :: a_flood
-        real(real32) :: w_mean_acc
-        real(real32) :: wm_mean_acc
-        real(real32) :: tk_bas
-        real(real32) :: tk_int
-        real(real32) :: tk_sup
-        real(real32) :: v_bas_next
-        real(real32) :: v_int_next
-        real(real32) :: v_sup_next
-        real(real32) :: area_catch
-        real(real32) :: linear_storage_total
-        real(real32), parameter :: rho_w = 1000.0
+        real(real64) :: w_mean_acc
+        real(real64) :: wm_mean_acc
+        real(real64) :: tk_bas
+        real(real64) :: tk_int
+        real(real64) :: tk_sup
+        real(real64) :: v_bas_next
+        real(real64) :: v_int_next
+        real(real64) :: v_sup_next
+        real(real64) :: area_catch
+        real(real64) :: linear_storage_total
+        real(real64), parameter :: rho_w = 1000.0
 
         ! Gets day of the year (day_of_year) for computing radiation
         day_of_year = calculate_integer_julian_day(year, month, day) - calculate_integer_julian_day(year, 1, 1) + 1
@@ -680,50 +680,50 @@ contains
         ! si_a         available interception storage [mm]
         ! si_m         maximum interception storage [mm]
         ! f_et         remaining potential-evapotranspiration fraction [1]
-        real(real32), intent(inout) :: p
-        real(real32), intent(inout) :: si
-        real(real32), intent(inout) :: rs
-        real(real32), intent(in) :: w
-        real(real32), intent(in) :: wm
-        real(real32), intent(in) :: pa
-        real(real32), intent(in) :: ta
-        real(real32), intent(in) :: wind
-        real(real32), intent(in) :: rh
-        real(real32), intent(in) :: solar
-        real(real32), intent(in) :: t_prev
-        real(real32), intent(in) :: lai
-        real(real32), intent(in) :: alb
-        real(real32), intent(in) :: z_veg
-        real(real32), intent(in) :: lat
-        real(real32), intent(out) :: et_soil
-        real(real32), intent(out) :: et_int
-        real(real32), intent(out) :: et_total
-        real(real32), intent(out) :: et_int_pot
-        real(real32), intent(out) :: et_water_pot
-        real(real32), intent(out) :: lambda_e
-        real(real32), intent(out) :: r_top
-        real(real32), intent(out) :: r_short
-        real(real32), parameter :: rho_w = 1000.0
-        real(real32), parameter :: c_p = 0.001013
-        real(real32) :: r_net
-        real(real32) :: e_a
-        real(real32) :: e_s
-        real(real32) :: e_d
-        real(real32) :: s_e
-        real(real32) :: gamma
-        real(real32) :: rho_a
-        real(real32) :: z0
-        real(real32) :: z
-        real(real32) :: u10
-        real(real32) :: u2
-        real(real32) :: r_a
-        real(real32) :: r_aw
-        real(real32) :: w_u
-        real(real32) :: w_w
-        real(real32), save :: f_rs = 0.0
-        real(real32) :: si_a
-        real(real32) :: si_m
-        real(real32) :: f_et
+        real(real64), intent(inout) :: p
+        real(real64), intent(inout) :: si
+        real(real64), intent(inout) :: rs
+        real(real64), intent(in) :: w
+        real(real64), intent(in) :: wm
+        real(real64), intent(in) :: pa
+        real(real64), intent(in) :: ta
+        real(real64), intent(in) :: wind
+        real(real64), intent(in) :: rh
+        real(real64), intent(in) :: solar
+        real(real64), intent(in) :: t_prev
+        real(real64), intent(in) :: lai
+        real(real64), intent(in) :: alb
+        real(real64), intent(in) :: z_veg
+        real(real64), intent(in) :: lat
+        real(real64), intent(out) :: et_soil
+        real(real64), intent(out) :: et_int
+        real(real64), intent(out) :: et_total
+        real(real64), intent(out) :: et_int_pot
+        real(real64), intent(out) :: et_water_pot
+        real(real64), intent(out) :: lambda_e
+        real(real64), intent(out) :: r_top
+        real(real64), intent(out) :: r_short
+        real(real64), parameter :: rho_w = 1000.0
+        real(real64), parameter :: c_p = 0.001013
+        real(real64) :: r_net
+        real(real64) :: e_a
+        real(real64) :: e_s
+        real(real64) :: e_d
+        real(real64) :: s_e
+        real(real64) :: gamma
+        real(real64) :: rho_a
+        real(real64) :: z0
+        real(real64) :: z
+        real(real64) :: u10
+        real(real64) :: u2
+        real(real64) :: r_a
+        real(real64) :: r_aw
+        real(real64) :: w_u
+        real(real64) :: w_w
+        real(real64), save :: f_rs = 0.0
+        real(real64) :: si_a
+        real(real64) :: si_m
+        real(real64) :: f_et
 
         call calculate_net_radiation( &
             & solar, &
@@ -827,29 +827,29 @@ contains
         ! r_sn     net shortwave radiation [MJ/m2/day]
         ! r_l      net longwave radiation [MJ/m2/day]
         ! g        ground heat flux [MJ/m2/day]
-        real(real32), intent(in) :: solar
-        real(real32), intent(in) :: ta
-        real(real32), intent(in) :: t_prev
-        real(real32), intent(in) :: rh
-        real(real32), intent(in) :: alb
-        real(real32), intent(in) :: lat
-        real(real32), intent(out) :: lambda_e
-        real(real32), intent(out) :: r_net
-        real(real32), intent(out) :: r_top
-        real(real32), intent(out) :: r_short
-        real(real32), intent(out) :: e_a
-        real(real32), intent(out) :: e_s
-        real(real32), parameter :: pi = 3.141592
-        real(real32), parameter :: rho_w = 1000.0
-        real(real32), parameter :: sigma = 4.903e-9
-        real(real32) :: d
-        real(real32) :: delta
-        real(real32) :: omega
-        real(real32) :: n_sun
-        real(real32) :: d_r
-        real(real32) :: r_sn
-        real(real32) :: r_l
-        real(real32) :: g
+        real(real64), intent(in) :: solar
+        real(real64), intent(in) :: ta
+        real(real64), intent(in) :: t_prev
+        real(real64), intent(in) :: rh
+        real(real64), intent(in) :: alb
+        real(real64), intent(in) :: lat
+        real(real64), intent(out) :: lambda_e
+        real(real64), intent(out) :: r_net
+        real(real64), intent(out) :: r_top
+        real(real64), intent(out) :: r_short
+        real(real64), intent(out) :: e_a
+        real(real64), intent(out) :: e_s
+        real(real64), parameter :: pi = 3.141592
+        real(real64), parameter :: rho_w = 1000.0
+        real(real64), parameter :: sigma = 4.903e-9
+        real(real64) :: d
+        real(real64) :: delta
+        real(real64) :: omega
+        real(real64) :: n_sun
+        real(real64) :: d_r
+        real(real64) :: r_sn
+        real(real64) :: r_l
+        real(real64) :: g
 
         lambda_e = 2.501 - 0.002361*ta
         e_s = 0.6108*exp((17.27*ta)/(237.3 + ta))
@@ -934,30 +934,30 @@ contains
         ! shape      ARNO saturation-curve remainder [1]
         ! w_prev     soil-water storage at iteration start [mm]
         ! p_eff      effective precipitation [mm per step]
-        real(real32), intent(in) :: p
-        real(real32), intent(in) :: wm
-        real(real32), intent(in) :: b
-        real(real32), intent(in) :: k_int
-        real(real32), intent(in) :: k_bas
-        real(real32), intent(in) :: lambda
+        real(real64), intent(in) :: p
+        real(real64), intent(in) :: wm
+        real(real64), intent(in) :: b
+        real(real64), intent(in) :: k_int
+        real(real64), intent(in) :: k_bas
+        real(real64), intent(in) :: lambda
         real(real32), intent(in) :: dt
-        real(real32), intent(in) :: area_catch
-        real(real32), intent(inout) :: w
-        real(real32), intent(inout) :: et_soil
-        real(real32), intent(inout) :: cap
-        real(real32), intent(inout) :: wc
-        real(real32), intent(inout) :: k_inf
-        real(real32), intent(out) :: d_sup
-        real(real32), intent(out) :: d_int
-        real(real32), intent(out) :: d_bas
-        real(real32), intent(out) :: d_infil
+        real(real64), intent(in) :: area_catch
+        real(real64), intent(inout) :: w
+        real(real64), intent(inout) :: et_soil
+        real(real64), intent(inout) :: cap
+        real(real64), intent(inout) :: wc
+        real(real64), intent(inout) :: k_inf
+        real(real64), intent(out) :: d_sup
+        real(real64), intent(out) :: d_int
+        real(real64), intent(out) :: d_bas
+        real(real64), intent(out) :: d_infil
         integer(int32), intent(in) :: i_catch
-        real(real32) :: w_int
-        real(real32) :: w_bas
-        real(real32) :: w_cap
-        real(real32) :: shape
-        real(real32) :: w_prev
-        real(real32) :: p_eff
+        real(real64) :: w_int
+        real(real64) :: w_bas
+        real(real64) :: w_cap
+        real(real64) :: shape
+        real(real64) :: w_prev
+        real(real64) :: p_eff
 
         ! The Brooks-Corey pore-size index controls subsurface drainage; typical
         ! values range from 0.165 for clay to 0.694 for sand (Rawls).

@@ -107,23 +107,23 @@ contains
         do i_catch = 1, catchment_count
             do i_hru = 1, hru_count
                 state_index = state_index + 1
-                soil_water_storage(i_catch, i_hru) = hotstart_water_balance_vector(state_index)
+                soil_water_storage(i_catch, i_hru) = real(hotstart_water_balance_vector(state_index), real64)
                 !Reading Soil Moisture
             end do
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            groundwater_storage(i_catch) = hotstart_water_balance_vector(state_index)
+            groundwater_storage(i_catch) = real(hotstart_water_balance_vector(state_index), real64)
             !Reading water in baseflow reservoir
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            subsurface_storage(i_catch) = hotstart_water_balance_vector(state_index)
+            subsurface_storage(i_catch) = real(hotstart_water_balance_vector(state_index), real64)
             !Reading water in subsurface reservoir
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            surface_storage(i_catch) = hotstart_water_balance_vector(state_index)
+            surface_storage(i_catch) = real(hotstart_water_balance_vector(state_index), real64)
             !Reading water surface volume
         end do
         do i_catch = 1, catchment_count
@@ -133,31 +133,31 @@ contains
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            incoming_q_current(i_catch) = hotstart_water_balance_vector(state_index)
+            incoming_q_current(i_catch) = real(hotstart_water_balance_vector(state_index), real64)
             !Reading Flow entering into the catchment
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            outgoing_q_current(i_catch) = hotstart_water_balance_vector(state_index)
+            outgoing_q_current(i_catch) = real(hotstart_water_balance_vector(state_index), real64)
             !Reading Flow going out of catchment
         end do
         do i_catch = 1, catchment_count
             do i_hru = 1, hru_count
                 state_index = state_index + 1
-                interception_storage(i_catch, i_hru) = hotstart_water_balance_vector(state_index)
+                interception_storage(i_catch, i_hru) = real(hotstart_water_balance_vector(state_index), real64)
                 !Reading Canopy interception volume
             end do
         end do
         do i_catch = 1, catchment_count
             do reach_index = 1, muskingum_reach_count(i_catch) + 1
                 state_index = state_index + 1
-                initial_river_q(i_catch, reach_index) = hotstart_water_balance_vector(state_index)
+                initial_river_q(i_catch, reach_index) = real(hotstart_water_balance_vector(state_index), real64)
                 !Reading Canopy interception volume
             end do
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            catchment_q_current(i_catch) = hotstart_water_balance_vector(state_index)
+            catchment_q_current(i_catch) = real(hotstart_water_balance_vector(state_index), real64)
             !Reading Runoff generation at each cell
         end do
 
@@ -333,23 +333,23 @@ contains
         do i_catch = 1, catchment_count
             do i_hru = 1, hru_count
                 state_index = state_index + 1
-                hotstart_water_balance_vector(state_index) = soil_water_storage(i_catch, i_hru)
+                hotstart_water_balance_vector(state_index) = real(soil_water_storage(i_catch, i_hru), real32)
                 !Soil Water for each HRU
             end do
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = groundwater_storage(i_catch)
+            hotstart_water_balance_vector(state_index) = real(groundwater_storage(i_catch), real32)
             !Reservoir Volume for baseflow
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = subsurface_storage(i_catch)
+            hotstart_water_balance_vector(state_index) = real(subsurface_storage(i_catch), real32)
             !Reservoir Volume for subsurface flow
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = surface_storage(i_catch)
+            hotstart_water_balance_vector(state_index) = real(surface_storage(i_catch), real32)
             !Reservoir Volume for surface flow
         end do
         do i_catch = 1, catchment_count
@@ -359,30 +359,30 @@ contains
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = incoming_q_current(i_catch)
+            hotstart_water_balance_vector(state_index) = real(incoming_q_current(i_catch), real32)
             !Streamflow at upstream of catchments
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = outgoing_q_current(i_catch)
+            hotstart_water_balance_vector(state_index) = real(outgoing_q_current(i_catch), real32)
             !Streamflow at downstream of catchments
         end do
         do i_catch = 1, catchment_count
             do i_hru = 1, hru_count
                 state_index = state_index + 1
-                hotstart_water_balance_vector(state_index) = interception_storage(i_catch, i_hru)
+                hotstart_water_balance_vector(state_index) = real(interception_storage(i_catch, i_hru), real32)
                 !Intercepted water stored on canopy reservoir
             end do
         end do
         do i_catch = 1, catchment_count
             do reach_index = 1, muskingum_reach_count(i_catch) + 1
                 state_index = state_index + 1
-                hotstart_water_balance_vector(state_index) = initial_river_q(i_catch, reach_index)
+                hotstart_water_balance_vector(state_index) = real(initial_river_q(i_catch, reach_index), real32)
             end do
         end do
         do i_catch = 1, catchment_count
             state_index = state_index + 1
-            hotstart_water_balance_vector(state_index) = catchment_q_current(i_catch)
+            hotstart_water_balance_vector(state_index) = real(catchment_q_current(i_catch), real32)
             !Runoff generated at catchment
         end do
 

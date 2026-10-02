@@ -75,8 +75,8 @@ contains
         ! first_level_volume first floodplain volume increment [m3]
         integer(int32) :: i_catch
         integer(int32) :: i_point
-        real(real32) :: dz
-        real(real32) :: dv
+        real(real64) :: dz
+        real(real64) :: dv
         real(real64) :: a_prev
         real(real64) :: a_curr
         real(real64) :: first_level_volume
@@ -658,19 +658,19 @@ contains
         real(real64) :: q_net
         real(real64) :: y
         real(real64) :: a
-        real(real32) :: r
+        real(real64) :: r
         real(real64) :: q
         real(real64) :: q_neighbor
-        real(real32) :: p
-        real(real32) :: d_et
-        real(real32) :: d_infil
-        real(real32) :: d_vertical
+        real(real64) :: p
+        real(real64) :: d_et
+        real(real64) :: d_infil
+        real(real64) :: d_vertical
         real(real64) :: a_flood
-        real(real32) :: a_catch
+        real(real64) :: a_catch
         real(real64) :: v_prev
         real(real64) :: v
         real(real64) :: d_et_output
-        real(real32) :: d_storage
+        real(real64) :: d_storage
 
         surface_water_output = 0.0
 

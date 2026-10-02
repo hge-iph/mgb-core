@@ -276,14 +276,14 @@ contains
 
             ! Store single-precision output records for this timestep.
             do i_catch = 1, catchment_count
-                q_river_output(i_catch) = inertial_q(i_catch)
-                water_surface_elevation_output(i_catch) = water_surface_elevation(i_catch)
-                total_water_storage_output(i_catch) = total_water_storage(i_catch)
-                flooded_area_output(i_catch) = current_flooded_area(i_catch)
-                catchment_q_output(i_catch) = catchment_q_current(i_catch)
-                river_stage = water_surface_elevation(i_catch) - real(stage_table(1, i_catch), real32)
+                q_river_output(i_catch) = real(inertial_q(i_catch), real32)
+                water_surface_elevation_output(i_catch) = real(water_surface_elevation(i_catch), real32)
+                total_water_storage_output(i_catch) = real(total_water_storage(i_catch), real32)
+                flooded_area_output(i_catch) = real(current_flooded_area(i_catch), real32)
+                catchment_q_output(i_catch) = real(catchment_q_current(i_catch), real32)
+                river_stage = real(water_surface_elevation(i_catch) - real(stage_table(1, i_catch), real32), real32)
                 hand_output(i_catch) = river_stage - real(bankfull_depth(i_catch), real32)
-                potential_open_water_et_output(i_catch) = potential_open_water_et(i_catch)
+                potential_open_water_et_output(i_catch) = real(potential_open_water_et(i_catch), real32)
             end do
 
             call write_model_outputs( &
