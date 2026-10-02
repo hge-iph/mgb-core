@@ -13,7 +13,7 @@ class ReportFailure(RuntimeError):
 
 def validate_thresholds(threshold_abs: float, threshold_rel: float) -> None:
     if any(not math.isfinite(value) or value < 0 for value in (threshold_abs, threshold_rel)):
-        raise ValueError("Error thresholds must be finite and non-negative")
+        raise ValueError("Difference thresholds must be finite and non-negative")
 
 
 def select_catchments(
@@ -28,15 +28,15 @@ def select_catchments(
     maximum_relative = [0.0] * catchment_count
     for index, (expected_value, actual_value) in enumerate(zip(expected, actual)):
         catchment = index % catchment_count
-        absolute_error = abs(actual_value - expected_value)
-        relative_error = absolute_error / max(abs(expected_value), abs(actual_value), 1.0e-30)
-        maximum_absolute[catchment] = max(maximum_absolute[catchment], absolute_error)
-        maximum_relative[catchment] = max(maximum_relative[catchment], relative_error)
+        absolute_difference = abs(actual_value - expected_value)
+        relative_difference = absolute_difference / max(abs(expected_value), abs(actual_value), 1.0e-30)
+        maximum_absolute[catchment] = max(maximum_absolute[catchment], absolute_difference)
+        maximum_relative[catchment] = max(maximum_relative[catchment], relative_difference)
     return sorted(
         (
             catchment + 1
-            for catchment, (absolute_error, relative_error) in enumerate(zip(maximum_absolute, maximum_relative))
-            if absolute_error >= threshold_abs or relative_error >= threshold_rel
+            for catchment, (absolute_difference, relative_difference) in enumerate(zip(maximum_absolute, maximum_relative))
+            if absolute_difference >= threshold_abs or relative_difference >= threshold_rel
         ),
         key=lambda catchment: maximum_absolute[catchment - 1],
         reverse=True,
@@ -48,7 +48,7 @@ def write_report(
     manifest: dict[str, Any],
     shape: dict[str, Any],
     results: dict[str, dict[str, Any]],
-    errors: list[str],
+    differences: list[str],
     threshold_abs: float,
     threshold_rel: float,
 ) -> Path:
@@ -76,14 +76,12 @@ def write_report(
         ".fail{color:#a00;font-weight:700}.pass{color:#176b35;font-weight:700}</style></head><body>",
         f"<h1>{html.escape(manifest.get('case_name', 'Regression report'))}</h1>",
         f"<p>{html.escape(manifest.get('description', ''))}</p><p>{html.escape(metadata)}</p>",
-        f"<p>Catchment thresholds: absolute ≥ {threshold_abs:g} or relative ≥ {threshold_rel:g}. "
-        "Thresholds select plots and do not change regression acceptance.</p>",
         "<h2>Comparison results</h2>",
         "<p>p99 uses linear interpolation at sorted position 0.99 × (n − 1). "
-        "Relative error is |actual − expected| / max(|expected|, |actual|, 1e−30). "
-        "A value passes when |actual − expected| ≤ atol and relative error ≤ rtol.</p>",
-        "<table><thead><tr><th>Output</th><th>dtype / count</th><th>p99 / max absolute error</th>"
-        "<th>p99 / max relative error</th><th>Maximum locations</th><th>Tolerance / result</th>"
+        "Relative difference is |actual − expected| / max(|expected|, |actual|, 1e−30). "
+        "A value passes when |actual − expected| ≤ atol and relative difference ≤ rtol.</p>",
+        "<table><thead><tr><th>Output</th><th>p99 / max absolute difference</th>"
+        "<th>p99 / max relative difference</th><th>Maximum locations</th><th>Tolerance / result</th>"
         "</tr></thead><tbody>",
     ]
 
@@ -105,22 +103,23 @@ def write_report(
         page.append(
             "<tr>"
             f"<td>{html.escape(path)} ({html.escape(result['unit'])})</td>"
-            f"<td>{html.escape(result['dtype'])} / {result['count']}</td>"
-            f"<td>{result['p99_abs']:.8e} / {result['max_abs']:.8e}</td>"
-            f"<td>{result['p99_rel']:.8e} / {result['max_rel']:.8e}</td>"
+            f"<td>{result['p99_abs']:.1e} / {result['max_abs']:.1e}</td>"
+            f"<td>{result['p99_rel']:.1e} / {result['max_rel']:.1e}</td>"
             f"<td>absolute: {html.escape(abs_location)}<br>relative: {html.escape(rel_location)}</td>"
-            f"<td>atol={result['atol']:.8e}; rtol={result['rtol']:.8e}; "
+            f"<td>atol={result['atol']:.1e}; rtol={result['rtol']:.1e}; "
             f"outside={result['outside_tolerance']} <span class=\"{status_class}\">{status}</span></td>"
             "</tr>"
         )
     page.append("</tbody></table>")
 
-    if errors:
-        page.extend(("<h2>Comparison errors</h2><pre>", html.escape("\n".join(errors)), "</pre>"))
+    if differences:
+        page.extend(("<h2>Comparison differences</h2><pre>", html.escape("\n".join(differences)), "</pre>"))
 
     charts = [
-        "<h2>Hydrographs</h2><p>Each output shows catchments whose maximum absolute or relative "
-        "error over the simulation meets its threshold.</p>"
+        "<h2>Catchment timeseries charts</h2>"
+        f"<p>Catchment thresholds: absolute ≥ {threshold_abs:.1e} or relative ≥ {threshold_rel:.1e}. "
+        "Each output shows catchments whose maximum absolute or relative difference over the simulation "
+        "meets its threshold. Thresholds select charts and do not change regression acceptance.</p>"
     ]
     plotly_included = False
     selected_any = False
@@ -168,8 +167,8 @@ def write_report(
             figure.update_xaxes(title_text="Date", row=2, col=1)
             figure.update_layout(
                 title=(
-                    f"Catchment {catchment} — max abs error {maximum_absolute:.8e}; "
-                    f"max rel error {maximum_relative:.8e}"
+                    f"Catchment {catchment} — max abs difference {maximum_absolute:.1e}; "
+                    f"max rel difference {maximum_relative:.1e}"
                 ),
                 template="plotly_white",
                 height=620,
