@@ -1,16 +1,16 @@
 # Paths
-src/Input/**
-src/Output/**
-src/Hotstart/**
-src/Debug/**
-src/x64/**
-input_example/**
-/Input/**
-/Output/**
+src/Input/
+src/Output/
+src/Hotstart/
+src/Debug/
+src/x64/
+/Input/
+/Output/
 /build/
 /site/
-/Testing/**
-/CMakeFiles/**
+/Testing/
+/CMakeFiles/
+/scratch/
 
 # CMake files
 /CMakeCache.txt
