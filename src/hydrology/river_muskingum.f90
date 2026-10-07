@@ -6,7 +6,8 @@ module river_muskingum
         & route_muskingum_cunge_network
 
 contains
-
+write("oi")
+write("teste")
     subroutine initialize_muskingum_cunge_routing
         use config, only: &
             & catchment_count, &
