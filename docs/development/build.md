@@ -66,7 +66,7 @@ The Linux Intel build commands are:
 ```bash
 FC=ifx cmake -S . -B build/ifx -DCMAKE_BUILD_TYPE=Release
 cmake --build build/ifx
-ctest --test-dir build/ifx --output-on-failure
+ctest --test-dir build/ifx --output-on-failurewho
 ```
 
 ## Windows with Intel ifx (validated)

@@ -40,6 +40,7 @@ set(MGB_VARIABLE_SOURCES
 
 set(MGB_HYDROLOGY_SOURCES
     src/hydrology/catchment.f90
+    src/hydrology/water_use.f90
     src/hydrology/river_muskingum.f90
     src/hydrology/river_inertial.f90
     src/hydrology/reservoirs.f90

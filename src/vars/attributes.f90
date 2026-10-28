@@ -4,6 +4,7 @@ module attributes
     save
 
     real, allocatable :: river_width(:)
+    integer, allocatable :: catchment_id(:)
     integer, allocatable :: catchment_subbasin(:)
     integer, allocatable :: downstream_catchment(:)
     real, allocatable :: longest_reach_slope(:)
@@ -39,6 +40,7 @@ contains
         integer, intent(in) :: hru_count
 
         allocate (river_width(catchment_count))
+        allocate (catchment_id(catchment_count))
         allocate (catchment_subbasin(catchment_count))
         allocate (downstream_catchment(catchment_count))
         allocate (longest_reach_slope(catchment_count))
@@ -93,6 +95,7 @@ contains
         if (allocated(downstream_catchment)) deallocate (downstream_catchment)
         if (allocated(catchment_subbasin)) deallocate (catchment_subbasin)
         if (allocated(river_width)) deallocate (river_width)
+        if (allocated(catchment_id)) deallocate (catchment_id)
     end subroutine deallocate_attributes
 
 end module attributes

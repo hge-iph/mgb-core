@@ -19,6 +19,9 @@
 
     reservoir_substitution_enabled           = 0                     ! Enable reservoir setup in reservoir_config.txt: (0) disabled, (1) enabled.
     reservoir_count                          = 0                     ! Number of reservoirs in reservoir_config.txt and reservoir_outflow.txt; requires reservoir_substitution_enabled = 1.
+    water_use_enabled                        = 1                     ! Apply withdrawals from retirada.csv: (0) disabled, (1) enabled.
+    water_use_scale                           = 10.0                  ! Multiplier applied to water-use rates read from retirada.csv and consumo.csv.
+    water_use_returns_enabled                = 1                     ! Return 70% of withdrawn water: (0) disabled, (1) enabled.
 
 &end
 !**************************************************************************************

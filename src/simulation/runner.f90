@@ -17,6 +17,7 @@ contains
         use static_input_io, only: &
             & read_catchment_inputs, &
             & read_floodplain_inputs
+        use water_use, only: read_water_use_inputs
         use config, only: &
             & inertial_catchment_count, &
             & routing_mode, &
@@ -27,6 +28,7 @@ contains
         implicit none
 
         call read_catchment_inputs
+        call read_water_use_inputs
         if (substitution_count > 0) call read_substitution_flows
         write (io_unit_log, *) 'Substitution flows loaded'
         call read_climatology

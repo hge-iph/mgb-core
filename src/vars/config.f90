@@ -14,6 +14,9 @@ module config
     integer :: climate_region_count
     integer :: substitution_count
     integer :: reservoir_count
+    integer :: water_use_enabled = 1
+    integer :: water_use_returns_enabled = 1
+    real :: water_use_scale = 1000.0
     integer :: timestep_count
     real :: model_timestep
     integer :: first_subbasin

@@ -592,6 +592,7 @@ contains
             & model_timestep, &
             & thread_count
         use forcing, only: precipitation
+        use water_use, only: apply_inertial_withdrawal_volume
         use attributes, only: &
             & catchment_area, &
             & catchment_subbasin, &
@@ -708,6 +709,7 @@ contains
             q_net = q_up + r - q + q_neighbor
             v = v_prev + dt_route*q_net - d_vertical*dt_route*a_flood*1000000.0/(model_timestep*1000.)
             v = max(v, 0.0)
+            call apply_inertial_withdrawal_volume(v, i_catch, dt_route)
             current_water_volume(i_catch) = v
 
             !! SIN_RESERV

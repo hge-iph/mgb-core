@@ -191,6 +191,7 @@ contains
             & substitution_count, &
             & substitution_enabled
         use forcing, only: substituted_q
+        use water_use, only: apply_outlet_return, apply_outlet_withdrawal
         use attributes, only: &
             & catchment_subbasin, &
             & downstream_catchment, &
@@ -469,6 +470,10 @@ contains
                     & c_up_prev, &
                     & c_up_curr, &
                     & c_down_prev)
+                ! Adjust each outlet boundary sample with its withdrawal and
+                ! corresponding return before routing it downstream.
+                call water_use_adjust_boundaries(i_catch, n_route_steps)
+                q = outgoing_q_boundary(i_catch, n_route_steps + 1)
                 outgoing_q_current(i_catch) = q
 
                 !Update volume proportions
@@ -556,6 +561,8 @@ contains
                 x_musk = 0.0
 
                 q = r
+                call apply_outlet_withdrawal(q, i_catch)
+                call apply_outlet_return(q, i_catch)
                 outgoing_q_current(i_catch) = q
                 outgoing_groundwater_fraction_current(i_catch) = r_groundwater/q
                 outgoing_subsurface_fraction_current(i_catch) = r_subsurface/q
@@ -575,7 +582,7 @@ contains
                     q_surface = incoming_surface_fraction_current(i_down)*q_down
                     !runoff
 
-                    q_down = q_down + r
+                    q_down = q_down + q
                     incoming_q_current(i_down) = q_down
 
                     !MUSKINGUM-CUNGE boundary condition
@@ -613,6 +620,21 @@ contains
         end do
         return
     end subroutine route_muskingum_cunge_network
+
+    subroutine water_use_adjust_boundaries(i_catch, n_step)
+        use state, only: outgoing_q_boundary
+        use water_use, only: apply_outlet_return, apply_outlet_withdrawal
+
+        implicit none
+        integer, intent(in) :: i_catch
+        integer, intent(in) :: n_step
+        integer :: i_step
+
+        do i_step = 1, n_step + 1
+            call apply_outlet_withdrawal(outgoing_q_boundary(i_catch, i_step), i_catch)
+            call apply_outlet_return(outgoing_q_boundary(i_catch, i_step), i_catch)
+        end do
+    end subroutine water_use_adjust_boundaries
 
     subroutine route_muskingum_cunge( &
         & i_catch, &

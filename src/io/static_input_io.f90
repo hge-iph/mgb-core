@@ -196,6 +196,7 @@ contains
             & routing_method
         use attributes, only: &
             & bankfull_depth, &
+            & catchment_id, &
             & catchment_area, &
             & catchment_order, &
             & catchment_subbasin, &
@@ -216,7 +217,6 @@ contains
             & subbasin_outlet_catchment
 
         implicit none
-        integer :: catchment_id(catchment_count)
         integer :: i_hru_new
         integer :: enabled_outlet_index
         integer :: input_catchment_sequence

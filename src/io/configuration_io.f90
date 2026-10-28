@@ -35,6 +35,9 @@ contains
             & pseudo_2d_enabled, &
             & reservoir_count, &
             & reservoir_substitution_enabled, &
+            & water_use_enabled, &
+            & water_use_returns_enabled, &
+            & water_use_scale, &
             & routing_mode, &
             & subbasin_count, &
             & thread_count, &
@@ -90,7 +93,8 @@ contains
 
         namelist /model/ simulation_start, simulation_end, model_timestep, hotstart_read_mode, &
             & hotstart_write_mode, first_subbasin, last_subbasin, catchment_count, hru_count, &
-            & subbasin_count, climate_region_count, reservoir_substitution_enabled, reservoir_count
+            & subbasin_count, climate_region_count, reservoir_substitution_enabled, reservoir_count, &
+            & water_use_enabled, water_use_returns_enabled, water_use_scale
 
         namelist /forcing/ use_temperature_timeseries, use_radiation_timeseries, &
             & use_humidity_timeseries, use_wind_timeseries, use_pressure_timeseries, &

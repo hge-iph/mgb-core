@@ -37,6 +37,9 @@ groups.
 | catchment_count, hru_count, subbasin_count | Entity counts |
 | climate_region_count | Number of climate regions |
 | reservoir_substitution_enabled | Enables reservoir substitution |
+| water_use_enabled | Enables withdrawal from `retirada.csv` and consumption from `consumo.csv` |
+| water_use_scale | Multiplier applied to the rates read from `retirada.csv` and `consumo.csv` (default 10000) |
+| water_use_returns_enabled | Returns the withdrawn flow left after consumption (default 1); set to 0 to disable return flow |
 | reservoir_count | Number of reservoir records |
 
 ### forcing
@@ -88,6 +91,8 @@ write_flooded_area are the complete output key set.
 | floodplain_connections.txt | Face connection records used by the pseudo-2D path. The current text reader retains the historical connection layout and the active binary floodplain path remains unchanged. |
 | substitution_flows.txt | Header fields followed by date/time and reservoir substitution flow records. |
 | observed_discharge.dat | Observed discharge fixture used by regression and performance tooling. |
+| retirada.csv | Optional water-use rows with catchment id, requested withdrawal rate, and year. Muskingum-Cunge limits withdrawal by available river flow; local-inertial routing converts the rate to volume for each substep and limits it by stored channel-plus-floodplain volume. |
+| consumo.csv | Optional rows with catchment id and consumption rate. Consumption is limited to realized withdrawal; unconsumed water is returned when return flow is enabled. In local-inertial routing, withdrawal and consumption are applied as volumes to channel-plus-floodplain storage. Missing consumption rows retain the historical 70% return assumption. |
 | hotstart_schedule.txt | Hotstart timestep schedule read as integer records. |
 | reservoir_config.txt | Reservoir-to-catchment and lake configuration records when reservoir substitution is enabled. |
 | reservoir_outflow.txt | Time-indexed reservoir outflow records when reservoir substitution is enabled. |

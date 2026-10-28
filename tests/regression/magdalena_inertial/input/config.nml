@@ -3,22 +3,24 @@
 !**************************************************************************************
 &model
 
-    simulation_start                         = "1979-01-01 00:00"    ! Simulation start date (YYYY-MM-DD HH:mm).
-    simulation_end                           = "1982-08-06 00:00"    ! Simulation end date (YYYY-MM-DD HH:mm).
+    simulation_start                         = "1990-01-01 00:00"    ! Simulation start date (YYYY-MM-DD HH:mm).
+    simulation_end                           = "2010-12-31 00:00"    ! Simulation end date (YYYY-MM-DD HH:mm).
     model_timestep                           = 86400.0               ! Meteorological forcing timestep in seconds.
     hotstart_read_mode                       = 0                     ! Hotstart read: (0) disabled, (1) read initial conditions from water_balance_state_<date>.bin and inertial_state_<date>.bin.
     hotstart_write_mode                      = 0                     ! Hotstart write: (0) disabled, (1) write at the end, (2) write at hotstart_schedule.txt times.
 
-    first_subbasin                           = 1                     ! Initial sub-basin for simulation.
-    last_subbasin                            = 296                   ! Final sub-basin for simulation.
+    first_subbasin                           = 135                    ! Initial sub-basin for simulation.
+    last_subbasin                            = 141                   ! Final sub-basin for simulation.
 
-    catchment_count                          = 458                   ! Total number of unit catchments.
+    catchment_count                          = 33749                   ! Total number of unit catchments.
     hru_count                                = 9                     ! Total number of hydrological response units.
     subbasin_count                           = 296                   ! Total number of sub-basins.
     climate_region_count                     = 7                     ! Number of climate regions.
 
     reservoir_substitution_enabled           = 0                     ! Enable reservoir setup in reservoir_config.txt: (0) disabled, (1) enabled.
     reservoir_count                          = 0                     ! Number of reservoirs in reservoir_config.txt and reservoir_outflow.txt; requires reservoir_substitution_enabled = 1.
+    water_use_scale                           = 10.0                  ! Multiplier applied to water-use rates read from retirada.csv and consumo.csv.
+    water_use_returns_enabled                = 1                     ! Return 70% of withdrawn water: (0) disabled, (1) enabled.
 
 &end
 !**************************************************************************************
@@ -40,7 +42,7 @@
 &routing
 
     routing_mode                             = 1                     ! Routing mode: (0) Muskingum-Cunge, (1) local inertial hydrodynamic routing.
-    thread_count                             = 2                     ! Number of OpenMP threads for inertial routing.
+    thread_count                             = 6                     ! Number of OpenMP threads for inertial routing.
 
     downstream_boundary_slope                = 0.0                   ! Downstream boundary slope in metres per kilometre.
     courant_alpha                            = 0.3                   ! Courant-Friedrichs-Lewy stability factor.
@@ -55,7 +57,7 @@
     write_discharge                          = 1                     ! River discharge (m3/s).
     write_water_surface_elevation            = 1                     ! Water-surface elevation (m).
     write_flooded_level                      = 0                     ! HAND-relative water level (m).
-    write_total_water_storage                = 1                     ! Terrestrial water storage (mm).
+    write_total_water_storage                = 0                     ! Terrestrial water storage (mm).
     write_soil_water                         = 0                     ! Soil water content (mm).
     write_soil_saturation                    = 0                     ! Soil saturation degree (0-1).
     write_runoff                             = 0                     ! Total runoff (mm).
