@@ -1,43 +1,44 @@
 module parameters
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     save
 
-    integer, allocatable :: catchments_per_subbasin(:)
+    integer(int32), allocatable :: catchments_per_subbasin(:)
     character(10), allocatable :: hru_name(:)
-    integer, allocatable :: subbasin_outlet_catchment(:)
-    real, allocatable :: specific_baseflow(:)
-    real, allocatable :: max_soil_water_storage(:, :)
-    real, allocatable :: b_arno(:, :)
-    real, allocatable :: subsurface_conductivity(:, :)
-    real, allocatable :: groundwater_conductivity(:, :)
-    real, allocatable :: lambda_brooks_corey(:, :)
-    real, allocatable :: max_capillary_flux(:, :)
-    real, allocatable :: capillary_threshold_fraction(:, :)
-    real, allocatable :: floodplain_infiltration_rate(:, :)
-    real, allocatable :: subsurface_routing_coefficient(:)
-    real, allocatable :: groundwater_routing_coefficient(:)
-    real, allocatable :: surface_routing_coefficient(:)
-    real, allocatable :: albedo(:, :, :)
-    real, allocatable :: leaf_area_index(:, :, :)
-    real, allocatable :: vegetation_height(:, :, :)
-    real, allocatable :: surface_resistance(:, :, :)
+    integer(int32), allocatable :: subbasin_outlet_catchment(:)
+    real(real32), allocatable :: specific_baseflow(:)
+    real(real32), allocatable :: max_soil_water_storage(:, :)
+    real(real32), allocatable :: b_arno(:, :)
+    real(real32), allocatable :: subsurface_conductivity(:, :)
+    real(real32), allocatable :: groundwater_conductivity(:, :)
+    real(real32), allocatable :: lambda_brooks_corey(:, :)
+    real(real32), allocatable :: max_capillary_flux(:, :)
+    real(real32), allocatable :: capillary_threshold_fraction(:, :)
+    real(real32), allocatable :: floodplain_infiltration_rate(:, :)
+    real(real32), allocatable :: subsurface_routing_coefficient(:)
+    real(real32), allocatable :: groundwater_routing_coefficient(:)
+    real(real32), allocatable :: surface_routing_coefficient(:)
+    real(real32), allocatable :: albedo(:, :, :)
+    real(real32), allocatable :: leaf_area_index(:, :, :)
+    real(real32), allocatable :: vegetation_height(:, :, :)
+    real(real32), allocatable :: surface_resistance(:, :, :)
 
-    integer, allocatable :: muskingum_reach_count(:)
-    real, allocatable :: muskingum_timestep(:)
-    real, allocatable :: wave_celerity(:)
-    real, allocatable :: time_of_concentration(:)
-    real, allocatable :: reference_q(:)
+    integer(int32), allocatable :: muskingum_reach_count(:)
+    real(real32), allocatable :: muskingum_timestep(:)
+    real(real32), allocatable :: wave_celerity(:)
+    real(real32), allocatable :: time_of_concentration(:)
+    real(real32), allocatable :: reference_q(:)
 
-    integer, allocatable :: upstream_topology(:, :)
-    real*8, allocatable :: stage_table(:, :)
-    real*8, allocatable :: volume_table(:, :)
-    real*8, allocatable :: area_table(:, :)
+    integer(int32), allocatable :: upstream_topology(:, :)
+    real(real64), allocatable :: stage_table(:, :)
+    real(real64), allocatable :: volume_table(:, :)
+    real(real64), allocatable :: area_table(:, :)
 
-    integer, allocatable :: reservoir_index_by_catchment(:)
-    integer, allocatable :: routing_downstream_catchment(:)
-    integer, allocatable :: reservoir_start_timestep(:)
-    integer, allocatable :: substitution_catchment(:)
+    integer(int32), allocatable :: reservoir_index_by_catchment(:)
+    integer(int32), allocatable :: routing_downstream_catchment(:)
+    integer(int32), allocatable :: reservoir_start_timestep(:)
+    integer(int32), allocatable :: substitution_catchment(:)
 
 contains
 
@@ -49,13 +50,13 @@ contains
         & max_hru_count, &
         & max_subbasin_count, &
         & max_muskingum_reach_count)
-        integer, intent(in) :: catchment_count
-        integer, intent(in) :: subbasin_count
-        integer, intent(in) :: hru_count
-        integer, intent(in) :: climate_region_count
-        integer, intent(in) :: max_hru_count
-        integer, intent(in) :: max_subbasin_count
-        integer, intent(in) :: max_muskingum_reach_count
+        integer(int32), intent(in) :: catchment_count
+        integer(int32), intent(in) :: subbasin_count
+        integer(int32), intent(in) :: hru_count
+        integer(int32), intent(in) :: climate_region_count
+        integer(int32), intent(in) :: max_hru_count
+        integer(int32), intent(in) :: max_subbasin_count
+        integer(int32), intent(in) :: max_muskingum_reach_count
 
         allocate (catchments_per_subbasin(subbasin_count))
         allocate (hru_name(max_hru_count))

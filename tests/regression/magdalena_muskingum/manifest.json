@@ -6,6 +6,8 @@
     "config.nml"
   ],
   "expected_dir": "expected",
+  "simulation_start": "1979-01-01T00:00:00",
+  "simulation_end": "1982-08-06T00:00:00",
   "required_outputs": [
     "model.log"
   ],
@@ -13,20 +15,23 @@
     {
       "path": "discharge.bin",
       "dtype": "float32",
+      "unit": "m3/s",
       "atol": 1.0,
-      "rtol": 100.0
+      "rtol": 0.1
     },
     {
       "path": "total_water_storage.bin",
       "dtype": "float32",
+      "unit": "mm",
       "atol": 1.0,
-      "rtol": 100.0
+      "rtol": 0.1
     },
     {
       "path": "runoff.bin",
       "dtype": "float32",
+      "unit": "mm",
       "atol": 1.0,
-      "rtol": 100.0
+      "rtol": 0.1
     }
   ]
 }

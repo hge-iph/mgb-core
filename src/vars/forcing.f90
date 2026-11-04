@@ -1,23 +1,24 @@
 module forcing
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     save
 
-    real(4), allocatable :: monthly_air_temperature(:, :)
-    real(4), allocatable :: monthly_relative_humidity(:, :)
-    real(4), allocatable :: monthly_wind_speed(:, :)
-    real(4), allocatable :: monthly_air_pressure(:, :)
-    real(4), allocatable :: monthly_solar_input(:, :)
-    real, allocatable :: climate_station_coordinates(:, :)
-    real, allocatable :: previous_air_temperature(:)
-    real(4), allocatable :: air_temperature(:)
-    real(4), allocatable :: relative_humidity(:)
-    real(4), allocatable :: wind_speed(:)
-    real(4), allocatable :: solar_input(:)
-    real(4), allocatable :: air_pressure(:)
-    real(4), allocatable :: precipitation(:)
-    real, allocatable :: substituted_q(:, :)
-    real(kind=8), allocatable :: reservoir_outflow(:, :)
+    real(real32), allocatable :: monthly_air_temperature(:, :)
+    real(real32), allocatable :: monthly_relative_humidity(:, :)
+    real(real32), allocatable :: monthly_wind_speed(:, :)
+    real(real32), allocatable :: monthly_air_pressure(:, :)
+    real(real32), allocatable :: monthly_solar_input(:, :)
+    real(real32), allocatable :: climate_station_coordinates(:, :)
+    real(real32), allocatable :: previous_air_temperature(:)
+    real(real32), allocatable :: air_temperature(:)
+    real(real32), allocatable :: relative_humidity(:)
+    real(real32), allocatable :: wind_speed(:)
+    real(real32), allocatable :: solar_input(:)
+    real(real32), allocatable :: air_pressure(:)
+    real(real32), allocatable :: precipitation(:)
+    real(real32), allocatable :: substituted_q(:, :)
+    real(real64), allocatable :: reservoir_outflow(:, :)
 
 contains
 
@@ -25,9 +26,9 @@ contains
         & catchment_count, &
         & substitution_count, &
         & timestep_count)
-        integer, intent(in) :: catchment_count
-        integer, intent(in) :: substitution_count
-        integer, intent(in) :: timestep_count
+        integer(int32), intent(in) :: catchment_count
+        integer(int32), intent(in) :: substitution_count
+        integer(int32), intent(in) :: timestep_count
         allocate (climate_station_coordinates(catchment_count, 2))
         allocate (monthly_air_temperature(catchment_count, 12))
         allocate (monthly_relative_humidity(catchment_count, 12))
@@ -65,8 +66,8 @@ contains
     subroutine allocate_reservoir_forcing( &
         & timestep_count, &
         & reservoir_count)
-        integer, intent(in) :: timestep_count
-        integer, intent(in) :: reservoir_count
+        integer(int32), intent(in) :: timestep_count
+        integer(int32), intent(in) :: reservoir_count
 
         allocate (reservoir_outflow(timestep_count, reservoir_count))
     end subroutine allocate_reservoir_forcing

@@ -1,5 +1,6 @@
 module meteorological_io
 
+    use, intrinsic :: iso_fortran_env, only: int32
     implicit none
     private
     public :: open_meteorological_inputs, read_climatology, read_meteorological_forcing, &
@@ -34,10 +35,10 @@ contains
             & monthly_wind_speed
 
         implicit none
-        integer :: i_catch
-        integer :: i_month
-        integer :: record_index
-        integer :: record_length
+        integer(int32) :: i_catch
+        integer(int32) :: i_month
+        integer(int32) :: record_index
+        integer(int32) :: record_length
 
         inquire (iolength=record_length) (monthly_air_temperature(i_catch, 1), i_catch=1, catchment_count)
         open (io_unit_climatology, file=input_directory//'monthly_climatology.bin', status='old', recl=record_length, &
@@ -99,8 +100,8 @@ contains
             & wind_speed
 
         implicit none
-        integer, intent(in) :: file_action
-        integer :: record_length
+        integer(int32), intent(in) :: file_action
+        integer(int32) :: record_length
 
         !input met files
         ! Open forcing streams before the timestep loop.
@@ -175,10 +176,10 @@ contains
         implicit none
 
         ! Calendar month
-        integer, intent(in) :: month_number
+        integer(int32), intent(in) :: month_number
         ! timestep for reading binaries
-        integer, intent(in) :: record_index
-        integer :: i_catch
+        integer(int32), intent(in) :: record_index
+        integer(int32) :: i_catch
 
         ! Using vectorized read for monthly climatological data
         if (use_temperature_timeseries == 0) air_temperature(:) = monthly_air_temperature(:, &

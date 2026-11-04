@@ -99,7 +99,7 @@ Build from the repository root:
 set "FC=ifx"
 cmake -S . -B build/ifx
 cmake --build build/ifx --config Release
-ctest --test-dir build/ifx -C Release --output-on-failure -R regression_magdalena_
+ctest --test-dir build/ifx -C Release --verbose --output-on-failure -R regression_magdalena_
 ```
 
 ## Linux
@@ -120,7 +120,7 @@ Build from the repository root:
 ```bash
 FC=ifx cmake -S . -B build/ifx -DCMAKE_BUILD_TYPE=Release
 cmake --build build/ifx
-ctest --test-dir build/ifx --output-on-failure -R regression_magdalena_
+ctest --test-dir build/ifx --verbose --output-on-failure -R regression_magdalena_
 ```
 
 For GNU Fortran 13.3 on Linux:
@@ -128,7 +128,7 @@ For GNU Fortran 13.3 on Linux:
 ```bash
 FC=gfortran cmake -S . -B build/gfortran -DCMAKE_BUILD_TYPE=Release
 cmake --build build/gfortran
-ctest --test-dir build/gfortran --output-on-failure -R regression_magdalena_
+ctest --test-dir build/gfortran --verbose --output-on-failure -R regression_magdalena_
 ```
 
 ## Build Definition

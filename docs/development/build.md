@@ -66,7 +66,7 @@ The Linux Intel build commands are:
 ```bash
 FC=ifx cmake -S . -B build/ifx -DCMAKE_BUILD_TYPE=Release
 cmake --build build/ifx
-ctest --test-dir build/ifx --output-on-failure
+ctest --test-dir build/ifx --verbose --output-on-failure
 ```
 
 ## Windows with Intel ifx (validated)
@@ -86,7 +86,7 @@ The Windows Intel build commands are:
 set "FC=ifx"
 cmake -S . -B build/ifx
 cmake --build build/ifx --config Release
-ctest --test-dir build/ifx -C Release --output-on-failure
+ctest --test-dir build/ifx -C Release --verbose --output-on-failure
 ```
 
 ## Linux with GNU Fortran 13.3 (validated)
@@ -97,7 +97,7 @@ OpenMP runtime:
 ```bash
 FC=gfortran cmake -S . -B build/gfortran -DCMAKE_BUILD_TYPE=Release
 cmake --build build/gfortran
-ctest --test-dir build/gfortran --output-on-failure
+ctest --test-dir build/gfortran --verbose --output-on-failure
 ```
 
 ## Windows with GNU Fortran (experimental, unvalidated)
@@ -109,7 +109,7 @@ workflow remains experimental and unvalidated:
 ```bash
 FC=gfortran cmake -S . -B build/gfortran -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build/gfortran
-ctest --test-dir build/gfortran --output-on-failure
+ctest --test-dir build/gfortran --verbose --output-on-failure
 ```
 
 Optional compiler diagnostics and failure-investigation workflows are in

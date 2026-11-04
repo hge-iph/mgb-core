@@ -1,5 +1,6 @@
 module catchment
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     private
     public :: calculate_catchment_time_of_concentration, initialize_catchment, update_catchment
@@ -41,13 +42,13 @@ contains
         ! tk_int   subsurface-reservoir delay [s]
         ! tk_sup   surface-reservoir delay [s]
         ! v_bas    initial groundwater-reservoir volume [m3]
-        integer :: i_catch
-        integer :: i_hru
-        integer :: i_sub
-        integer :: tk_bas
-        integer :: tk_int
-        integer :: tk_sup
-        real, volatile :: v_bas
+        integer(int32) :: i_catch
+        integer(int32) :: i_hru
+        integer(int32) :: i_sub
+        integer(int32) :: tk_bas
+        integer(int32) :: tk_int
+        integer(int32) :: tk_sup
+        real(real64) :: v_bas
 
         interception_storage = 0.0
         do i_catch = 1, catchment_count
@@ -88,9 +89,9 @@ contains
         ! i_catch catchment index [1]
         ! l_reach longest reach length [km]
         ! dh      reach elevation difference [m]
-        integer :: i_catch
-        real :: l_reach
-        real :: dh
+        integer(int32) :: i_catch
+        real(real64) :: l_reach
+        real(real64) :: dh
 
         ! Calculates Time of Concentration (i.e. time of travel) for Catchment
         do i_catch = 1, catchment_count
@@ -242,63 +243,63 @@ contains
         ! area_catch   catchment area [km2]
         ! linear_storage_total total terrestrial linear-reservoir volume [m3]
         ! rho_w        water density [kg/m3]
-        integer :: i_catch
-        integer :: i_hru
-        integer :: i_sub
-        real, volatile :: p
-        real, volatile :: w
-        real, volatile :: wm
-        real, volatile :: pa
-        real, volatile :: ta
-        real, volatile :: wind
-        real, volatile :: rh
-        real, volatile :: solar
-        real, volatile :: t_prev
-        real, volatile :: lai
-        real, volatile :: alb
-        real, volatile :: z_veg
-        real, volatile :: rs
-        real, volatile :: si
-        real, volatile :: lat
-        real, volatile :: b
-        real, volatile :: k_int
-        real, volatile :: k_bas
-        real, volatile :: lambda
-        real, volatile :: cap
-        real, volatile :: wc
-        real, volatile :: k_inf
-        real, volatile :: et_soil
-        real, volatile :: et_int
-        real, volatile :: et_total
-        real, volatile :: et_int_pot
-        real, volatile :: et_water_pot
-        real, volatile :: lambda_e
-        real, volatile :: r_top
-        real, volatile :: r_short
-        real, volatile :: d_sup
-        real, volatile :: d_int
-        real, volatile :: d_bas
-        real, volatile :: d_infil
-        real, volatile :: q_sup
-        real, volatile :: q_int
-        real, volatile :: q_bas
-        real, volatile :: q_sup_acc
-        real, volatile :: q_int_acc
-        real, volatile :: q_bas_acc
-        real, volatile :: q_cap_acc
-        real, volatile :: hru_pct
-        real*8, volatile :: a_flood
-        real, volatile :: w_mean_acc
-        real, volatile :: wm_mean_acc
-        real, volatile :: tk_bas
-        real, volatile :: tk_int
-        real, volatile :: tk_sup
-        real, volatile :: v_bas_next
-        real, volatile :: v_int_next
-        real, volatile :: v_sup_next
-        real, volatile :: area_catch
-        real, volatile :: linear_storage_total
-        real, parameter :: rho_w = 1000.0
+        integer(int32) :: i_catch
+        integer(int32) :: i_hru
+        integer(int32) :: i_sub
+        real(real64) :: p
+        real(real64) :: w
+        real(real64) :: wm
+        real(real64) :: pa
+        real(real64) :: ta
+        real(real64) :: wind
+        real(real64) :: rh
+        real(real64) :: solar
+        real(real64) :: t_prev
+        real(real64) :: lai
+        real(real64) :: alb
+        real(real64) :: z_veg
+        real(real64) :: rs
+        real(real64) :: si
+        real(real64) :: lat
+        real(real64) :: b
+        real(real64) :: k_int
+        real(real64) :: k_bas
+        real(real64) :: lambda
+        real(real64) :: cap
+        real(real64) :: wc
+        real(real64) :: k_inf
+        real(real64) :: et_soil
+        real(real64) :: et_int
+        real(real64) :: et_total
+        real(real64) :: et_int_pot
+        real(real64) :: et_water_pot
+        real(real64) :: lambda_e
+        real(real64) :: r_top
+        real(real64) :: r_short
+        real(real64) :: d_sup
+        real(real64) :: d_int
+        real(real64) :: d_bas
+        real(real64) :: d_infil
+        real(real64) :: q_sup
+        real(real64) :: q_int
+        real(real64) :: q_bas
+        real(real64) :: q_sup_acc
+        real(real64) :: q_int_acc
+        real(real64) :: q_bas_acc
+        real(real64) :: q_cap_acc
+        real(real64) :: hru_pct
+        real(real64) :: a_flood
+        real(real64) :: w_mean_acc
+        real(real64) :: wm_mean_acc
+        real(real64) :: tk_bas
+        real(real64) :: tk_int
+        real(real64) :: tk_sup
+        real(real64) :: v_bas_next
+        real(real64) :: v_int_next
+        real(real64) :: v_sup_next
+        real(real64) :: area_catch
+        real(real64) :: linear_storage_total
+        real(real64), parameter :: rho_w = 1000.0
 
         ! Gets day of the year (day_of_year) for computing radiation
         day_of_year = calculate_integer_julian_day(year, month, day) - calculate_integer_julian_day(year, 1, 1) + 1
@@ -679,50 +680,50 @@ contains
         ! si_a         available interception storage [mm]
         ! si_m         maximum interception storage [mm]
         ! f_et         remaining potential-evapotranspiration fraction [1]
-        real, intent(inout) :: p
-        real, intent(inout) :: si
-        real, intent(inout) :: rs
-        real, intent(in) :: w
-        real, intent(in) :: wm
-        real, intent(in) :: pa
-        real, intent(in) :: ta
-        real, intent(in) :: wind
-        real, intent(in) :: rh
-        real, intent(in) :: solar
-        real, intent(in) :: t_prev
-        real, intent(in) :: lai
-        real, intent(in) :: alb
-        real, intent(in) :: z_veg
-        real, intent(in) :: lat
-        real, intent(out) :: et_soil
-        real, intent(out) :: et_int
-        real, intent(out) :: et_total
-        real, intent(out) :: et_int_pot
-        real, intent(out) :: et_water_pot
-        real, intent(out) :: lambda_e
-        real, intent(out) :: r_top
-        real, intent(out) :: r_short
-        real, parameter :: rho_w = 1000.0
-        real, parameter :: c_p = 0.001013
-        real, volatile :: r_net
-        real, volatile :: e_a
-        real, volatile :: e_s
-        real, volatile :: e_d
-        real, volatile :: s_e
-        real, volatile :: gamma
-        real, volatile :: rho_a
-        real, volatile :: z0
-        real, volatile :: z
-        real, volatile :: u10
-        real, volatile :: u2
-        real, volatile :: r_a
-        real, volatile :: r_aw
-        real, volatile :: w_u
-        real, volatile :: w_w
-        real, save :: f_rs = 0.0
-        real, volatile :: si_a
-        real, volatile :: si_m
-        real, volatile :: f_et
+        real(real64), intent(inout) :: p
+        real(real64), intent(inout) :: si
+        real(real64), intent(inout) :: rs
+        real(real64), intent(in) :: w
+        real(real64), intent(in) :: wm
+        real(real64), intent(in) :: pa
+        real(real64), intent(in) :: ta
+        real(real64), intent(in) :: wind
+        real(real64), intent(in) :: rh
+        real(real64), intent(in) :: solar
+        real(real64), intent(in) :: t_prev
+        real(real64), intent(in) :: lai
+        real(real64), intent(in) :: alb
+        real(real64), intent(in) :: z_veg
+        real(real64), intent(in) :: lat
+        real(real64), intent(out) :: et_soil
+        real(real64), intent(out) :: et_int
+        real(real64), intent(out) :: et_total
+        real(real64), intent(out) :: et_int_pot
+        real(real64), intent(out) :: et_water_pot
+        real(real64), intent(out) :: lambda_e
+        real(real64), intent(out) :: r_top
+        real(real64), intent(out) :: r_short
+        real(real64), parameter :: rho_w = 1000.0
+        real(real64), parameter :: c_p = 0.001013
+        real(real64) :: r_net
+        real(real64) :: e_a
+        real(real64) :: e_s
+        real(real64) :: e_d
+        real(real64) :: s_e
+        real(real64) :: gamma
+        real(real64) :: rho_a
+        real(real64) :: z0
+        real(real64) :: z
+        real(real64) :: u10
+        real(real64) :: u2
+        real(real64) :: r_a
+        real(real64) :: r_aw
+        real(real64) :: w_u
+        real(real64) :: w_w
+        real(real64), save :: f_rs = 0.0
+        real(real64) :: si_a
+        real(real64) :: si_m
+        real(real64) :: f_et
 
         call calculate_net_radiation( &
             & solar, &
@@ -826,29 +827,29 @@ contains
         ! r_sn     net shortwave radiation [MJ/m2/day]
         ! r_l      net longwave radiation [MJ/m2/day]
         ! g        ground heat flux [MJ/m2/day]
-        real, intent(in) :: solar
-        real, intent(in) :: ta
-        real, intent(in) :: t_prev
-        real, intent(in) :: rh
-        real, intent(in) :: alb
-        real, intent(in) :: lat
-        real, intent(out) :: lambda_e
-        real, intent(out) :: r_net
-        real, intent(out) :: r_top
-        real, intent(out) :: r_short
-        real, intent(out) :: e_a
-        real, intent(out) :: e_s
-        real, parameter :: pi = 3.141592
-        real, parameter :: rho_w = 1000.0
-        real, parameter :: sigma = 4.903e-9
-        real, volatile :: d
-        real, volatile :: delta
-        real, volatile :: omega
-        real, volatile :: n_sun
-        real, volatile :: d_r
-        real, volatile :: r_sn
-        real, volatile :: r_l
-        real, volatile :: g
+        real(real64), intent(in) :: solar
+        real(real64), intent(in) :: ta
+        real(real64), intent(in) :: t_prev
+        real(real64), intent(in) :: rh
+        real(real64), intent(in) :: alb
+        real(real64), intent(in) :: lat
+        real(real64), intent(out) :: lambda_e
+        real(real64), intent(out) :: r_net
+        real(real64), intent(out) :: r_top
+        real(real64), intent(out) :: r_short
+        real(real64), intent(out) :: e_a
+        real(real64), intent(out) :: e_s
+        real(real64), parameter :: pi = 3.141592
+        real(real64), parameter :: rho_w = 1000.0
+        real(real64), parameter :: sigma = 4.903e-9
+        real(real64) :: d
+        real(real64) :: delta
+        real(real64) :: omega
+        real(real64) :: n_sun
+        real(real64) :: d_r
+        real(real64) :: r_sn
+        real(real64) :: r_l
+        real(real64) :: g
 
         lambda_e = 2.501 - 0.002361*ta
         e_s = 0.6108*exp((17.27*ta)/(237.3 + ta))
@@ -933,30 +934,30 @@ contains
         ! shape      ARNO saturation-curve remainder [1]
         ! w_prev     soil-water storage at iteration start [mm]
         ! p_eff      effective precipitation [mm per step]
-        real, intent(in) :: p
-        real, intent(in) :: wm
-        real, intent(in) :: b
-        real, intent(in) :: k_int
-        real, intent(in) :: k_bas
-        real, intent(in) :: lambda
-        real, intent(in) :: dt
-        real, intent(in) :: area_catch
-        real, intent(inout) :: w
-        real, intent(inout) :: et_soil
-        real, intent(inout) :: cap
-        real, intent(inout) :: wc
-        real, intent(inout) :: k_inf
-        real, intent(out) :: d_sup
-        real, intent(out) :: d_int
-        real, intent(out) :: d_bas
-        real, intent(out) :: d_infil
-        integer, intent(in) :: i_catch
-        real, volatile :: w_int
-        real, volatile :: w_bas
-        real, volatile :: w_cap
-        real, volatile :: shape
-        real, volatile :: w_prev
-        real, volatile :: p_eff
+        real(real64), intent(in) :: p
+        real(real64), intent(in) :: wm
+        real(real64), intent(in) :: b
+        real(real64), intent(in) :: k_int
+        real(real64), intent(in) :: k_bas
+        real(real64), intent(in) :: lambda
+        real(real32), intent(in) :: dt
+        real(real64), intent(in) :: area_catch
+        real(real64), intent(inout) :: w
+        real(real64), intent(inout) :: et_soil
+        real(real64), intent(inout) :: cap
+        real(real64), intent(inout) :: wc
+        real(real64), intent(inout) :: k_inf
+        real(real64), intent(out) :: d_sup
+        real(real64), intent(out) :: d_int
+        real(real64), intent(out) :: d_bas
+        real(real64), intent(out) :: d_infil
+        integer(int32), intent(in) :: i_catch
+        real(real64) :: w_int
+        real(real64) :: w_bas
+        real(real64) :: w_cap
+        real(real64) :: shape
+        real(real64) :: w_prev
+        real(real64) :: p_eff
 
         ! The Brooks-Corey pore-size index controls subsurface drainage; typical
         ! values range from 0.165 for clay to 0.694 for sand (Rawls).

@@ -1,42 +1,43 @@
 module attributes
 
+    use, intrinsic :: iso_fortran_env, only: int32, real32, real64
     implicit none
     save
 
-    real, allocatable :: river_width(:)
-    integer, allocatable :: catchment_subbasin(:)
-    integer, allocatable :: downstream_catchment(:)
-    real, allocatable :: longest_reach_slope(:)
-    real, allocatable :: longest_reach_length(:)
-    real, allocatable :: catchment_lon(:)
-    real, allocatable :: catchment_lat(:)
-    integer, allocatable :: climate_region(:)
-    real, allocatable :: catchment_area(:)
-    real, allocatable :: drainage_area(:)
-    real, allocatable :: river_length(:)
-    real, allocatable :: river_slope(:)
-    real, allocatable :: hru_percentage(:, :)
-    integer, allocatable :: catchment_order(:)
-    real, allocatable :: n_manning(:)
+    real(real32), allocatable :: river_width(:)
+    integer(int32), allocatable :: catchment_subbasin(:)
+    integer(int32), allocatable :: downstream_catchment(:)
+    real(real32), allocatable :: longest_reach_slope(:)
+    real(real32), allocatable :: longest_reach_length(:)
+    real(real32), allocatable :: catchment_lon(:)
+    real(real32), allocatable :: catchment_lat(:)
+    integer(int32), allocatable :: climate_region(:)
+    real(real32), allocatable :: catchment_area(:)
+    real(real32), allocatable :: drainage_area(:)
+    real(real32), allocatable :: river_length(:)
+    real(real32), allocatable :: river_slope(:)
+    real(real32), allocatable :: hru_percentage(:, :)
+    integer(int32), allocatable :: catchment_order(:)
+    real(real32), allocatable :: n_manning(:)
 
-    integer, allocatable :: floodplain_point_count(:)
-    integer, allocatable :: floodplain_bottom_elevation(:)
-    integer, allocatable :: floodplain_elevation(:, :)
-    real*8, allocatable :: floodplain_area(:, :)
-    real*8, allocatable :: bankfull_depth(:)
-    real*8, allocatable :: face_catchment_1(:)
-    real*8, allocatable :: face_catchment_2(:)
-    real*8, allocatable :: first_face_elevation(:)
-    real*8, allocatable :: second_face_elevation(:)
-    real*8, allocatable :: face_distance(:)
+    integer(int32), allocatable :: floodplain_point_count(:)
+    integer(int32), allocatable :: floodplain_bottom_elevation(:)
+    integer(int32), allocatable :: floodplain_elevation(:, :)
+    real(real64), allocatable :: floodplain_area(:, :)
+    real(real64), allocatable :: bankfull_depth(:)
+    real(real64), allocatable :: face_catchment_1(:)
+    real(real64), allocatable :: face_catchment_2(:)
+    real(real64), allocatable :: first_face_elevation(:)
+    real(real64), allocatable :: second_face_elevation(:)
+    real(real64), allocatable :: face_distance(:)
 
 contains
 
     subroutine allocate_attributes( &
         & catchment_count, &
         & hru_count)
-        integer, intent(in) :: catchment_count
-        integer, intent(in) :: hru_count
+        integer(int32), intent(in) :: catchment_count
+        integer(int32), intent(in) :: hru_count
 
         allocate (river_width(catchment_count))
         allocate (catchment_subbasin(catchment_count))

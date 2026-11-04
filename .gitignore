@@ -1,25 +1,21 @@
 # Paths
-src/Input/**
-src/Output/**
-src/Hotstart/**
-src/Debug/**
-src/x64/**
-input_example/**
-/Input/**
-/Output/**
+src/Input/
+src/Output/
+src/Hotstart/
+src/Debug/
+src/x64/
+/Input/
+/Output/
 /build/
 /site/
-/Testing/**
-/CMakeFiles/**
+/Testing/
+/CMakeFiles/
+/scratch/
 
 # CMake files
 /CMakeCache.txt
 /cmake_install.cmake
 /CTestTestfile.cmake
-
-# Files/formats from ad hoc runtime input paths
-/Input/*.pbi
-/Input/*.qob
 
 # Python caches
 __pycache__/
@@ -66,5 +62,4 @@ __pycache__/
 *.app
 
 # Machine states
-.omx/
 .codex
